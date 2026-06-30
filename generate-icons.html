@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Icons</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Generating Grocerly Icons...</h1>
+  <div id="status">Drawing vector icons...</div>
+
+  <script>
+    const sizes = [32, 180, 192, 512];
+    const leafPath = 'M19.2 122.9C6.9 104.2 0 82 0 59.1C0 26.5 26.5 0 59.1 0c22.9 0 45.1 6.9 63.8 19.2L329.8 226C340.6 233 347 245.1 347 258c0 23.2-18.8 42-42 42c-12.9 0-25-6.4-32-17.2L19.2 122.9zM224 400.9c0-11.8 4.7-23.1 13-31.5l112-112c17.4-17.4 45.6-17.4 63 0s17.4 45.6 0 63l-112 112c-8.4 8.3-19.7 13-31.5 13c-24.6 0-44.5-19.9-44.5-44.5zm254.8-377C491.5 36.2 512 63.7 512 94.3V256c0 141.4-114.6 256-256 256H96.3c-30.6 0-58.1-20.5-65.4-50.2c-5-20.3 6.9-40.8 27.1-46.3l28-7.6c13.7-3.7 27.9-1.3 39.8 6.6C153 432.8 189 448 228 448c121.5 0 220-98.5 220-220c0-39-15.2-75-43.2-102.2c-7.9-7.7-11-19-8.4-29.6l6.8-28.1c5.5-20.3 26-32.1 46.3-27.1c3 .8 5.8 2.2 8.3 3.9z';
+    
+    const promises = [];
+    
+    sizes.forEach(size => {
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      
+      // 1. Solid White Background
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      
+      // 2. Draw Vector Leaf Icon
+      // Add padding (15% of size)
+      const padding = size * 0.15;
+      const drawableSize = size - padding * 2;
+      
+      // FontAwesome path viewBox is 512x512
+      const scale = drawableSize / 512;
+      
+      ctx.save();
+      ctx.translate(padding, padding);
+      ctx.scale(scale, scale);
+      
+      const p = new Path2D(leafPath);
+      ctx.fillStyle = '#2eb872'; // Grocerly Primary Green
+      ctx.fill(p);
+      ctx.restore();
+      
+      const base64 = canvas.toDataURL('image/png');
+      
+      // Paths to save
+      const paths = [
+        `pwa/icons/icon-${size}x${size}.png`,
+        `icon-${size}x${size}.png`
+      ];
+      
+      if (size === 32) {
+        paths.push('pwa/icons/favicon-32x32.png');
+        paths.push('favicon-32x32.png');
+      } else if (size === 180) {
+        paths.push('pwa/icons/apple-touch-icon.png');
+        paths.push('apple-touch-icon.png');
+      }
+      
+      paths.forEach(filePath => {
+        const promise = fetch('/api/save-icon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePath, base64 })
+        }).then(res => res.json());
+        promises.push(promise);
+      });
+    });
+    
+    Promise.all(promises).then(() => {
+      document.getElementById('status').innerHTML = '<h2 style="color: green;">All icons generated and saved successfully!</h2>';
+      console.log('ALL_ICONS_DONE');
+    }).catch(err => {
+      document.getElementById('status').innerHTML = `<h2 style="color: red;">Error: ${err.message}</h2>`;
+    });
+  </script>
+</body>
+</html>

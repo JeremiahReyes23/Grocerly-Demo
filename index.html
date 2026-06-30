@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Grocerly - Buy Smarter. Waste Less. Eat Better.</title>
+  <!-- SEO Tags -->
+  <meta name="description" content="Grocerly is your personal grocery intelligence assistant. Track budgets, inventory, reduce food waste, and plan healthy meals.">
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <link rel="shortcut icon" href="/pwa/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="/pwa/manifest.json">
+  <meta name="theme-color" content="#2eb872">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Grocerly">
+  <link rel="apple-touch-icon" href="/pwa/icons/apple-touch-icon.png">
+</head>
+<body>
+
+  <!-- Premium Device Frame Mockup -->
+  <div class="device-wrapper">
+    
+    <!-- App Container Shell -->
+    <div class="app-container">
+      
+      <!-- ========================================== -->
+      <!-- ONBOARDING FLOW SCREENS -->
+      <!-- ========================================== -->
+      
+      <!-- 1. Splash Screen -->
+      <div id="page-splash" class="page active">
+        <div class="splash-logo">
+          <i class="fas fa-leaf"></i>
+          <span>Grocerly</span>
+        </div>
+        <div class="splash-slogan">"Buy Smarter. Waste Less. Eat Better."</div>
+      </div>
+
+      <!-- 2. Login Screen -->
+      <div id="page-login" class="page" style="justify-content: center; padding-top: 20px; padding-bottom: 20px;">
+        <div class="auth-logo" style="margin-bottom: 10px;">
+          <i class="fas fa-leaf"></i> Grocerly
+        </div>
+        <h1 style="text-align: center; margin-bottom: 15px; font-size: 24px;">Welcome Back</h1>
+        
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="hello@grocerly.app" value="jane.doe@gmail.com">
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" value="password123">
+        </div>
+        
+        <div class="form-group" style="flex-direction: row; align-items: center; gap: 8px; margin-bottom: 15px; cursor: pointer; user-select: none;">
+          <input type="checkbox" id="login-keep-signed-in" checked style="width: 18px; height: 18px; accent-color: var(--primary-green); cursor: pointer;">
+          <label for="login-keep-signed-in" style="font-size: 13px; color: var(--text-secondary); text-transform: none; font-weight: 500; cursor: pointer;">Keep me signed in</label>
+        </div>
+        
+        <div class="btn-group" style="padding-top: 0; gap: 8px;">
+          <button class="btn btn-primary" id="btn-login-signin">Sign In</button>
+          
+          <div class="social-login-separator" style="text-align: center; margin: 8px 0; font-size: 11px; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; position: relative;">
+            <span style="background: var(--bg-primary); padding: 0 8px; position: relative; z-index: 1;">or continue with</span>
+            <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border-color); z-index: 0;"></div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button class="btn btn-outline" id="btn-login-google" style="padding: 10px 12px; font-size: 13px;"><i class="fab fa-google" style="color: #db4437;"></i> Google</button>
+            <button class="btn btn-outline" id="btn-login-apple" style="padding: 10px 12px; font-size: 13px;"><i class="fab fa-apple"></i> Apple</button>
+          </div>
+          
+          <button class="btn btn-outline" id="btn-login-goto-register" style="margin-top: 8px;">Create Account</button>
+          <button class="btn btn-text" id="btn-login-forgot" style="padding: 4px;">Forgot Password?</button>
+        </div>
+      </div>
+
+      <!-- 2b. Account Creation (Register) -->
+      <div id="page-register" class="page" style="justify-content: center; padding-top: 20px; padding-bottom: 20px;">
+        <div class="auth-logo" style="margin-bottom: 10px;">
+          <i class="fas fa-leaf"></i> Grocerly
+        </div>
+        <h1 style="text-align: center; margin-bottom: 15px; font-size: 24px;">Join Grocerly</h1>
+        
+        <div class="form-group">
+          <label for="reg-name">Your Full Name</label>
+          <input type="text" id="reg-name" class="form-control" placeholder="Jane Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="yourname@domain.com" required>
+        </div>
+        <div class="form-group">
+          <label for="reg-password">Password</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="Minimum 6 characters" required>
+        </div>
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label for="reg-password-confirm">Confirm Password</label>
+          <input type="password" id="reg-password-confirm" class="form-control" placeholder="Confirm your password" required>
+        </div>
+        
+        <div class="btn-group" style="padding-top: 0; gap: 8px;">
+          <button class="btn btn-primary" id="btn-register-signup">Register</button>
+          <button class="btn btn-outline" id="btn-register-back-login">Back to Login</button>
+        </div>
+      </div>
+
+      <!-- 3. Profile Setup -->
+      <div id="page-profile-setup" class="page">
+        <h1>Profile Setup</h1>
+        <p style="margin-bottom: 20px;">Tell us about yourself to tailor Grocerly to your kitchen.</p>
+        
+        <div class="avatar-setup">
+          <div class="avatar-large" id="profile-avatar-select" style="position: relative; background: var(--bg-card); border: 2px solid var(--border-color); border-radius: 50%; width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; margin-bottom: 5px;">
+            <i class="fas fa-user-alt" style="font-size: 40px; color: var(--text-secondary);"></i>
+            <div style="position: absolute; bottom: 0; right: 0; background: var(--primary-green); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; border: 2px solid var(--bg-card);"><i class="fas fa-plus"></i></div>
+          </div>
+          <input type="file" id="profile-avatar-upload" accept="image/*" style="display: none;">
+          <span style="font-size: 12px; color: var(--text-secondary); font-weight: 500;">Upload Profile Picture</span>
+        </div>
+
+        <div class="form-group">
+          <label for="profile-name">Your Full Name</label>
+          <input type="text" id="profile-name" class="form-control" placeholder="Jane Doe" value="Jane Doe">
+        </div>
+        
+        <div class="form-group">
+          <label for="profile-household">Household Size (People)</label>
+          <input type="number" id="profile-household" class="form-control" min="1" max="12" value="2">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-location">Location (Optional)</label>
+          <input type="text" id="profile-location" class="form-control" placeholder="Philadelphia, PA" value="Philadelphia, PA">
+        </div>
+
+        <div class="form-group">
+          <label for="profile-age">Age (Optional)</label>
+          <input type="number" id="profile-age" class="form-control" placeholder="e.g. 29" value="29">
+        </div>
+
+        <div class="btn-group" style="margin-top: auto;">
+          <button class="btn btn-primary" id="btn-profile-next">Continue</button>
+        </div>
+      </div>
+
+      <!-- 4. Goals Page -->
+      <div id="page-goals" class="page">
+        <h1>What are your goals?</h1>
+        <p>Select all that apply. We will customize your experience based on your choices.</p>
+        
+        <div class="selection-list" id="goals-list-container">
+          <!-- Populated by JavaScript -->
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btn-goals-next">Next</button>
+        </div>
+      </div>
+
+      <!-- 5. Dynamic Questions Page -->
+      <div id="page-dynamic-questions" class="page">
+        <div class="step-indicator-bar">
+          <div class="step-indicator-fill" id="dynamic-progress-bar" style="width: 0%;"></div>
+        </div>
+        
+        <div class="question-container" id="dynamic-questions-container">
+          <!-- Populated Dynamically by JavaScript -->
+        </div>
+
+        <div class="btn-group" style="flex-direction: row;">
+          <button class="btn btn-outline" id="btn-dynamic-back" style="flex: 1;">Back</button>
+          <button class="btn btn-primary" id="btn-dynamic-next" style="flex: 2;">Continue</button>
+        </div>
+      </div>
+
+      <!-- 6. Congratulations Screen -->
+      <div id="page-congrats" class="page" style="justify-content: center;">
+        <div class="congrats-container">
+          <div class="congrats-icon">
+            <i class="fas fa-check"></i>
+          </div>
+          <h1 style="font-size: 30px;">Congratulations!</h1>
+          <p id="congrats-summary">Your profile and grocery goals have been created.</p>
+          <button class="btn btn-primary" id="btn-congrats-finish" style="margin-top: 30px;">Let's Get Started</button>
+        </div>
+      </div>
+
+      <!-- ========================================== -->
+      <!-- MAIN TABS (AUTHENTICATED FLOW) -->
+      <!-- ========================================== -->
+      
+      <!-- T1. HOME DASHBOARD -->
+      <div id="page-dashboard" class="page">
+        <div class="header-bar">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-leaf" style="color: var(--primary-green); font-size: 24px;"></i>
+            <h1 style="font-size: 24px; margin-bottom: 0; font-weight: 800;">Grocerly</h1>
+          </div>
+          <div class="header-actions">
+            <div class="notif-bell" id="btn-dashboard-ai" style="margin-right: 4px;" title="Grocerly AI Hub">
+              <i class="fas fa-brain" style="color: var(--primary-green);"></i>
+            </div>
+            <div class="notif-bell" id="btn-dashboard-notifs">
+              <i class="far fa-bell"></i>
+              <div class="notif-badge" id="notif-badge-indicator" style="display: none;"></div>
+            </div>
+            <img class="avatar-header" id="dash-avatar-img" src="" alt="Avatar">
+          </div>
+        </div>
+
+        <!-- Section 1: 2x2 Stats Grid (Budget, Savings, Lifespan, Waste) -->
+        <div class="dashboard-stats-2x2">
+          <!-- 1. Kitchen Budget -->
+          <div class="stat-card green-alert" id="card-stat-budget">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+              <div class="stat-card-row">
+                <div class="stat-card-icon-container" style="background: var(--primary-green-light); color: var(--primary-green);"><i class="fas fa-wallet"></i></div>
+                <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Budget</span>
+              </div>
+              <div id="btn-edit-budget-trigger" style="background: var(--bg-primary); border: 1px solid var(--border-color); width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" title="Edit Budget">
+                <i class="fas fa-pen" style="font-size: 9px; color: var(--text-secondary);"></i>
+              </div>
+            </div>
+            <div style="margin-top: 8px;">
+              <div class="stat-value" id="stat-budget-rem" style="font-size: 18px; font-weight: 800;">$185.00</div>
+              <div class="stat-desc" id="stat-budget-prog" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); margin-top: 2px;">Spend: $115 of $300</div>
+            </div>
+          </div>
+          <!-- 2. Projected Savings -->
+          <div class="stat-card" id="card-stat-savings" style="cursor: pointer;">
+            <div class="stat-card-row">
+              <div class="stat-card-icon-container" style="background: var(--primary-green-light); color: var(--primary-green);"><i class="fas fa-piggy-bank"></i></div>
+              <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Savings</span>
+            </div>
+            <div style="margin-top: 8px;">
+              <div class="stat-value" id="stat-savings-val" style="font-size: 18px; font-weight: 800;">$48.20</div>
+              <div class="stat-desc" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); margin-top: 2px;">Projected this month</div>
+            </div>
+          </div>
+          <!-- 3. Grocery Lifespan -->
+          <div class="stat-card" id="card-stat-duration" style="cursor: pointer;">
+            <div class="stat-card-row">
+              <div class="stat-card-icon-container" style="background: var(--primary-green-light); color: var(--primary-green);"><i class="fas fa-hourglass-half"></i></div>
+              <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Lifespan</span>
+            </div>
+            <div style="margin-top: 8px;">
+              <div class="stat-value" id="stat-duration-val" style="font-size: 18px; font-weight: 800;">14 days</div>
+              <div class="stat-desc" style="font-size: 9px; font-weight: 600; color: var(--text-secondary); margin-top: 2px;">Average store loop</div>
+            </div>
+          </div>
+          <!-- 4. Food Waste -->
+          <div class="stat-card orange-alert" id="card-stat-waste" style="cursor: pointer;">
+            <div class="stat-card-row">
+              <div class="stat-card-icon-container" style="background: var(--accent-orange-light); color: var(--accent-orange);"><i class="fas fa-trash-alt"></i></div>
+              <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Waste</span>
+            </div>
+            <div style="margin-top: 8px;">
+              <div class="stat-value" id="stat-waste-val" style="font-size: 18px; font-weight: 800; color: var(--accent-orange);">$18.50</div>
+              <div class="stat-desc" id="stat-waste-pct" style="font-size: 9px; font-weight: 600; color: var(--accent-orange); margin-top: 2px;">8.4% of total bought</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Current Grocery List (Dropdown Table of Inventory) -->
+        <div class="dropdown-section active" id="dash-grocery-list-dropdown">
+          <div class="dropdown-header" onclick="this.closest('.dropdown-section').classList.toggle('active')">
+            <div class="dropdown-header-left">
+              <i class="fas fa-list-check" style="color: var(--primary-green); font-size: 15px;"></i>
+              <h2>Current Grocery List</h2>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; pointer-events: auto;" onclick="event.stopPropagation();">
+              <button class="btn btn-outline" id="btn-dash-go-meals" style="padding: 4px 10px; font-size: 10px; font-weight: 700; width: auto; border-radius: var(--border-radius-sm); border-color: var(--primary-green); color: var(--primary-green); background: transparent;"><i class="fas fa-utensils"></i> Meals</button>
+              <i class="fas fa-chevron-down dropdown-icon-chevron"></i>
+            </div>
+          </div>
+          <div class="dropdown-content">
+            <div class="grocery-table-wrapper">
+              <table class="grocery-table">
+                <thead>
+                  <tr>
+                    <th>Ingredient</th>
+                    <th style="text-align: center; width: 60px;">Qty</th>
+                    <th style="text-align: center; width: 80px;">Storage</th>
+                    <th style="text-align: right; width: 90px;">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="dash-grocery-table-body">
+                  <!-- Populated dynamically via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Actionable Needs Dropdown -->
+        <div class="dropdown-section" id="dash-actionable-needs-dropdown">
+          <div class="dropdown-header" onclick="this.closest('.dropdown-section').classList.toggle('active')">
+            <div class="dropdown-header-left">
+              <i class="fas fa-triangle-exclamation" style="color: var(--accent-orange); font-size: 15px;"></i>
+              <h2>Actionable Needs</h2>
+              <span class="pulse-orange-dot" id="dash-pulse-dot" style="display: none; margin-left: 6px; position: static;"></span>
+            </div>
+            <i class="fas fa-chevron-down dropdown-icon-chevron"></i>
+          </div>
+          <div class="dropdown-content">
+            <div id="dash-actionable-alerts-list" style="display: flex; flex-direction: column;">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Welcome & Active Focus -->
+        <div class="dash-section" style="margin-bottom: 20px;">
+          <h1 id="dash-welcome-text" style="font-size: 24px; font-weight: 800; margin-bottom: 4px;">Welcome, Jane</h1>
+          <div class="section-title-row" style="margin-bottom: 8px;">
+            <h2 style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-bottom: 0;">Your Active Focus</h2>
+          </div>
+          <div class="goals-grid-2x2" id="dash-goals-grid">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+
+        <!-- Section 5: Weekly Meal Planner Calendar -->
+        <div class="weekly-calendar-section">
+          <div class="calendar-header-row">
+            <h2>Weekly Meal Planner</h2>
+            <i class="far fa-calendar-days" style="color: var(--primary-green); font-size: 16px;"></i>
+          </div>
+          <div class="calendar-days-container" id="calendar-days-container">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- T2. GROCERIES ENTRY -->
+      <div id="page-groceries" class="page">
+        <h1>Add Purchases</h1>
+        <p style="margin-bottom: 16px;">Scan a receipt, enter manually, or upload a digital bill.</p>
+        
+        <div class="entry-options">
+          <div class="entry-btn active" id="btn-tab-ocr">
+            <i class="fas fa-expand"></i>
+            <span>Scan Receipt</span>
+          </div>
+          <div class="entry-btn" id="btn-tab-manual">
+            <i class="fas fa-pen-to-square"></i>
+            <span>Manual Entry</span>
+          </div>
+          <div class="entry-btn" id="btn-tab-digital">
+            <i class="fas fa-file-arrow-up"></i>
+            <span>Import Bill</span>
+          </div>
+        </div>
+
+        <!-- Panel 1: OCR Receipts -->
+        <div class="entry-panel active" id="panel-ocr">
+          <div class="store-list-title">Choose Store Receipt Template to Simulate OCR:</div>
+          <div class="store-selector-grid" id="ocr-store-grid">
+            <div class="store-chip selected" data-store="Costco">Costco</div>
+            <div class="store-chip" data-store="Walmart">Walmart</div>
+            <div class="store-chip" data-store="Trader Joe's">Trader Joe's</div>
+            <div class="store-chip" data-store="Aldi">Aldi</div>
+            <div class="store-chip" data-store="Target">Target</div>
+            <div class="store-chip" data-store="Whole Foods">Whole Foods</div>
+          </div>
+
+          <!-- OCR Review and Edit Box -->
+          <div class="receipt-review-box" id="receipt-review-container" style="display: none;">
+            <div class="receipt-header-info">
+              <div>
+                <div class="receipt-store-title" id="review-receipt-store">Costco</div>
+                <div style="font-size: 11px; color: var(--text-secondary);" id="review-receipt-date">2026-06-29</div>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 11px; font-weight: 600;">OCR STATUS</div>
+                <span class="recipe-tag" style="background-color: var(--primary-green-light); color: var(--primary-green); border: none;">98% CONFIDENCE</span>
+              </div>
+            </div>
+
+            <div class="receipt-review-items" id="review-receipt-items-list">
+              <!-- Populated by OCR script -->
+            </div>
+
+            <div class="receipt-total-row">
+              <span>Receipt Total</span>
+              <span id="review-receipt-total">$0.00</span>
+            </div>
+            
+            <div class="btn-group" style="flex-direction: row; margin-top: 15px; padding-top: 0;">
+              <button class="btn btn-outline" id="btn-ocr-cancel" style="flex:1;">Cancel</button>
+              <button class="btn btn-primary" id="btn-ocr-save" style="flex:2;">Confirm & Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: Manual Form Entry -->
+        <div class="entry-panel" id="panel-manual">
+          <div class="form-group">
+            <label for="man-name">Ingredient Name</label>
+            <input type="text" id="man-name" class="form-control" placeholder="e.g. Organic Milk, Chicken breast" required>
+          </div>
+          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 12px;" id="man-cat-grid">
+            <div class="grid-option selected" data-cat="Produce">Produce</div>
+            <div class="grid-option" data-cat="Meat & Poultry">Meat</div>
+            <div class="grid-option" data-cat="Dairy & Eggs">Dairy</div>
+            <div class="grid-option" data-cat="Pantry">Pantry</div>
+            <div class="grid-option" data-cat="Bakery">Bakery</div>
+            <div class="grid-option" data-cat="Frozen">Frozen</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label for="man-qty">Quantity</label>
+              <input type="number" id="man-qty" class="form-control" value="1" min="0.1" step="any">
+            </div>
+            <div class="form-group">
+              <label for="man-unit">Unit / Weight</label>
+              <select id="man-unit" class="form-control">
+                <option value="pcs">pieces (pcs)</option>
+                <option value="lbs">pounds (lbs)</option>
+                <option value="oz">ounces (oz)</option>
+                <option value="gal">gallons (gal)</option>
+                <option value="oz-vol">fluid oz</option>
+                <option value="bag">bag</option>
+                <option value="box">box</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label for="man-price">Price ($)</label>
+              <input type="number" id="man-price" class="form-control" placeholder="0.00" step="0.01">
+            </div>
+            <div class="form-group">
+              <label for="man-store-select">Store</label>
+              <select id="man-store-select" class="form-control">
+                <option value="Costco" selected>Costco</option>
+                <option value="Aldi">Aldi</option>
+                <option value="Trader Joe's">Trader Joe's</option>
+                <option value="Walmart">Walmart</option>
+                <option value="Target">Target</option>
+                <option value="Whole Foods">Whole Foods</option>
+                <option value="ShopRite">ShopRite</option>
+                <option value="Wegmans">Wegmans</option>
+                <option value="Stop & Shop">Stop & Shop</option>
+                <option value="Acme">Acme</option>
+                <option value="Giant">Giant</option>
+                <option value="Giant Food Stores">Giant Food Stores</option>
+                <option value="Giant Eagle">Giant Eagle</option>
+                <option value="Food Lion">Food Lion</option>
+                <option value="Lidl">Lidl</option>
+                <option value="Sam's Club">Sam's Club</option>
+                <option value="BJ's Wholesale Club">BJ's Wholesale Club</option>
+                <option value="Weis Markets">Weis Markets</option>
+                <option value="Price Chopper / Market 32">Price Chopper / Market 32</option>
+                <option value="Save A Lot">Save A Lot</option>
+                <option value="Other">Other (Enter below)...</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" id="man-store-other-group" style="display: none;">
+            <label for="man-store">Custom Store Name</label>
+            <input type="text" id="man-store" class="form-control" placeholder="Enter store name" value="Trader Joe's">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-group">
+              <label for="man-date-purchase">Purchase Date</label>
+              <input type="date" id="man-date-purchase" class="form-control">
+            </div>
+            <div class="form-group">
+              <label for="man-date-expiry">Expiration Date</label>
+              <input type="date" id="man-date-expiry" class="form-control">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Storage Location</label>
+            <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);" id="man-loc-grid">
+              <div class="grid-option" data-loc="Pantry">Pantry</div>
+              <div class="grid-option selected" data-loc="Fridge">Fridge</div>
+              <div class="grid-option" data-loc="Freezer">Freezer</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="man-notes">Notes / Custom storage instructions</label>
+            <input type="text" id="man-notes" class="form-control" placeholder="e.g. Kept in ziploc bag">
+          </div>
+
+          <div class="btn-group" style="padding-top: 10px;">
+            <button class="btn btn-primary" id="btn-manual-save">Save Ingredient</button>
+          </div>
+        </div>
+
+        <!-- Panel 3: Digital Receipt PDF/Email -->
+        <div class="entry-panel" id="panel-digital">
+          <div class="ocr-scanner-box" id="digital-upload-box">
+            <i class="fas fa-envelope-open-text ocr-scanner-icon" style="color: var(--primary-green);"></i>
+            <div style="font-weight: 700; font-size: 15px;">Import digital receipt invoice</div>
+            <p style="font-size: 12px; margin-bottom: 10px;">Drag and drop PDF, PNG or Forward your receipt emails</p>
+            <div style="background-color: var(--primary-green-light); padding: 8px 12px; border-radius: var(--border-radius-sm); font-size: 11px; font-weight: 600; color: var(--primary-green);">
+              UPLOAD PDF / IMAGE FILE
+            </div>
+          </div>
+          
+          <div class="store-list-title" style="margin-top: 20px;">Email Integration Key:</div>
+          <div class="input-with-label">
+            <input type="text" class="form-control" value="jane.doe.543@grocerly.email" readonly style="font-family: monospace;">
+            <span style="font-size: 12px; cursor: pointer; color: var(--primary-green);" onclick="alert('Copied to clipboard!')">COPY</span>
+          </div>
+          <p style="font-size: 11px; margin-top: 6px;">Forward receipt emails from ShopRite, Amazon Fresh, or Instacart to this address to automatically import them.</p>
+        </div>
+
+        <!-- Section 3: Purchases Folders & Receipts -->
+        <div class="purchases-folders-section" style="margin-top: 24px; border-top: 1px solid var(--border-color); padding-top: 24px;">
+          <h2 style="font-size: 18px; margin-bottom: 4px;">Receipt Records & Folders</h2>
+          <p style="font-size: 12px; margin-bottom: 12px;">Browse your purchases history organized into folders.</p>
+          
+          <div class="purchases-folders-grid" id="purchases-folders-grid">
+            <!-- Populated dynamically via JS -->
+          </div>
+          
+          <!-- Folder Receipts List View Container (Initially hidden) -->
+          <div class="folder-receipts-list-box" id="folder-receipts-container" style="display: none; margin-top: 16px;">
+            <div class="folder-receipts-header">
+              <h3 id="folder-receipts-title">June 2026 Receipts</h3>
+              <div id="btn-close-folder-receipts" style="cursor: pointer; background: var(--bg-primary); width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-color);" title="Close folder">
+                <i class="fas fa-xmark" style="color: var(--accent-orange); font-size: 11px;"></i>
+              </div>
+            </div>
+            <div id="folder-receipts-list" style="display: flex; flex-direction: column;">
+              <!-- Populated dynamically via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- T3. MEAL BUILDER -->
+      <div id="page-meals" class="page">
+        <div class="header-bar">
+          <div class="meals-intro">
+            <h1>Meal Builder</h1>
+            <p>Develop recipes and cook using inventory ingredients.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-meals-create-trigger" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--border-radius-sm);">
+            <i class="fas fa-plus"></i> Add Recipe
+          </button>
+        </div>
+
+        <!-- Filter bar for recipes -->
+        <div class="search-filter-row" style="flex-direction: column; gap: 10px; align-items: stretch; margin-bottom: 16px;">
+          <div class="search-wrapper-input">
+            <i class="fas fa-search"></i>
+            <input type="text" id="recipe-search-input" class="form-control" placeholder="Search recipe name...">
+          </div>
+          <div class="filter-chips-row" id="meal-type-filter-chips" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch;">
+            <div class="filter-chip active" data-filter="All" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 20px; background: var(--primary-green-light); color: var(--primary-green); border: 1px solid var(--primary-green); cursor: pointer; white-space: nowrap;">All</div>
+            <div class="filter-chip" data-filter="Breakfast" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 20px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Breakfast</div>
+            <div class="filter-chip" data-filter="Lunch" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 20px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Lunch</div>
+            <div class="filter-chip" data-filter="Dinner" style="padding: 6px 12px; font-size: 12px; font-weight: 600; border-radius: 20px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Dinner</div>
+          </div>
+        </div>
+
+        <div class="recipes-list" id="recipes-list-container">
+          <!-- Dynamic recipe cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- T4. INVENTORY SYSTEM -->
+      <div id="page-inventory" class="page">
+        <div class="header-bar">
+          <div>
+            <h1>My Inventory</h1>
+            <p id="inventory-total-label">12 ingredients in storage</p>
+          </div>
+        </div>
+
+        <!-- Search and location filter tabs -->
+        <div class="search-filter-row" style="margin-bottom: 10px;">
+          <div class="search-wrapper-input">
+            <i class="fas fa-search"></i>
+            <input type="text" id="inventory-search-input" class="form-control" placeholder="Search storage items...">
+          </div>
+          <div class="filter-btn" id="btn-inventory-sort-toggle" title="Sort by Expiry">
+            <i class="fas fa-arrow-down-a-z"></i>
+          </div>
+        </div>
+
+        <div class="loc-tabs" style="margin-bottom: 10px;">
+          <div class="loc-tab active" data-location="All">All Storage</div>
+          <div class="loc-tab" data-location="Fridge">Fridge</div>
+          <div class="loc-tab" data-location="Freezer">Freezer</div>
+          <div class="loc-tab" data-location="Pantry">Pantry</div>
+        </div>
+
+        <div class="category-filter-scroll static-chips" id="inventory-category-chips" style="display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; -webkit-overflow-scrolling: touch;">
+          <div class="filter-chip active" data-category="All" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--primary-green-light); color: var(--primary-green); border: 1px solid var(--primary-green); cursor: pointer; white-space: nowrap;">All Categories</div>
+          <div class="filter-chip" data-category="Dairy & Eggs" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Dairy & Eggs</div>
+          <div class="filter-chip" data-category="Meat & Poultry" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Meat & Poultry</div>
+          <div class="filter-chip" data-category="Produce" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Produce</div>
+          <div class="filter-chip" data-category="Bakery" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Bakery & Grain</div>
+          <div class="filter-chip" data-category="Frozen" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Frozen</div>
+          <div class="filter-chip" data-category="Pantry" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Pantry</div>
+          <div class="filter-chip" data-category="Snacks" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Snacks</div>
+          <div class="filter-chip" data-category="Drinks" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Drinks</div>
+          <div class="filter-chip" data-category="Condiments" style="padding: 6px 12px; font-size: 11px; font-weight: 600; border-radius: 14px; background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); cursor: pointer; white-space: nowrap;">Condiments</div>
+        </div>
+
+        <div class="inventory-list" id="inventory-list-container">
+          <!-- Dynamic inventory cards populated by JS -->
+        </div>
+      </div>
+
+      <!-- T5. ANALYTICS PAGE -->
+      <div id="page-analytics" class="page">
+        <h1>Analytics</h1>
+        <p style="margin-bottom: 16px;">Track your budget, savings, nutrition, and food waste.</p>
+
+        <div class="analytics-summary-cards">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-anal-total-spend">$235.40</span>
+            <span class="stat-label">Total Spend</span>
+            <span class="stat-desc">Past 30 Days</span>
+          </div>
+          <div class="stat-card orange-alert">
+            <span class="stat-value" id="stat-anal-waste-pct">8.4%</span>
+            <span class="stat-label">Waste Index</span>
+            <span class="stat-desc">Target: &lt;5%</span>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>Spending vs Budget</span>
+            <span style="font-size: 11px; color: var(--primary-green); font-weight: 600;">WEEKLY</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-dash-spending"></canvas>
+            <div class="chart-placeholder" id="chart-spending-placeholder" style="display: none;">
+              <i class="fas fa-chart-line"></i>
+              <p>No spending data logged yet. Add your first grocery trip!</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>Spending Trends ($)</span>
+            <span style="font-size: 11px; color: var(--primary-green); font-weight: 600;">MONTHLY</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-anal-spending-trend"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>Food Use Ratio</span>
+            <span style="font-size: 11px; color: var(--accent-orange); font-weight: 600;">WASTE VS USE</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-anal-food-ratio"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-title">
+            <span>Nutrition Goal Met (%)</span>
+            <span style="font-size: 11px; color: var(--primary-green); font-weight: 600;">DAILY MACROS</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-anal-nutrition"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card" id="analytics-lifespan-card">
+          <div class="chart-card-title">
+            <span>Ingredient Lifespan Timeline</span>
+            <span style="font-size: 11px; color: var(--primary-green); font-weight: 600;">HISTORY</span>
+          </div>
+          <p style="font-size: 12px; margin-bottom: 12px; color: var(--text-secondary);">Tracking how long ingredients last in your kitchen:</p>
+          <div class="timeline-list" id="analytics-lifespan-timeline" style="display: flex; flex-direction: column; gap: 12px;">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+      </div>
+
+      <!-- T6. PROFILE & SETTINGS -->
+      <div id="page-profile" class="page">
+        <h1>My Profile</h1>
+        <p style="margin-bottom: 20px;">Manage goals, sharing, and configuration parameters.</p>
+
+        <div class="profile-card">
+          <div class="profile-avatar-wrapper" id="profile-avatar-trigger">
+            <img id="profile-card-img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Profile Picture" class="profile-avatar-img-circle" title="Click to upload your photo">
+            <div class="profile-avatar-plus-badge"><i class="fas fa-plus"></i></div>
+          </div>
+          <input type="file" id="profile-card-upload" accept="image/*" style="display: none;">
+          <div class="profile-card-name" id="profile-card-name">Jane Doe</div>
+          <div class="profile-card-sub" id="profile-card-household">Household Size: 2 People</div>
+          <span class="recipe-tag" id="profile-plan-badge" style="background-color: var(--primary-green-light); color: var(--primary-green); border: none; font-weight: 700;">PREMIUM PLAN</span>
+        </div>
+
+        <h2 style="font-size: 16px; margin-bottom: 12px;">APP OPTIONS</h2>
+        <div class="settings-list">
+          <div class="settings-item" id="btn-profile-go-premium" style="cursor: pointer;">
+            <div class="settings-item-left">
+              <i class="fas fa-gem" style="color: var(--accent-orange);"></i>
+              <span style="font-weight: 600;">Upgrade to Premium</span>
+            </div>
+            <span class="settings-item-val" style="color: var(--primary-green); font-weight: 700;">$2.00/mo</span>
+          </div>
+          <div class="settings-item">
+            <div class="settings-item-left">
+              <i class="fas fa-moon"></i>
+              <span>Dark Theme Override</span>
+            </div>
+            <label class="theme-toggle-switch">
+              <input type="checkbox" id="dark-theme-toggle">
+              <span class="theme-toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-item" id="btn-profile-family-sharing">
+            <div class="settings-item-left">
+              <i class="fas fa-users-viewfinder"></i>
+              <span>Family Grocery Sharing</span>
+            </div>
+            <span class="settings-item-val" id="profile-family-status">2 Active Members</span>
+          </div>
+
+          <div class="settings-item" id="btn-profile-edit-goals">
+            <div class="settings-item-left">
+              <i class="fas fa-circle-check"></i>
+              <span>Re-adjust Grocery Goals</span>
+            </div>
+            <i class="fas fa-chevron-right" style="font-size: 12px; color: var(--text-secondary);"></i>
+          </div>
+
+          <div class="settings-item" id="btn-profile-ai-shopping-generator">
+            <div class="settings-item-left">
+              <i class="fas fa-brain"></i>
+              <span>Predictive AI Reminders</span>
+            </div>
+            <span class="settings-item-val">ON (Daily)</span>
+          </div>
+        </div>
+
+        <div class="btn-group" style="margin-top: 25px; padding-top: 0;">
+          <button class="btn btn-outline" id="btn-logout" style="border-color: var(--accent-orange); color: var(--accent-orange);">
+            <i class="fas fa-right-from-bracket"></i> Sign Out
+          </button>
+        </div>
+        <div style="height: 30px;"></div>
+      </div>
+      <!-- Global Search Bar Overlay Wrapper -->
+      <div id="global-search-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+          <span style="font-weight: 700; font-size: 14px;">GLOBAL SEARCH RESULTS</span>
+          <span id="btn-close-global-search" style="font-size: 12px; font-weight: 700; color: var(--accent-orange); cursor: pointer;">CLEAR</span>
+        </div>
+        <div class="search-results-list" id="global-search-results">
+          <!-- Results rendered from inventory + recipe + trips database -->
+        </div>
+      </div>
+
+    </div> <!-- End App Container -->    <!-- Bottom Navigation Bar Mockup -->
+    <div class="bottom-nav" id="app-bottom-nav">
+      <a class="nav-item active" data-tab="dashboard">
+        <i class="fas fa-house"></i>
+        <span>Home</span>
+      </a>
+      <a class="nav-item" data-tab="groceries">
+        <i class="fas fa-cart-shopping"></i>
+        <span>Purchases</span>
+      </a>
+      <a class="nav-item" data-tab="meals">
+        <i class="fas fa-utensils"></i>
+        <span>Meals</span>
+      </a>
+      <a class="nav-item" data-tab="inventory">
+        <i class="fas fa-boxes-stacked"></i>
+        <span>Inventory</span>
+      </a>
+      <a class="nav-item" data-tab="analytics">
+        <i class="fas fa-chart-simple"></i>
+        <span>Analytics</span>
+      </a>
+      <a class="nav-item" data-tab="profile">
+        <i class="fas fa-user-circle"></i>
+        <span>Profile</span>
+      </a>
+    </div>
+
+
+  <!-- ========================================== -->
+  <!-- DIALOGS & OVERLAYS (MODALS) -->
+  <!-- ========================================== -->
+  
+  <!-- 1. Welcome Tutorial Modal -->
+  <div class="modal-overlay" id="modal-welcome">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Welcome to Grocerly</h3>
+        <button class="modal-close" id="btn-close-welcome">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div class="tutorial-container">
+          <div class="tutorial-slider">
+            
+            <div class="tutorial-slide active" data-slide="0">
+              <div class="tutorial-icon"><i class="fas fa-leaf"></i></div>
+              <h2>Buy Smarter</h2>
+              <p>Scan receipts using AI-powered OCR. Keep item records complete with pricing, categories, and tracking fields automatically.</p>
+            </div>
+
+            <div class="tutorial-slide" data-slide="1">
+              <div class="tutorial-icon" style="background: var(--accent-orange-light); color: var(--accent-orange);"><i class="fas fa-trash-can-slash"></i></div>
+              <h2>Waste Less</h2>
+              <p>Track grocery lifespans and receive proactive suggestions to freeze meat, dairy or greens before they expire, backing USDA recommendations.</p>
+            </div>
+
+            <div class="tutorial-slide" data-slide="2">
+              <div class="tutorial-icon"><i class="fas fa-heart-pulse"></i></div>
+              <h2>Eat Better</h2>
+              <p>Build custom recipes, calculate complete macro structures automatically, and deduct ingredients from inventory instantly as you cook.</p>
+            </div>
+
+          </div>
+          
+          <div class="tutorial-indicators">
+            <div class="dot active" data-dot="0"></div>
+            <div class="dot" data-dot="1"></div>
+            <div class="dot" data-dot="2"></div>
+          </div>
+
+          <div class="btn-group" style="padding-top: 10px;">
+            <button class="btn btn-primary" id="btn-tutorial-next">Next Tip</button>
+            <button class="btn btn-outline" id="btn-tutorial-skip">Skip Tutorial</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Add Recipe Details Modal -->
+  <div class="modal-overlay" id="modal-recipe-detail">
+    <div class="modal-box" style="max-height: 85%;">
+      <div class="modal-header">
+        <h3 id="recipe-modal-title">Create Recipe</h3>
+        <button class="modal-close" id="btn-recipe-modal-close">&times;</button>
+      </div>
+      <div class="modal-content" style="padding-top: 14px;">
+        <div id="recipe-view-mode">
+          <!-- View details of recipe -->
+          <div id="recipe-view-desc" style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px;"></div>
+          <div class="recipe-nutri-summary" id="recipe-view-macros" style="border-top: none; font-size: 12px; margin-bottom: 12px;"></div>
+          
+          <h4>Required Ingredients:</h4>
+          <ul id="recipe-view-ingredients" style="margin-left: 20px; font-size: 13px; margin-top: 6px; margin-bottom: 14px; line-height: 1.6;"></ul>
+          
+          <h4>Instructions:</h4>
+          <p id="recipe-view-instructions" style="font-size: 13px; margin-top: 6px; margin-bottom: 20px; text-align: justify;"></p>
+
+          <div class="btn-group" style="flex-direction: row; gap: 8px;">
+            <button class="btn btn-outline" id="btn-recipe-duplicate" style="flex:1;"><i class="far fa-copy"></i> Duplicate</button>
+            <button class="btn btn-outline" id="btn-recipe-edit" style="flex:1;"><i class="far fa-edit"></i> Edit</button>
+            <button class="btn btn-primary" id="btn-recipe-cook" style="flex:2;"><i class="fas fa-fire"></i> Cook Recipe</button>
+          </div>
+        </div>
+
+        <div id="recipe-edit-mode" style="display: none;">
+          <!-- Create / Edit Recipe fields -->
+          <input type="hidden" id="edit-recipe-id">
+          <div class="form-group">
+            <label for="edit-recipe-name">Recipe Name</label>
+            <input type="text" id="edit-recipe-name" class="form-control" placeholder="e.g. Garlic Herb Chicken thighs">
+          </div>
+          <div class="form-group">
+            <label for="edit-recipe-desc">Short Description</label>
+            <input type="text" id="edit-recipe-desc" class="form-control" placeholder="Brief tagline about flavor, time, etc.">
+          </div>
+          
+          <label style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; display: block; text-transform: uppercase;">Ingredients List</label>
+          <div class="recipe-edit-ingredients-list" id="recipe-edit-ingredients-container">
+            <!-- Rows added dynamically -->
+          </div>
+          <button class="btn btn-outline" id="btn-recipe-add-ingredient-row" style="padding: 8px; font-size: 12px; border-radius: var(--border-radius-sm); margin-bottom: 15px;">
+            <i class="fas fa-plus"></i> Add Ingredient Row
+          </button>
+
+          <div class="form-group">
+            <label for="edit-recipe-instructions">Cooking Instructions</label>
+            <textarea id="edit-recipe-instructions" class="form-control" rows="4" placeholder="Explain steps to prepare and cook..."></textarea>
+          </div>
+
+          <div class="btn-group" style="flex-direction: row; gap: 8px; padding-top: 10px;">
+            <button class="btn btn-outline" id="btn-recipe-edit-cancel" style="flex:1;">Cancel</button>
+            <button class="btn btn-primary" id="btn-recipe-edit-save" style="flex:2;">Save Recipe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Split Storage Setup Modal -->
+  <div class="modal-overlay" id="modal-split-storage">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Split Storage</h3>
+        <button class="modal-close" id="btn-split-modal-close">&times;</button>
+      </div>
+      <div class="modal-content">
+        <p style="margin-bottom: 12px;">Divide this item package across multiple locations to keep fresh or freeze.</p>
+        <div id="split-item-name" style="font-weight: 700; font-size: 15px; margin-bottom: 10px;">Chicken Package</div>
+        <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 16px;">
+          Original Quantity: <span id="split-item-orig-qty" style="font-weight: 600;">6 thighs</span>
+        </div>
+
+        <h4 style="font-size: 13px; margin-bottom: 8px;">Package A (Current)</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 10px; font-weight:700;">QTY</label>
+            <input type="number" id="split-qty-a" class="form-control" value="3">
+          </div>
+          <div>
+            <label style="font-size: 10px; font-weight:700;">LOCATION</label>
+            <select id="split-loc-a" class="form-control">
+              <option value="Fridge">Fridge</option>
+              <option value="Freezer">Freezer</option>
+              <option value="Pantry">Pantry</option>
+            </select>
+          </div>
+        </div>
+
+        <h4 style="font-size: 13px; margin-bottom: 8px;">Package B (New split)</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+          <div>
+            <label style="font-size: 10px; font-weight:700;">QTY</label>
+            <input type="number" id="split-qty-b" class="form-control" value="3">
+          </div>
+          <div>
+            <label style="font-size: 10px; font-weight:700;">LOCATION</label>
+            <select id="split-loc-b" class="form-control">
+              <option value="Fridge">Fridge</option>
+              <option value="Freezer" selected>Freezer</option>
+              <option value="Pantry">Pantry</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="btn-group" style="padding-top: 10px;">
+          <button class="btn btn-primary" id="btn-split-confirm">Split & Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Spoiled Food Waste Prompt Modal -->
+  <div class="modal-overlay" id="modal-waste-prompt">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Log Item Disposition</h3>
+        <button class="modal-close" id="btn-waste-modal-close">&times;</button>
+      </div>
+      <div class="modal-content">
+        <p style="margin-bottom: 12px;">What happened to <span id="waste-item-name" style="font-weight: 700; color: var(--text-main);">Milk</span>?</p>
+        <p style="font-size: 12px; margin-bottom: 20px;">We keep track of this to train your AI shopping model and improve budgeting.</p>
+
+        <div class="btn-group" style="gap: 12px; padding-top: 0;">
+          <button class="btn btn-primary" data-action="Used" style="font-size: 14px; padding: 12px;">
+            <i class="fas fa-check-double"></i> Fully Used / Eaten
+          </button>
+          
+          <button class="btn btn-orange" data-action="Spoiled" style="font-size: 14px; padding: 12px;">
+            <i class="fas fa-trash-can"></i> Spoiled (Food Waste)
+          </button>
+          
+          <button class="btn btn-outline" data-action="Donated" style="font-size: 14px; padding: 12px; border-color: var(--primary-green); color: var(--primary-green);">
+            <i class="fas fa-hand-holding-heart"></i> Donated
+          </button>
+          
+          <button class="btn btn-outline" data-action="Thrown Away" style="font-size: 14px; padding: 12px;">
+            <i class="fas fa-dumpster"></i> Thrown Away
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Notifications List Center Modal -->
+  <div class="modal-overlay" id="modal-notifications">
+    <div class="modal-box" style="max-height: 80%;">
+      <div class="modal-header">
+        <h3>App Notifications</h3>
+        <button class="modal-close" id="btn-notif-modal-close">&times;</button>
+      </div>
+      <div class="modal-content" style="padding: 12px 16px;">
+        <div class="alerts-list" id="notif-center-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Family Sharing Modal -->
+  <div class="modal-overlay" id="modal-family-sharing">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Family Sharing Config</h3>
+        <button class="modal-close" id="btn-family-modal-close">&times;</button>
+      </div>
+      <div class="modal-content">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Share your grocery list and pantry inventory with household members.</p>
+        
+        <div style="background-color: var(--bg-primary); padding: 12px; border-radius: var(--border-radius-sm); margin-bottom: 16px; border: 1px solid var(--border-color);">
+          <div style="font-size: 12px; font-weight: 700;">ACTIVE INVENTORY SHARING GROUP</div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px;">
+            <span><i class="fas fa-user" style="color: var(--primary-green); margin-right: 4px;"></i> Jane Doe (You)</span>
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-secondary);">OWNER</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 13px;">
+            <span><i class="fas fa-user-plus" style="color: var(--text-secondary); margin-right: 4px;"></i> Mark Doe</span>
+            <select class="form-control" style="width: auto; padding: 4px 6px; font-size: 11px; border-radius: 4px; height: auto;" onchange="alert('Permission updated!')">
+              <option value="edit" selected>Edit Inventory</option>
+              <option value="view">View Only</option>
+              <option value="meal">Meal Planning</option>
+              <option value="shop">Shopping</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="family-invite-email">Invite Member via Email</label>
+          <div style="display: flex; gap: 6px;">
+            <input type="email" id="family-invite-email" class="form-control" placeholder="name@family.com" style="flex:1;">
+            <button class="btn btn-primary" style="width: auto; padding: 10px 14px;" onclick="alert('Invitation sent!')">Invite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Grocerly AI Intelligence Hub Modal -->
+  <div class="modal-overlay" id="modal-ai-assistant">
+    <div class="modal-box" style="max-height: 85%;">
+      <div class="modal-header">
+        <h3><i class="fas fa-brain" style="color: var(--primary-green);"></i> Grocerly AI Hub</h3>
+        <button class="modal-close" id="btn-ai-modal-close">&times;</button>
+      </div>
+      <div class="modal-content" style="padding-top: 10px;">
+        <div class="ai-tabs" style="display: flex; gap: 6px; margin-bottom: 14px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+          <div class="ai-tab active" data-aitab="cook" style="cursor: pointer; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 4px; background: var(--primary-green-light); color: var(--primary-green);">What Can I Cook?</div>
+          <div class="ai-tab" data-aitab="suggest" style="cursor: pointer; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 4px; color: var(--text-secondary);">Suggestions</div>
+          <div class="ai-tab" data-aitab="preserve" style="cursor: pointer; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 4px; color: var(--text-secondary);">Preservation</div>
+          <div class="ai-tab" data-aitab="forecast" style="cursor: pointer; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 4px; color: var(--text-secondary);">Forecast</div>
+        </div>
+
+        <!-- Section A: What Can I Cook? -->
+        <div class="ai-section-panel active" id="ai-panel-cook">
+          <p style="font-size: 12px; margin-bottom: 10px; color: var(--text-secondary);">Matches inventory stock against your recipes:</p>
+          <div class="ai-list-container" id="ai-cook-list" style="max-height: 250px; overflow-y: auto;">
+            <!-- Populated via API -->
+          </div>
+        </div>
+
+        <!-- Section B: Recipe Suggestions -->
+        <div class="ai-section-panel" id="ai-panel-suggest" style="display: none;">
+          <p style="font-size: 12px; margin-bottom: 10px; color: var(--text-secondary);">Personal suggestions based on dietary preferences:</p>
+          <div class="ai-list-container" id="ai-suggest-list" style="max-height: 250px; overflow-y: auto;">
+            <!-- Populated via API -->
+          </div>
+        </div>
+
+        <!-- Section C: Expiration Preservation Tips -->
+        <div class="ai-section-panel" id="ai-panel-preserve" style="display: none;">
+          <p style="font-size: 12px; margin-bottom: 10px; color: var(--text-secondary);">Spoilage alerts and preservation tips:</p>
+          <div class="ai-list-container" id="ai-preserve-list" style="max-height: 250px; overflow-y: auto;">
+            <!-- Populated via API -->
+          </div>
+        </div>
+
+        <!-- Section D: Shopping Forecast -->
+        <div class="ai-section-panel" id="ai-panel-forecast" style="display: none;">
+          <p style="font-size: 12px; margin-bottom: 10px; color: var(--text-secondary);">Items running low or predicted for recipes:</p>
+          <div class="ai-list-container" id="ai-forecast-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 12px;">
+            <!-- Populated via API -->
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" id="btn-ai-export-forecast" style="padding: 10px; font-size: 13px; border-radius: var(--border-radius-sm); flex: 1;"><i class="fas fa-arrow-up-from-bracket"></i> Export List</button>
+            <button class="btn btn-primary" id="btn-ai-import-forecast" style="padding: 10px; font-size: 13px; border-radius: var(--border-radius-sm); flex: 1;"><i class="fas fa-file-import"></i> Import List</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Edit Budget Modal -->
+  <div class="modal-overlay" id="modal-edit-budget">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Grocery Budget</h3>
+        <button class="modal-close" id="btn-budget-modal-close">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div class="form-group">
+          <label>Budget Period</label>
+          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr);" id="edit-budget-period">
+            <div class="grid-option" data-val="weekly">Weekly</div>
+            <div class="grid-option" data-val="biweekly">Biweekly</div>
+            <div class="grid-option selected" data-val="monthly">Monthly</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-budget-amount">Budget Amount ($)</label>
+          <input type="number" id="edit-budget-amount" class="form-control" min="1" value="300">
+        </div>
+        <div class="btn-group" style="padding-top: 10px;">
+          <button class="btn btn-primary" id="btn-save-budget">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Live Camera Capture Modal -->
+  <div class="modal-overlay" id="modal-camera">
+    <div class="modal-box" style="max-width: 460px; width: 90%;">
+      <div class="modal-header">
+        <h3>Camera Receipt Scanner</h3>
+        <button class="modal-close" id="btn-camera-close">&times;</button>
+      </div>
+      <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 12px 0;">
+        <div class="camera-viewport-wrapper" style="width: 100%; aspect-ratio: 3/4; background: #0b0c10; border-radius: var(--border-radius-md); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.8);">
+          <video id="camera-video" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+          <canvas id="camera-canvas" style="display: none;"></canvas>
+          <img id="camera-preview" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: var(--border-radius-md);">
+          <div class="camera-guideline-box" style="position: absolute; border: 2px dashed rgba(255,255,255,0.5); width: 80%; height: 75%; border-radius: var(--border-radius-sm); pointer-events: none; box-shadow: 0 0 0 999px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 600; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,0.8);">
+            ALIGN RECEIPT HERE
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px; width: 100%; padding-top: 8px;">
+          <button class="btn btn-primary" id="btn-camera-capture" style="flex: 1;"><i class="fas fa-circle-dot" style="font-size: 16px; margin-right: 6px;"></i> Take Photo</button>
+          <button class="btn btn-outline" id="btn-camera-retake" style="display: none; flex: 1;"><i class="fas fa-arrow-rotate-left" style="margin-right: 6px;"></i> Retake</button>
+          <button class="btn btn-primary" id="btn-camera-use" style="display: none; flex: 2; background-color: var(--primary-green); border-color: var(--primary-green);"><i class="fas fa-check" style="margin-right: 6px;"></i> Use This Photo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Premium Subscription Upgrade Modal -->
+  <div class="modal-overlay" id="modal-premium">
+    <div class="modal-box" style="max-width: 480px; width: 92%;">
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+        <button class="modal-close" id="btn-premium-close">&times;</button>
+      </div>
+      <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 0 8px 12px 8px;">
+        <div style="background: var(--primary-green-light); color: var(--primary-green); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 8px; box-shadow: var(--shadow-soft);">
+          <i class="fas fa-gem"></i>
+        </div>
+        <h2 style="font-size: 24px; font-weight: 800; font-family: var(--font-family-title); color: var(--text-main); margin-bottom: 0;">Go Premium</h2>
+        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+          Unlock unlimited AI recipe matchmaking, smart shopping predictions, and food preservation advice.
+        </p>
+
+        <!-- Subscription Card -->
+        <div style="background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-green-hover) 100%); color: white; width: 100%; border-radius: var(--border-radius-lg); padding: 24px; text-align: left; box-shadow: var(--shadow-button); position: relative; overflow: hidden; margin-bottom: 12px;">
+          <div style="position: absolute; right: -20px; bottom: -20px; font-size: 120px; opacity: 0.1; color: white;"><i class="fas fa-brain"></i></div>
+          <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 4px;">UNLIMITED AI PASS</div>
+          <div style="font-size: 36px; font-weight: 800; font-family: var(--font-family-title); margin-bottom: 8px;">$2.00 <span style="font-size: 16px; font-weight: 500; opacity: 0.8;">/ month</span></div>
+          <div style="font-size: 13px; font-weight: 500; line-height: 1.6;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><i class="fas fa-check-circle"></i> Unlimited AI assistant matching</div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><i class="fas fa-check-circle"></i> Live camera receipt scanning</div>
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;"><i class="fas fa-check-circle"></i> Predictive shopping lists</div>
+            <div style="display: flex; align-items: center; gap: 8px;"><i class="fas fa-check-circle"></i> Real-time expiration notifications</div>
+          </div>
+        </div>
+
+        <!-- Simulated Payment Form -->
+        <div id="premium-payment-form" style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="premium-card-number" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">Card Number</label>
+            <input type="text" id="premium-card-number" class="form-control" placeholder="4111 2222 3333 4444" style="font-family: monospace;" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="premium-card-expiry" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">Expiry Date</label>
+              <input type="text" id="premium-card-expiry" class="form-control" placeholder="MM / YY" style="font-family: monospace;" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="premium-card-cvc" style="font-size: 11px; font-weight: 700; color: var(--text-secondary);">CVC</label>
+              <input type="text" id="premium-card-cvc" class="form-control" placeholder="123" style="font-family: monospace;" required>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="btn-premium-subscribe" style="margin-top: 16px; background-color: var(--primary-green); border-color: var(--primary-green); font-size: 15px; padding: 12px;"><i class="fas fa-lock" style="margin-right: 6px;"></i> Subscribe for $2.00/mo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Login Modal -->
+  <div class="modal-overlay" id="modal-social-login">
+    <div class="modal-box" style="max-width: 440px; width: 92%;">
+      <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+        <button class="modal-close" id="btn-social-login-close">&times;</button>
+      </div>
+      <div class="modal-content" style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 0 8px 12px 8px;">
+        <div style="background: var(--primary-green-light); color: var(--primary-green); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin-bottom: 8px; box-shadow: var(--shadow-soft);">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h2 style="font-size: 22px; font-weight: 800; font-family: var(--font-family-title); color: var(--text-main); margin-bottom: 0;">Choose an Account</h2>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 8px;">
+          Select a Google or Apple account to continue to Grocerly.
+        </p>
+        
+        <div class="social-login-accounts-list" id="social-accounts-list">
+          <!-- Populated by JS -->
+        </div>
+
+        <div style="width: 100%; border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px; text-align: left;">
+          <label for="social-login-custom-email" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Or use another email</label>
+          <input type="email" id="social-login-custom-email" class="form-control" placeholder="name@domain.com" style="margin-top: 6px; margin-bottom: 12px;">
+          <button class="btn btn-primary" id="btn-social-login-submit" style="padding: 10px 16px; font-size: 14px; width: 100%;"><i class="fas fa-arrow-right" style="margin-right: 6px;"></i> Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Editor/Cropper Modal -->
+  <div class="modal-overlay" id="modal-image-editor">
+    <div class="modal-box" style="max-width: 440px; width: 92%;">
+      <div class="modal-header">
+        <h2 style="font-size: 18px; font-weight: 800; margin-bottom: 0;">Adjust Profile Photo</h2>
+        <button class="modal-close" id="btn-image-editor-close">&times;</button>
+      </div>
+      <div class="modal-content" style="padding: 16px 8px 12px 8px;">
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; text-align: center;">Drag the image to position, and use the slider to zoom.</p>
+        
+        <div class="image-cropper-workarea" id="cropper-workarea">
+          <img src="" class="cropper-preview-image" id="cropper-img" alt="Preview" style="position: absolute; transform-origin: center center;">
+          <div class="cropper-circle-overlay"></div>
+        </div>
+        
+        <div class="cropper-zoom-bar">
+          <i class="fas fa-image" style="font-size: 12px;"></i>
+          <input type="range" id="cropper-zoom-slider" min="1" max="3" step="0.05" value="1">
+          <i class="fas fa-image" style="font-size: 18px;"></i>
+        </div>
+        
+        <div class="btn-group" style="flex-direction: row; margin-top: 20px; padding-top: 0; gap: 10px;">
+          <button class="btn btn-outline" id="btn-cropper-cancel" style="flex: 1; padding: 10px 14px; font-size: 14px;">Cancel</button>
+          <button class="btn btn-primary" id="btn-cropper-save" style="flex: 1.5; padding: 10px 14px; font-size: 14px; background-color: var(--primary-green); border-color: var(--primary-green);">Save Photo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div> <!-- End Device Wrapper -->
+
+  <!-- Chart JS library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Main Logic Engine -->
+  <script src="app.js"></script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/pwa/sw.js', { scope: '/' })
+          .then((reg) => console.log('[PWA] Service Worker registered:', reg.scope))
+          .catch((err) => console.error('[PWA] Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>

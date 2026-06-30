@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in - Google Accounts</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #202124;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+    .login-box {
+      width: 100%;
+      max-width: 450px;
+      padding: 40px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    @media (max-width: 450px) {
+      .login-box {
+        border: none;
+        padding: 24px;
+      }
+    }
+    .google-logo {
+      height: 24px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      font-weight: 400;
+      margin: 0 0 8px 0;
+      color: #202124;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: #202124;
+      margin-bottom: 24px;
+    }
+    .account-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #e8eaed;
+      cursor: pointer;
+      text-align: left;
+    }
+    .account-row:hover {
+      background-color: #f8f9fa;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 12px;
+      object-fit: cover;
+    }
+    .details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #3c4043;
+    }
+    .email {
+      font-size: 12px;
+      color: #5f6368;
+    }
+    .use-another {
+      display: flex;
+      align-items: center;
+      padding: 16px 0;
+      color: #1a73e8;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+    }
+    .use-another i {
+      margin-right: 12px;
+      font-size: 16px;
+    }
+    .footer-text {
+      font-size: 12px;
+      color: #5f6368;
+      margin-top: 32px;
+      line-height: 1.5;
+      text-align: left;
+    }
+    .footer-text a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+    /* Loading Spinner Overlay */
+    .spinner-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #1a73e8;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Custom Input Form */
+    .form-view {
+      display: none;
+      text-align: left;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 16px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: #1a73e8;
+      border-width: 2px;
+      padding: 15px;
+    }
+    .btn-submit {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right;
+    }
+    .btn-submit:hover {
+      background-color: #1b66ca;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box" style="position: relative; overflow: hidden; min-height: 500px;">
+    
+    <!-- Spinner -->
+    <div class="spinner-overlay" id="spinner-view">
+      <div class="spinner"></div>
+      <div style="font-size: 16px; color: #202124;">One moment...</div>
+    </div>
+
+    <!-- Account Chooser View -->
+    <div id="chooser-view">
+      <img class="google-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google">
+      <h1>Choose an account</h1>
+      <div class="subtitle">to continue to Grocerly</div>
+
+      <div class="account-row" onclick="selectAccount('jane.doe@gmail.com', 'Jane Doe', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100')">
+        <img class="avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Jane">
+        <div class="details">
+          <span class="name">Jane Doe</span>
+          <span class="email">jane.doe@gmail.com</span>
+        </div>
+      </div>
+
+      <div class="account-row" onclick="selectAccount('alex.mercer@gmail.com', 'Alex Mercer', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100')">
+        <img class="avatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100" alt="Alex">
+        <div class="details">
+          <span class="name">Alex Mercer</span>
+          <span class="email">alex.mercer@gmail.com</span>
+        </div>
+      </div>
+
+      <div class="use-another" onclick="showFormView()">
+        <i class="far fa-user-circle"></i>
+        <span>Use another account</span>
+      </div>
+
+      <div class="footer-text">
+        To continue, Google will share your name, email address, language preference, and profile picture with Grocerly. Before using this app, you can review Grocerly's <a href="#">privacy policy</a> and <a href="#">terms of service</a>.
+      </div>
+    </div>
+
+    <!-- Custom Form View -->
+    <div id="form-view" class="form-view">
+      <img class="google-logo" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" style="margin-bottom: 24px;">
+      <h1 style="margin-bottom: 8px;">Sign in</h1>
+      <div style="font-size: 16px; color: #202124; margin-bottom: 28px;">Use your Google Account</div>
+
+      <div class="form-group">
+        <input type="email" id="custom-email" class="input-field" placeholder="Email or phone" required>
+      </div>
+      
+      <div class="form-group">
+        <input type="password" id="custom-password" class="input-field" placeholder="Enter your password" required>
+      </div>
+
+      <div style="margin-top: 32px; overflow: hidden;">
+        <span style="color: #1a73e8; font-size: 14px; font-weight: 500; cursor: pointer; line-height: 36px;" onclick="showChooserView()">Back</span>
+        <button class="btn-submit" onclick="submitCustomForm()">Next</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function selectAccount(email, name, avatar) {
+      document.getElementById("spinner-view").style.display = "flex";
+      setTimeout(() => {
+        if (window.opener) {
+          window.opener.postMessage({
+            type: "oauth-success",
+            provider: "Google",
+            email: email,
+            name: name,
+            avatar: avatar
+          }, "*");
+        }
+        window.close();
+      }, 1200);
+    }
+
+    function showFormView() {
+      document.getElementById("chooser-view").style.display = "none";
+      document.getElementById("form-view").style.display = "block";
+    }
+
+    function showOriginalView() {
+      document.getElementById("form-view").style.display = "none";
+      document.getElementById("chooser-view").style.display = "block";
+    }
+
+    function showChooserView() {
+      showOriginalView();
+    }
+
+    function submitCustomForm() {
+      const email = document.getElementById("custom-email").value.trim();
+      const password = document.getElementById("custom-password").value.trim();
+
+      if (!email || !email.includes("@")) {
+        alert("Enter a valid email");
+        return;
+      }
+      if (!password || password.length < 4) {
+        alert("Enter a valid password");
+        return;
+      }
+
+      const name = email.split("@")[0];
+      const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+      
+      selectAccount(email, displayName, "");
+    }
+  </script>
+</body>
+</html>
