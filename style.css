@@ -2240,7 +2240,7 @@ input:checked + .theme-toggle-slider:before {
   
   /* Page Padding for Mobile */
   .page {
-    padding: 85px 16px calc(80px + env(safe-area-inset-bottom)) 16px !important;
+    padding: 65px 16px calc(80px + env(safe-area-inset-bottom)) 16px !important;
   }
 
   .analytics-summary-cards {
