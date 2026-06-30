@@ -122,7 +122,7 @@ body {
   pointer-events: none;
   visibility: hidden;
   transition: opacity 0.6s ease, transform 0.6s ease, visibility 0.6s;
-  padding: 85px 20px calc(90px + env(safe-area-inset-bottom)) 20px;
+  padding: 65px 20px calc(90px + env(safe-area-inset-bottom)) 20px;
   overflow-y: auto;
 }
 
