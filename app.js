@@ -4334,7 +4334,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-});
+};
 
 window.openEditGroceryModal = function(id) {
   const item = State.inventory.find(i => i.id === id);
