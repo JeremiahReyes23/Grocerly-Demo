@@ -1277,11 +1277,41 @@ p {
   background-color: var(--bg-card);
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.inv-card-main-content {
+  flex: 1;
   padding: 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: all 0.2s;
+}
+
+.inv-card-progress-col {
+  width: 12px;
+  background-color: var(--border-color);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-left: 1px solid var(--border-color);
+}
+
+.inv-card-progress-fill {
+  width: 100%;
+  transition: height 0.3s ease, background-color 0.3s ease;
+}
+
+.calendar-meal-slot-edit-btn {
+  transition: transform 0.2s, color 0.2s;
+}
+.calendar-meal-slot-edit-btn:hover {
+  transform: scale(1.2);
+  color: var(--primary-green-light) !important;
 }
 
 .inv-card-header {
