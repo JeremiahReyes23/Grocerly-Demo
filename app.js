@@ -3199,7 +3199,7 @@ function refreshInventoryList() {
         <div class="inv-card-side">
           <span class="inv-card-life ${lifeClass}">${lifeText}</span>
           <div class="inv-card-quick-actions">
-            <span class="inv-card-stock ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'needs' : 'ready'}"><i class="fas ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i> ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'Low stock' : 'Ready'}</span>
+            <span class="inv-card-stock ${daysLeft <= 0 || item.remainingPercent <= 25 || item.currentQty <= 0 ? 'needs' : 'ready'}"><i class="fas ${daysLeft <= 0 || item.remainingPercent <= 25 || item.currentQty <= 0 ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i> ${daysLeft <= 0 ? 'Check date' : item.remainingPercent <= 25 || item.currentQty <= 0 ? 'Low stock' : 'Ready'}</span>
             <button type="button" class="inv-quick-action" aria-label="Edit ${item.name}" onclick="event.stopPropagation(); openEditGroceryModal('${item.id}')"><i class="fas fa-pen" aria-hidden="true"></i></button>
             <button type="button" class="inv-quick-action delete" aria-label="Remove ${item.name}" onclick="event.stopPropagation(); removeItemDirectly('${item.id}')"><i class="fas fa-trash-can" aria-hidden="true"></i></button>
           </div>
