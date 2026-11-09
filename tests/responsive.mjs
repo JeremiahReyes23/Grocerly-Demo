@@ -46,6 +46,28 @@ try {
           horizontalOverflow: Math.max(0, activePage.scrollWidth - activePage.clientWidth)
         };
       });
+      // Wide browsers use a centered, compact reference-proportioned app.
+      // Header, pages, and dock must be aligned to the SAME visible frame.
+      if (viewport.width >= 621) {
+        const shell = await page.evaluate(() => {
+          const frame = document.querySelector(".device-wrapper").getBoundingClientRect();
+          const header = document.querySelector(".grocerly-global-header").getBoundingClientRect();
+          const nav = document.querySelector("#app-bottom-nav").getBoundingClientRect();
+          const active = document.querySelector(".page.active").getBoundingClientRect();
+          const content = document.querySelector(".page.active > .grocerly-quick-panel, .page.active > .header-bar, .page.active .grocerly-profile-scroll")?.getBoundingClientRect();
+          return {frame:{left:frame.left,right:frame.right,width:frame.width},
+            header:{left:header.left,right:header.right},
+            nav:{left:nav.left,right:nav.right},
+            page:{left:active.left,right:active.right},
+            content:content?{left:content.left,right:content.right}:null};
+        });
+        assert(shell.frame.width <= 662, `${screen} desktop app too wide at ${viewport.width}: ${JSON.stringify(shell)}`);
+        assert(Math.abs(shell.frame.left - (viewport.width-shell.frame.width)/2) <= 4, `${screen} compact app not centered at ${viewport.width}: ${JSON.stringify(shell)}`);
+        assert(shell.header.left >= shell.frame.left+10 && shell.header.right <= shell.frame.right-10, `${screen} header misaligned with app at ${viewport.width}: ${JSON.stringify(shell)}`);
+        assert(Math.abs(shell.nav.left-shell.frame.left)<=3 && Math.abs(shell.nav.right-shell.frame.right)<=3, `${screen} dock does not align with app at ${viewport.width}: ${JSON.stringify(shell)}`);
+        assert(Math.abs(shell.page.left-shell.frame.left)<=3 && Math.abs(shell.page.right-shell.frame.right)<=3, `${screen} page not sized to compact app at ${viewport.width}: ${JSON.stringify(shell)}`);
+        if(shell.content) assert(shell.content.left >= shell.frame.left+16 && shell.content.right <= shell.frame.right-16, `${screen} content not aligned to app gutters at ${viewport.width}: ${JSON.stringify(shell)}`);
+      }
       assert(bounds.header.left >= -2 && bounds.header.right <= viewport.width + 2, `${screen} header overflow at ${viewport.width}`);
       assert(bounds.nav.left >= -2 && bounds.nav.right <= viewport.width + 2, `${screen} bottom nav overflow at ${viewport.width}`);
       for (const item of bounds.navItems) assert(item.width >= 40 && item.right <= viewport.width + 2, `${screen} nav item clipped at ${viewport.width}`);
@@ -124,7 +146,7 @@ try {
           }};
         }, {width:viewport.width,tab,screen}));
       }
-      if ([390,768,1440].includes(viewport.width)) {
+      if ([390,768,1024,1440,1920].includes(viewport.width)) {
         await page.screenshot({ path: `test-artifacts/${viewport.width}-${screen.toLowerCase()}.png`, fullPage: false });
       }
       console.log(`${viewport.width}×${viewport.height} ${screen}: OK`);
