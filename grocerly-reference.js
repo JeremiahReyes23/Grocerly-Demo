@@ -195,6 +195,32 @@
       };
     }
 
+    // EN/ES stays available on login and onboarding, without duplicating the app header.
+    const authLanguage=document.createElement("div");
+    authLanguage.id="grocerly-auth-language";
+    authLanguage.className="grocerly-language-switch grocerly-auth-language";
+    authLanguage.setAttribute("role","group");
+    authLanguage.setAttribute("aria-label","Language");
+    ["en","es"].forEach(language=>{
+      const button=document.createElement("button");
+      button.type="button";button.textContent=language.toUpperCase();
+      button.setAttribute("lang",language);
+      button.addEventListener("click",()=>{
+        if(window.GrocerlyLanguage)window.GrocerlyLanguage.set(language);
+        reflectLanguage();
+      });
+      button.dataset.lang=language;
+      authLanguage.appendChild(button);
+    });
+    function reflectLanguage(){
+      const selected=window.GrocerlyLanguage?.current()||"en";
+      authLanguage.querySelectorAll("button").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.lang===selected)));
+    }
+    reflectLanguage();
+    document.querySelector(".device-wrapper")?.appendChild(authLanguage);
+    const appLanguage=$("grocerly-language-switch");
+    appLanguage?.addEventListener("click",()=>setTimeout(reflectLanguage,0));
+
     // Keep the user-visible main tab highlighted after returning from secondary screens.
     document.querySelectorAll("#app-bottom-nav .nav-item").forEach(a=>{
       a.addEventListener("click",()=>{document.querySelectorAll("#app-bottom-nav .nav-item").forEach(item=>item.classList.toggle("active",item===a));});
