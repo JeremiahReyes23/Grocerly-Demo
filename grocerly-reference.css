@@ -3,9 +3,9 @@
  * Deliberately final in CSS order; no changes to persisted user grocery data.
  */
 :root{
- --grocerly-paper:#f2f8f1; --grocerly-ink:#101a14; --grocerly-forest:#327655;
+ --grocerly-paper:#f2f8f1; --grocerly-ink:#101a14; --grocerly-forest:#357457;
  --grocerly-slate:#566d60; --grocerly-outline:#17231b; --grocerly-orange:#b87b11;
- --primary-green:#327655; --primary-green-hover:#265d43; --primary-green-light:#dff0e1;
+ --primary-green:#357457; --primary-green-hover:#265d43; --primary-green-light:#dff0e1;
  --bg-primary:#f2f8f1; --bg-card:#fff; --text-main:#121913; --text-secondary:#566d60;
  --border-color:#d4ded4; --accent-orange:#b87b11; --accent-orange-light:#fff2da;
  --shadow-soft:none; --shadow-card:none; --shadow-button:none;
