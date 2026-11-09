@@ -1,0 +1,42 @@
+name: Grocerly responsive and login smoke test
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  responsive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install application and browser test dependencies
+        run: |
+          npm install --no-save --no-package-lock
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Start Grocerly application
+        run: |
+          npm start > /tmp/grocerly-server.log 2>&1 &
+          for i in $(seq 1 40); do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/grocerly-server.log
+          exit 1
+      - name: Test mobile, tablet and web layouts and skip-onboarding flow
+        run: node tests/responsive.mjs
+      - name: Upload screenshots for visual review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grocerly-reference-screens
+          path: test-artifacts/
+          if-no-files-found: ignore
+      - name: Print server logs on failure
+        if: failure()
+        run: cat /tmp/grocerly-server.log
