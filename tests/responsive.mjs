@@ -50,7 +50,41 @@ try {
       assert(bounds.nav.left >= -2 && bounds.nav.right <= viewport.width + 2, `${screen} bottom nav overflow at ${viewport.width}`);
       for (const item of bounds.navItems) assert(item.width >= 40 && item.right <= viewport.width + 2, `${screen} nav item clipped at ${viewport.width}`);
       assert(bounds.horizontalOverflow <= 4, `${screen} page horizontal overflow ${bounds.horizontalOverflow}px at ${viewport.width}`);
-      const titleGap = await page.evaluate(activeTab => {
+      // Every main screen is exactly one viewport tall. Only its data panel scrolls.
+      const viewportFrame = await page.evaluate(activeTab => {
+        const active = document.querySelector('.page.active');
+        const nav = document.querySelector('#app-bottom-nav');
+        const select = {
+          dashboard: '#dash-grocery-list-dropdown .grocery-table-wrapper',
+          meals: '#recipes-list-container',
+          inventory: '#inventory-list-container',
+          profile: '.grocerly-profile-scroll'
+        };
+        const inner = active.querySelector(select[activeTab]);
+        const rect = inner?.getBoundingClientRect();
+        const navigation = nav.getBoundingClientRect();
+        window.scrollTo(0, 200);
+        active.scrollTop = 200;
+        return {
+          windowScrollY: window.scrollY,
+          pageScrollTop: active.scrollTop,
+          pageOverflow: Math.max(0, active.scrollHeight - active.clientHeight),
+          documentOverflow: Math.max(0, document.documentElement.scrollHeight - window.innerHeight),
+          innerOverflowY: inner ? getComputedStyle(inner).overflowY : null,
+          innerHeight: inner ? inner.clientHeight : -1,
+          innerTop: rect?.top,
+          innerBottom: rect?.bottom,
+          navTop: navigation.top
+        };
+      }, tab);
+      assert(viewportFrame.windowScrollY === 0, `${screen} scrolls the document at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(viewportFrame.pageScrollTop === 0, `${screen} scrolls the whole page at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(viewportFrame.pageOverflow <= 3, `${screen} page contents overflow the viewport at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(viewportFrame.documentOverflow <= 3, `${screen} document height exceeds the viewport at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(['auto', 'scroll'].includes(viewportFrame.innerOverflowY), `${screen} missing contained scrolling at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(viewportFrame.innerHeight >= 15, `${screen} inner content panel collapsed at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert(viewportFrame.innerBottom <= viewportFrame.navTop + 3, `${screen} inner content overlaps bottom navigation at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+            const titleGap = await page.evaluate(activeTab => {
         const titleSelector = activeTab === 'dashboard' ? '#dash-welcome-text'
           : activeTab === 'meals' || activeTab === 'inventory' ? '#page-' + activeTab + ' .header-bar'
           : '#page-profile > h1';
