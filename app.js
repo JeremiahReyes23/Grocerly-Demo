@@ -5132,6 +5132,10 @@ const ClientAPI = {
       }
       return data;
     } catch (e) {
+      // Authentication must never fall back to simulated accounts after a server error.
+      if (endpoint.startsWith('/api/auth/') && endpoint !== '/api/auth/config') {
+        throw e;
+      }
       console.warn(`API server error on ${endpoint}, falling back to local simulation:`, e.message);
       if (isWrite && !endpoint.includes('/api/auth')) {
         updateCloudSyncBadge("offline");
