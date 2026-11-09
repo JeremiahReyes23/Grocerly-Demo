@@ -948,6 +948,7 @@ function initOnboardingFlow() {
         refreshDashboard();
         refreshInventoryList();
         refreshRecipesList();
+        refreshProfileCard();
         transitionToPage("page-dashboard");
       } catch (err) {
         console.error("Signup failed:", err);
@@ -984,6 +985,10 @@ function initOnboardingFlow() {
         sessionStorage.setItem("grocerly_logged_in", "true");
       }
       saveStateToStorage();
+      refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
+      refreshProfileCard();
       transitionToPage("page-dashboard");
       document.getElementById("app-bottom-nav").classList.add("active");
     } catch (err) {
@@ -1093,6 +1098,8 @@ function initOnboardingFlow() {
       saveStateToStorage();
       refreshProfileCard();
       refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
       
       // Google sign-in goes straight into the app, even for first-time accounts.
       transitionToPage("page-dashboard");
@@ -1215,14 +1222,25 @@ function initOnboardingFlow() {
     try {
       const response = await ClientAPI.request('/api/auth/signup', 'POST', { email, password: pass });
        State.user = response.profile;
-      State.user.name = name;
+      State.user.uid = response.googleUid || email;
+      State.user.name = name.trim();
+      State.inventory = response.inventory || [];
+      State.recipes = response.recipes || [];
+      State.trips = response.trips || [];
+      State.notifications = response.notifications || [];
+      State.wasteLogs = response.wasteLogs || [];
       State.calendar = response.calendar || {};
       State.customStores = response.customStores || [];
       localStorage.setItem("grocerly_logged_in", "true");
       saveStateToStorage();
+      // Registration includes a name; save it without a separate setup screen.
+      ClientAPI.request('/api/profile', 'PUT', {
+        email: State.user.email, userId: State.user.uid || null, profile: State.user
+      }).catch(err => console.warn("Name sync could not complete yet:", err));
       refreshDashboard();
       refreshInventoryList();
       refreshRecipesList();
+      refreshProfileCard();
       transitionToPage("page-dashboard");
     } catch (err) {
       console.warn("Signup failed:", err);
