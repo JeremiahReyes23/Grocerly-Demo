@@ -50,6 +50,17 @@ try {
       assert(bounds.nav.left >= -2 && bounds.nav.right <= viewport.width + 2, `${screen} bottom nav overflow at ${viewport.width}`);
       for (const item of bounds.navItems) assert(item.width >= 40 && item.right <= viewport.width + 2, `${screen} nav item clipped at ${viewport.width}`);
       assert(bounds.horizontalOverflow <= 4, `${screen} page horizontal overflow ${bounds.horizontalOverflow}px at ${viewport.width}`);
+      const titleGap = await page.evaluate(activeTab => {
+        const titleSelector = activeTab === 'dashboard' ? '#dash-welcome-text'
+          : activeTab === 'meals' || activeTab === 'inventory' ? '#page-' + activeTab + ' .header-bar'
+          : '#page-profile > h1';
+        const target = document.querySelector(titleSelector);
+        const brand = document.querySelector('.grocerly-global-brand');
+        if (!target || !brand) return null;
+        return target.getBoundingClientRect().top - brand.getBoundingClientRect().bottom;
+      }, tab);
+      assert(titleGap !== null && titleGap >= 8, `${screen} starts behind the Grocerly brand at ${viewport.width}px: gap ${titleGap}`);
+
       if ([390,1440].includes(viewport.width)) {
         visualDiagnostics.push(await page.evaluate((view) => {
           const pick = ['.recipe-card','.recipe-card-title','.recipe-card-desc','.recipe-ingredients-check',
