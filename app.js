@@ -32,7 +32,12 @@ function showToast(message, type = "success") {
 }
 
 function updateAllAvatarElements() {
-  const avatar = (State && State.user && State.user.avatar) || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0aec0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  const suppliedAvatar = (State && State.user && State.user.avatar) || "";
+  const genericStock = /images\.unsplash\.com\/photo-(1494790108377|1534528741775|1535713875002)/.test(suppliedAvatar);
+  const avatar = (!suppliedAvatar || genericStock)
+    ? 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>'
+    : suppliedAvatar;
+  const unusedLegacyFallback = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0aec0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
   
   const ids = ["dash-avatar-img", "profile-card-img", "profile-card-img-sidebar"];
   ids.forEach(id => {
@@ -1671,9 +1676,9 @@ function refreshDashboard() {
   if (labelEditItemPrice) labelEditItemPrice.textContent = `Price (${symbol})`;
 
   // Update welcome greeting
-  const firstName = State.user.name.split(" ")[0];
+  const firstName = State.user.name && State.user.name.trim() !== "New Chef" ? State.user.name.trim().split(" ")[0] : "";
   const welcomeText = document.getElementById("dash-welcome-text");
-  if (welcomeText) welcomeText.innerText = `Welcome, ${firstName}!`;
+  if (welcomeText) welcomeText.innerText = firstName ? `Welcome, ${firstName}!` : "Welcome!";
   
   updateAllAvatarElements();
 
