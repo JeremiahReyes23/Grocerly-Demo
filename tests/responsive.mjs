@@ -13,7 +13,7 @@ const screens = [
   ['Groceries', 'inventory'], ['Settings', 'profile'],
 ];
 await mkdir('test-artifacts', { recursive: true });
-const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+const browser = await chromium.launch({ headless: true, executablePath: process.env.GROCERLY_CHROME_PATH || undefined, args: ['--no-sandbox'] });
 const errors = [];
 try {
   for (const viewport of viewports) {
