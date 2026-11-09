@@ -390,3 +390,62 @@ html, body {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* Compact laptop and desktop height without reducing the information shown.
+   At 900px high, the previous design consumed the entire content region before
+   the first grocery row. Reclaim space for an actually usable scrolling list. */
+@media (min-width: 901px) and (max-height: 1000px) {
+  .grocerly-global-header {
+    top: 8px !important;
+    height: 102px !important;
+  }
+  .grocerly-global-logo { max-height: 63px; max-width: 63px; }
+  .grocerly-global-brand span {
+    font-size: clamp(35px, 3.4vw, 50px) !important;
+  }
+  #page-dashboard, #page-meals, #page-inventory, #page-profile, #page-groceries {
+    padding-top: 121px !important;
+    padding-bottom: calc(91px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav, .bottom-nav.active { height: 79px !important; }
+  .bottom-nav .nav-item { gap: 4px !important; }
+  .bottom-nav .nav-item i { font-size: 26px !important; }
+  #page-dashboard #dash-welcome-text {
+    font-size: clamp(29px, 2.75vw, 37px) !important;
+    margin-bottom: 12px !important;
+  }
+  #page-dashboard .grocerly-quick-panel { margin-bottom: 17px !important; }
+  #page-dashboard .grocerly-quick-panel h2 {
+    font-size: clamp(23px, 2.25vw, 29px) !important;
+    margin-bottom: 15px !important;
+  }
+  #page-dashboard .grocerly-quick-action {
+    min-height: 64px !important;
+    font-size: clamp(14px, 1.4vw, 19px) !important;
+  }
+  #page-dashboard .grocerly-plan-heading {
+    font-size: clamp(23px, 2.1vw, 29px) !important;
+    margin-bottom: 15px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 {
+    margin-bottom: 16px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 .stat-card {
+    min-height: 135px !important;
+    padding: 16px 20px !important;
+  }
+  #page-dashboard .stat-value {
+    font-size: clamp(30px, 3vw, 45px) !important;
+  }
+  #page-dashboard #dash-grocery-list-dropdown .dropdown-header {
+    min-height: 60px !important;
+    padding: 10px 16px !important;
+  }
+  #page-dashboard #dash-grocery-list-dropdown .grocery-table th,
+  #page-dashboard #dash-grocery-list-dropdown .grocery-table td {
+    padding-top: 9px !important;
+    padding-bottom: 9px !important;
+  }
+  #page-profile .profile-card { top: 120px !important; }
+}
