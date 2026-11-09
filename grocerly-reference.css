@@ -473,3 +473,7 @@ body.dark-theme #page-inventory #inventory-list-container .inv-card:hover{backgr
  .grocerly-category-filters button{font-size:12px;min-height:38px;padding:7px 13px}
  #page-dashboard .grocery-table{min-width:425px!important}
 }
+
+.grocerly-inventory-heading{min-width:0;flex:1;display:flex;flex-direction:column;gap:7px}
+.grocerly-inventory-heading p{font-size:clamp(14px,1.65vw,21px)!important;color:var(--grocerly-slate)!important;margin:0!important;line-height:1.35}
+@media(max-width:620px){.grocerly-inventory-heading p{font-size:13px!important}.grocerly-inventory-heading{gap:4px}}
