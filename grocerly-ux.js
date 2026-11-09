@@ -64,11 +64,13 @@
     }
     // Receipt-first inventory: manual entry remains available as a secondary option.
     const inventoryAdd = document.getElementById("btn-inventory-add-trigger");
+    let openManualOnce = false;
     if (inventoryAdd) {
       inventoryAdd.innerHTML = '<i class="fas fa-camera" aria-hidden="true"></i> Scan receipt';
       inventoryAdd.setAttribute("title", "Scan or upload a grocery receipt");
       inventoryAdd.addEventListener("click", function (event) {
-        // Existing manual-add handler runs on the same button. Block it here in capture phase.
+        // Allow the existing form initialization when manual entry is explicitly requested.
+        if (openManualOnce) { openManualOnce = false; return; }
         event.stopImmediatePropagation();
         go("groceries");
         document.getElementById("btn-ocr-scan-trigger")?.focus();
@@ -79,7 +81,8 @@
       manual.className = "btn btn-outline grocerly-manual-add";
       manual.innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i> Add manually';
       manual.addEventListener("click", function () {
-        document.getElementById("modal-add-grocery")?.classList.add("active");
+        openManualOnce = true;
+        inventoryAdd.click(); // Reuses existing date/default setup and validation.
       });
       actions.appendChild(manual);
     }
@@ -118,9 +121,8 @@
             feedback.textContent = "We couldn't read a product name. Try a clearer photo or add it manually.";
             return;
           }
-          document.getElementById("btn-inventory-add-trigger")?.dispatchEvent(new Event("grocerly-manual-open"));
+          manual.click(); // Open the original form with its default dates and fields.
           const modal = document.getElementById("modal-add-grocery");
-          modal?.classList.add("active");
           const nameInput = document.getElementById("groc-name");
           const priceInput = document.getElementById("groc-price");
           if (nameInput) nameInput.value = name.slice(0, 100);
