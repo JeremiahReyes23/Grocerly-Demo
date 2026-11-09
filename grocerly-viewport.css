@@ -1,0 +1,392 @@
+/* Grocerly fixed-viewport layout — keeps the four reference screens inside the
+   app frame. Long collections scroll INSIDE their cards, not the entire page. */
+
+html, body {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+.device-wrapper,
+.app-container {
+  height: 100dvh !important;
+  min-height: 0 !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+#page-dashboard,
+#page-meals,
+#page-inventory,
+#page-profile {
+  box-sizing: border-box !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+}
+#page-dashboard > *,
+#page-meals > *,
+#page-inventory > *,
+#page-profile > * {
+  flex-shrink: 0;
+}
+#page-dashboard .grocerly-quick-panel,
+#page-dashboard #dash-welcome-text,
+#page-dashboard .grocerly-plan-heading,
+#page-dashboard .dashboard-stats-2x2 {
+  flex: 0 0 auto;
+}
+
+/* HOME — preserve the greeting and budget cards.
+   Only the grocery list's table scrolls when there are more items than space. */
+#page-dashboard #dash-grocery-list-dropdown {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin-bottom: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+#page-dashboard #dash-grocery-list-dropdown .dropdown-header {
+  flex: 0 0 auto;
+}
+#page-dashboard #dash-grocery-list-dropdown .dropdown-content,
+#page-dashboard #dash-grocery-list-dropdown.active .dropdown-content {
+  display: flex !important;
+  flex: 1 1 0 !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding-bottom: 10px !important;
+}
+#page-dashboard #dash-grocery-list-dropdown .grocery-table-wrapper {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grocerly-forest) transparent;
+}
+
+/* MEALS — recipe list is the flexible region. Creating/editing a recipe or
+   viewing AI ideas replaces the list instead of expanding the entire page. */
+#page-meals > .header-bar,
+#page-meals > .search-filter-row,
+#page-meals > .grocerly-calendar-details {
+  flex: 0 0 auto !important;
+}
+#page-meals #recipes-list-container {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  align-content: start !important;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grocerly-forest) transparent;
+}
+#page-meals #recipe-inline-editor:not([style*="display: none"]),
+#page-meals #meals-ideas-section:not([style*="display: none"]) {
+  min-height: 0 !important;
+  flex: 1 1 0 !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+#page-meals:has(#recipe-inline-editor:not([style*="display: none"])) > .search-filter-row,
+#page-meals:has(#recipe-inline-editor:not([style*="display: none"])) > #recipes-list-container,
+#page-meals:has(#recipe-inline-editor:not([style*="display: none"])) > #meals-ideas-section {
+  display: none !important;
+}
+#page-meals:has(#meals-ideas-section:not([style*="display: none"])) > #recipes-list-container {
+  display: none !important;
+}
+
+/* GROCERIES — the search and filters stay visible; inventory cards scroll
+   within the list. Do not restrict list height with viewport percentages. */
+#page-inventory > .header-bar,
+#page-inventory > .search-filter-row,
+#page-inventory > .grocerly-category-filters {
+  flex: 0 0 auto !important;
+}
+#page-inventory #inventory-list-container {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  height: auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grocerly-forest) transparent;
+}
+
+/* SETTINGS — name, email, toggles and logout are retained. On short screens
+   the fields scroll in a dedicated content panel, not on the whole page.
+   Sign Out remains visible at the bottom. */
+#page-profile .grocerly-profile-scroll {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100%;
+  max-width: inherit;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grocerly-forest) transparent;
+  padding-right: 4px;
+}
+#page-profile .grocerly-profile-scroll > * {
+  flex: 0 0 auto;
+}
+#page-profile .grocerly-profile-scroll > h1 {
+  margin: 0 0 8px !important;
+  padding-right: 130px !important;
+}
+#page-profile .grocerly-profile-scroll > .grocerly-profile-intro {
+  margin: 0 0 15px !important;
+  padding-right: 150px !important;
+}
+#page-profile .grocerly-profile-scroll > .grocerly-profile-name,
+#page-profile .grocerly-profile-scroll > .grocerly-profile-email {
+  margin-bottom: 10px !important;
+}
+#page-profile .grocerly-profile-scroll .form-group label {
+  margin-bottom: 5px !important;
+}
+#page-profile .grocerly-profile-scroll .form-control {
+  height: 46px !important;
+  min-height: 46px !important;
+}
+#page-profile .grocerly-profile-scroll > .grocerly-settings-heading {
+  margin: 3px 0 9px !important;
+}
+#page-profile .grocerly-profile-scroll > .settings-list {
+  gap: 9px !important;
+  padding-bottom: 8px;
+}
+#page-profile .grocerly-profile-scroll .settings-item {
+  min-height: 55px !important;
+  padding: 11px 15px !important;
+}
+#page-profile > .btn-group {
+  flex: 0 0 auto !important;
+  margin: 10px auto 0 !important;
+  padding: 0 !important;
+  width: 100%;
+}
+#page-profile > .btn-group #btn-logout {
+  min-height: 54px !important;
+  font-size: clamp(17px, 2vw, 23px) !important;
+}
+#page-profile .profile-card {
+  pointer-events: none;
+}
+#page-profile .profile-avatar-wrapper {
+  pointer-events: auto;
+}
+
+/* The receipt scanner is a task screen rather than one of the four dashboard
+   destinations. Keep its heading stationary and scroll its form inside. */
+#page-groceries {
+  overflow: hidden !important;
+  min-height: 0 !important;
+  overscroll-behavior: none;
+}
+#page-groceries .grocerly-receipt-task-scroll {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  width: 100%;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--grocerly-forest) transparent;
+  padding-right: 4px;
+}
+
+/* Laptops with limited vertical pixels need shorter cards, not a page scrollbar. */
+@media (min-width: 621px) and (max-height: 840px) {
+  .grocerly-global-header {
+    top: 5px !important;
+    height: 84px !important;
+  }
+  .grocerly-global-logo {
+    max-height: 58px;
+    max-width: 58px;
+  }
+  #page-dashboard, #page-meals, #page-inventory, #page-profile, #page-groceries {
+    padding-top: 105px !important;
+    padding-bottom: calc(86px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav, .bottom-nav.active {
+    height: calc(73px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav .nav-item { gap: 3px !important; }
+  .bottom-nav .nav-item i { font-size: 24px !important; }
+  .bottom-nav .nav-item span { font-size: 13px !important; }
+  #page-dashboard #dash-welcome-text {
+    font-size: clamp(24px, 2.6vw, 34px) !important;
+    margin-bottom: 11px !important;
+  }
+  #page-dashboard .grocerly-quick-panel { margin-bottom: 16px !important; }
+  #page-dashboard .grocerly-quick-panel h2 {
+    font-size: clamp(19px, 2vw, 25px) !important;
+    margin-bottom: 12px !important;
+  }
+  #page-dashboard .grocerly-quick-action {
+    min-height: 58px !important;
+  }
+  #page-dashboard .grocerly-plan-heading {
+    font-size: clamp(21px, 2vw, 27px) !important;
+    margin-bottom: 13px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 {
+    gap: 14px !important;
+    margin-bottom: 15px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 .stat-card {
+    min-height: 130px !important;
+    padding: 14px 18px !important;
+  }
+  #page-dashboard .stat-value {
+    font-size: clamp(27px, 3.3vw, 40px) !important;
+  }
+  #dash-grocery-list-dropdown .dropdown-header {
+    min-height: 58px !important;
+  }
+  #page-profile .profile-card {
+    top: 105px !important;
+  }
+}
+
+/* Very short mobile viewports: keep the same four actions/tabs, compact the
+   non-scrolling summary and allocate the remaining area to the grocery table. */
+@media (max-width: 620px) and (max-height: 735px) {
+  .grocerly-global-header {
+    top: 0 !important;
+    height: 69px !important;
+  }
+  .grocerly-global-logo { width: 38px !important; height: 38px !important; }
+  .grocerly-global-brand span { font-size: clamp(23px, 7vw, 30px) !important; }
+  #page-dashboard, #page-meals, #page-inventory, #page-profile, #page-groceries {
+    padding-top: calc(80px + env(safe-area-inset-top)) !important;
+    padding-bottom: calc(70px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav, .bottom-nav.active {
+    height: calc(62px + env(safe-area-inset-bottom)) !important;
+  }
+  .bottom-nav .nav-item i { font-size: 20px !important; }
+  .bottom-nav .nav-item span { font-size: 10px !important; }
+  #page-dashboard #dash-welcome-text {
+    font-size: 24px !important;
+    margin-bottom: 8px !important;
+  }
+  #page-dashboard .grocerly-quick-panel { margin-bottom: 10px !important; }
+  #page-dashboard .grocerly-quick-panel h2 {
+    font-size: 17px !important;
+    margin-bottom: 8px !important;
+  }
+  #page-dashboard .grocerly-quick-action {
+    min-height: 54px !important;
+    padding: 5px 4px !important;
+    gap: 3px !important;
+    font-size: 10px !important;
+  }
+  #page-dashboard .grocerly-quick-action i { font-size: 17px !important; }
+  #page-dashboard .grocerly-plan-heading {
+    font-size: 19px !important;
+    margin-bottom: 8px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 {
+    margin-bottom: 9px !important;
+    gap: 8px !important;
+  }
+  #page-dashboard .dashboard-stats-2x2 .stat-card {
+    min-height: 96px !important;
+    padding: 9px 10px !important;
+    border-radius: 13px !important;
+  }
+  #page-dashboard .stat-card-icon-container {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 11px !important;
+  }
+  #page-dashboard .stat-card-row span {
+    font-size: 12px !important;
+  }
+  #page-dashboard .stat-value {
+    font-size: clamp(20px, 6vw, 26px) !important;
+  }
+  #page-dashboard .stat-desc { font-size: 10px !important; }
+  #dash-grocery-list-dropdown .dropdown-header {
+    min-height: 43px !important;
+    padding: 5px 9px !important;
+  }
+  #dash-grocery-list-dropdown .dropdown-header-left h2 { font-size: 13px !important; }
+  #dash-grocery-list-dropdown .dropdown-header-left i { font-size: 17px !important; }
+  #dash-grocery-list-dropdown #btn-dash-go-meals {
+    min-height: 34px !important;
+    font-size: 10px !important;
+    padding: 5px 7px !important;
+  }
+  #page-meals .header-bar {
+    margin-bottom: 9px !important;
+    gap: 6px !important;
+  }
+  #page-meals .meals-intro h1 { font-size: 25px !important; }
+  #page-meals .meals-intro p { font-size: 13px !important; }
+  #page-meals .header-bar > div:last-child { gap: 7px !important; }
+  #page-meals #btn-meals-ideas-trigger, #page-meals #btn-meals-create-trigger {
+    min-height: 40px !important;
+    font-size: 13px !important;
+    padding: 7px 10px !important;
+  }
+  #page-inventory .header-bar { margin-bottom: 8px !important; }
+  #page-inventory .header-bar h1 { font-size: 24px !important; }
+  #page-inventory .search-filter-row { margin-bottom: 6px !important; }
+  #page-inventory .grocerly-category-filters { padding-bottom: 6px !important; }
+  #page-profile .profile-card { top: 80px !important; }
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-intro {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Mobile remains list-scroll-only even at typical portrait heights. */
+@media (max-width: 620px) {
+  #page-meals #recipes-list-container,
+  #page-inventory #inventory-list-container {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: none !important;
+    min-height: 0 !important;
+  }
+  #page-profile .grocerly-profile-scroll > h1 {
+    padding-right: 105px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-intro {
+    padding-right: 105px !important;
+  }
+  #page-profile > .btn-group { margin-top: 8px !important; }
+  #page-profile > .btn-group #btn-logout { min-height: 48px !important; }
+}
+
+/* Default non-reference task pages may need a real form scrollbar, but the
+   browser and the four primary screens never acquire global scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  .grocerly-profile-scroll, #inventory-list-container,
+  #recipes-list-container, .grocery-table-wrapper {
+    scroll-behavior: auto !important;
+  }
+}
