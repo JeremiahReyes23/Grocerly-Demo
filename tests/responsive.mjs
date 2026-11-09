@@ -68,6 +68,19 @@ try {
         assert(Math.abs(shell.page.left-shell.frame.left)<=3 && Math.abs(shell.page.right-shell.frame.right)<=3, `${screen} page not sized to compact app at ${viewport.width}: ${JSON.stringify(shell)}`);
         if(shell.content) assert(shell.content.left >= shell.frame.left+16 && shell.content.right <= shell.frame.right-16, `${screen} content not aligned to app gutters at ${viewport.width}: ${JSON.stringify(shell)}`);
       }
+      if (tab === "inventory" && viewport.width >= 621) {
+        const groceryHeader = await page.evaluate(() => {
+          const total = document.querySelector("#inventory-total-price").getBoundingClientRect();
+          const add = document.querySelector("#btn-inventory-add-trigger").getBoundingClientRect();
+          const heading = document.querySelector(".grocerly-inventory-heading").getBoundingClientRect();
+          return {total:{left:total.left,top:total.top,right:total.right},add:{left:add.left,top:add.top,right:add.right},heading:{left:heading.left,top:heading.top,right:heading.right}};
+        });
+        assert(Math.abs(groceryHeader.total.top - groceryHeader.add.top) <= 18,
+          `Groceries total and Add should share the reference row at ${viewport.width}: ${JSON.stringify(groceryHeader)}`);
+        assert(groceryHeader.heading.right <= groceryHeader.total.left + 2 &&
+               groceryHeader.total.right <= groceryHeader.add.left + 2,
+          `Groceries heading/total/Add overlap at ${viewport.width}: ${JSON.stringify(groceryHeader)}`);
+      }
       assert(bounds.header.left >= -2 && bounds.header.right <= viewport.width + 2, `${screen} header overflow at ${viewport.width}`);
       assert(bounds.nav.left >= -2 && bounds.nav.right <= viewport.width + 2, `${screen} bottom nav overflow at ${viewport.width}`);
       for (const item of bounds.navItems) assert(item.width >= 40 && item.right <= viewport.width + 2, `${screen} nav item clipped at ${viewport.width}`);
