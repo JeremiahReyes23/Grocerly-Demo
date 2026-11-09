@@ -860,10 +860,8 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("app-bottom-nav").classList.add("active");
     // No automatic tutorial or setup prompts: start directly on Home.
   } else {
-    // Start splash screen countdown
-    setTimeout(() => {
-      transitionToPage("page-login");
-    }, 2000);
+    // No artificial wait or extra setup step: show the login screen immediately.
+    transitionToPage("page-login");
   }
 
   // Refresh lists
