@@ -477,3 +477,112 @@ body.dark-theme #page-inventory #inventory-list-container .inv-card:hover{backgr
 .grocerly-inventory-heading{min-width:0;flex:1;display:flex;flex-direction:column;gap:7px}
 .grocerly-inventory-heading p{font-size:clamp(14px,1.65vw,21px)!important;color:var(--grocerly-slate)!important;margin:0!important;line-height:1.35}
 @media(max-width:620px){.grocerly-inventory-heading p{font-size:13px!important}.grocerly-inventory-heading{gap:4px}}
+
+
+/* FINAL FOUR-SCREEN EXPERIENCE — reference-only visible navigation, all sizes. */
+/* Keep onboarding markup for compatibility with legacy handlers, but never show its questions. */
+#page-profile-setup,
+#page-goals,
+#page-dynamic-questions,
+#page-congrats,
+#modal-welcome { display:none!important; }
+
+/* The supplied mockups contain four screens only. Secondary engines remain in the
+   codebase but do not crowd the normal experience. */
+#page-dashboard #dash-actionable-needs-dropdown,
+#page-dashboard > .dash-section,
+#page-dashboard > .weekly-calendar-section,
+#page-meals .grocerly-calendar-details,
+#page-profile .grocerly-advanced-settings,
+#page-inventory .grocerly-add-options {
+  display:none!important;
+}
+#page-profile #btn-profile-go-premium,
+#page-profile #btn-profile-family-sharing,
+#page-profile #btn-profile-edit-goals,
+#page-profile #admin-toggle-container,
+#page-profile #btn-profile-ai-shopping-generator { display:none!important; }
+
+/* Snapshot profile keeps four exact options in order. */
+#page-profile .settings-list { gap:16px!important; }
+#page-profile .settings-item.grocerly-ai-setting{
+  display:flex!important;order:2;cursor:default!important;
+}
+#page-profile .grocerly-ai-setting .theme-toggle-switch { margin-left:auto;flex-shrink:0;cursor:pointer; }
+#page-profile #btn-profile-submit-feedback { order:3; }
+
+/* The product/receipt/manual alternatives appear INSIDE the scanner, not as
+   extra main-page sections. */
+.grocerly-scanner-alternatives{
+  display:flex;justify-content:center;align-items:center;flex-wrap:wrap;
+  gap:8px 17px;width:100%;padding:0 12px 5px;
+}
+.grocerly-scanner-alternatives button{
+  min-height:44px;padding:9px 10px;border:0;background:transparent;
+  color:var(--primary-green);font:650 14px var(--font-family-body);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:9px;
+}
+.grocerly-scanner-alternatives button:hover{background:var(--primary-green-light);}
+#modal-camera .modal-box{max-height:min(92dvh,820px)!important;overflow-y:auto!important;}
+#modal-camera .camera-viewport-wrapper{max-height:48dvh!important;min-height:150px;}
+#modal-camera .modal-content { padding-bottom:15px!important;}
+
+/* Web layout: wide screens use their available space, not a narrow 390px phone
+   column, while keeping your original composition and bottom dock. */
+@media(min-width:1100px){
+  .grocerly-global-header { width:min(calc(100% - 96px),1140px)!important; }
+  #page-dashboard,#page-meals,#page-inventory,#page-profile,#page-groceries,
+  #page-analytics,#page-admin{
+    padding-left:max(48px,calc((100vw - 1140px)/2))!important;
+    padding-right:max(48px,calc((100vw - 1140px)/2))!important;
+  }
+  #page-dashboard >*,#page-meals >*,#page-inventory >*,#page-profile >*,
+  #page-groceries >*,#page-analytics >*{
+    max-width:1140px!important;
+  }
+  .bottom-nav,.bottom-nav.active{
+    padding-left:max(48px,calc((100vw - 1140px)/2))!important;
+    padding-right:max(48px,calc((100vw - 1140px)/2))!important;
+  }
+  #page-profile .profile-card{right:max(48px,calc((100vw - 1140px)/2))!important;}
+  #page-dashboard .dashboard-stats-2x2 .stat-card { min-height:190px!important; }
+  #page-meals #recipes-list-container { grid-template-columns:repeat(2,minmax(0,1fr))!important; }
+  #page-inventory #inventory-list-container { min-height:300px!important; }
+}
+@media(min-width:1600px){
+  .grocerly-global-header{width:min(calc(100% - 130px),1280px)!important;}
+  #page-dashboard,#page-meals,#page-inventory,#page-profile,#page-groceries,
+  #page-analytics,#page-admin{
+    padding-left:max(65px,calc((100vw - 1280px)/2))!important;
+    padding-right:max(65px,calc((100vw - 1280px)/2))!important;
+  }
+  #page-dashboard >*,#page-meals >*,#page-inventory >*,#page-profile >*,
+  #page-groceries >*,#page-analytics >* { max-width:1280px!important; }
+  .bottom-nav,.bottom-nav.active{
+    padding-left:max(65px,calc((100vw - 1280px)/2))!important;
+    padding-right:max(65px,calc((100vw - 1280px)/2))!important;
+  }
+  #page-profile .profile-card{right:max(65px,calc((100vw - 1280px)/2))!important;}
+}
+@media(max-width:620px){
+  /* The reference's two stats cards still fit on phones; avoid number overflow. */
+  #page-dashboard #card-stat-budget,
+  #page-dashboard #card-stat-duration { min-width:0!important; }
+  #page-dashboard .stat-value { overflow-wrap:anywhere; }
+  #page-meals #recipes-list-container .recipe-card { overflow:hidden; }
+  #page-inventory .header-bar>div:nth-child(2){ flex-wrap:wrap; }
+  #page-profile .settings-item-left{min-width:0;}
+  #page-profile .settings-item-left span{overflow-wrap:anywhere;}
+  #page-profile #profile-currency-select{max-width:112px;}
+  #modal-camera .camera-viewport-wrapper{max-height:43dvh!important;}
+}
+@media (max-height:560px) and (orientation:landscape) {
+  .grocerly-global-header{height:62px!important;}
+  #page-dashboard,#page-meals,#page-inventory,#page-profile,#page-groceries{
+    padding-top:80px!important;
+    padding-bottom:78px!important;
+  }
+  .bottom-nav,.bottom-nav.active{height:65px!important;}
+  .bottom-nav .nav-item i{font-size:20px!important;}
+}
