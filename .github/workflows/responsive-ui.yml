@@ -14,11 +14,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install application and browser test dependencies
-        run: |
-          npm install --no-save --no-package-lock
-          npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
+      - name: Install application dependencies
+        run: npm ci
+      - name: Install Playwright test driver
+        run: npm install --no-save --no-package-lock playwright@1.56.1
+      - name: Install Chromium for viewport tests
+        run: npx playwright install chromium
       - name: Start Grocerly application
         run: |
           npm start > /tmp/grocerly-server.log 2>&1 &
@@ -39,4 +40,4 @@ jobs:
           if-no-files-found: ignore
       - name: Print server logs on failure
         if: failure()
-        run: cat /tmp/grocerly-server.log
+        run: test ! -f /tmp/grocerly-server.log || cat /tmp/grocerly-server.log
