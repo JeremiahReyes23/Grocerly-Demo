@@ -459,3 +459,57 @@
     max-width: 100% !important;
   }
 }
+
+
+/* The reference has My Groceries, Total, and Add aligned on one line.
+   Use display:contents to preserve all original button events and DOM IDs;
+   no JavaScript moves or duplicate controls are required. */
+@media (min-width: 621px) {
+  #page-inventory > .header-bar {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    grid-template-rows: auto !important;
+    align-items: start !important;
+    justify-content: stretch !important;
+    gap: 11px !important;
+    margin: 0 0 15px !important;
+    min-width: 0 !important;
+  }
+  #page-inventory > .header-bar > div:first-child,
+  #page-inventory > .header-bar > div:nth-child(2),
+  #page-inventory > .header-bar > div:nth-child(2) > div {
+    display: contents !important;
+  }
+  #page-inventory > .header-bar .grocerly-inventory-heading {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0 !important;
+    width: auto !important;
+    align-self: start !important;
+  }
+  #page-inventory #inventory-total-price {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+  #page-inventory #btn-inventory-add-trigger {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: center !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+}
+@media (min-width: 621px) and (max-width: 700px) {
+  #page-inventory > .header-bar { gap: 7px !important; }
+  #page-inventory #inventory-total-price {
+    padding: 9px 10px !important;
+    font-size: 12px !important;
+  }
+  #page-inventory #btn-inventory-add-trigger {
+    padding: 8px 11px !important;
+    font-size: 12px !important;
+  }
+}
