@@ -443,3 +443,33 @@ body.dark-theme #page-profile .settings-item-left{color:var(--text-main)!importa
 @media(prefers-reduced-motion:reduce){
  .grocerly-quick-action{transition:none!important}
 }
+
+/* Keep sign-in bilingual and secondary actions reachable. */
+.grocerly-auth-language{position:absolute!important;top:16px!important;right:20px!important;left:auto!important;z-index:50!important}
+body:has(.page.active:is(#page-dashboard,#page-meals,#page-inventory,#page-profile,#page-groceries,#page-analytics,#page-admin)) .grocerly-auth-language{display:none!important}
+.grocerly-auth-language{padding:4px!important;box-shadow:none!important;background:#fff!important;border:1px solid #d8e6d9!important}
+.grocerly-auth-language button{min-width:42px;min-height:39px;padding:7px;font-size:12px!important;border-radius:99px}
+#page-inventory .grocerly-add-options #btn-inventory-export-lists,
+#page-inventory .grocerly-add-options #btn-inventory-done-shopping{
+ display:inline-flex!important;min-height:44px!important;width:auto!important;align-items:center!important;gap:7px;
+ font-size:13px!important;padding:9px 13px!important;border-radius:11px!important;
+}
+#page-profile .grocerly-more-tools{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+#page-profile .grocerly-tool-link{width:100%;font-family:inherit;text-align:left;cursor:pointer}
+#page-profile .grocerly-ai-shortcut{width:100%;font-family:inherit;text-align:left;cursor:pointer}
+#inventory-list-container .inv-card[hidden]{display:none!important}
+#page-dashboard #dash-grocery-list-dropdown .dropdown-header{cursor:default!important}
+body.dark-theme .grocerly-quick-action,body.dark-theme .grocerly-quick-action.primary{background:var(--bg-card)!important;color:var(--text-main)!important}
+body.dark-theme #page-dashboard #dash-grocery-list-dropdown #btn-dash-go-meals{background:var(--bg-card)!important;color:var(--primary-green)!important}
+body.dark-theme .grocerly-global-header .grocerly-language-switch{background:var(--bg-card)!important}
+body.dark-theme .grocerly-global-header .grocerly-language-switch button[aria-pressed="true"]{background:var(--primary-green)!important;color:#10261a!important}
+body.dark-theme #page-profile .form-control{background:var(--bg-card)!important;color:var(--text-main)!important}
+body.dark-theme #page-dashboard #dash-grocery-list-dropdown .grocery-table td{color:var(--text-main)!important}
+body.dark-theme #page-inventory #inventory-list-container .inv-card:hover{background:var(--bg-card)!important}
+@media(max-width:620px){
+ .grocerly-auth-language{top:10px!important;right:10px!important}
+ #page-meals #meal-type-filter-chips{gap:7px!important}
+ #page-meals #meal-type-filter-chips .filter-chip{font-size:12px!important;min-height:38px!important;padding:7px 13px!important}
+ .grocerly-category-filters button{font-size:12px;min-height:38px;padding:7px 13px}
+ #page-dashboard .grocery-table{min-width:425px!important}
+}
