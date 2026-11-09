@@ -110,10 +110,10 @@
         try {
           if (!window.Tesseract) throw new Error("Photo reading is unavailable right now.");
           const result = await window.Tesseract.recognize(file, "eng");
-          const lines = (result.data.text || "").split(/\\r?\\n/).map(x => x.trim()).filter(Boolean);
-          const priceMatches = [...(result.data.text || "").matchAll(/(?:\\$\\s*)?(\\d{1,4}[.,]\\d{2})\\b/g)];
+          const lines = (result.data.text || "").split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+          const priceMatches = [...(result.data.text || "").matchAll(/(?:\$\s*)?(\d{1,4}[.,]\d{2})\b/g)];
           const price = priceMatches.length === 1 ? Number(priceMatches[0][1].replace(",", ".")) : null;
-          const name = lines.find(x => /[a-zA-Z]{3}/.test(x) && !/^\\$?\\s*\\d/.test(x)) || "";
+          const name = lines.find(x => /[a-zA-Z]{3}/.test(x) && !/^\$?\s*\d/.test(x)) || "";
           if (!name) {
             feedback.textContent = "We couldn't read a product name. Try a clearer photo or add it manually.";
             return;
