@@ -1673,7 +1673,7 @@ function refreshDashboard() {
   // Update welcome greeting
   const firstName = State.user.name.split(" ")[0];
   const welcomeText = document.getElementById("dash-welcome-text");
-  if (welcomeText) welcomeText.innerText = `Welcome, ${firstName}`;
+  if (welcomeText) welcomeText.innerText = `Welcome, ${firstName}!`;
   
   updateAllAvatarElements();
 
@@ -3189,10 +3189,17 @@ function refreshInventoryList() {
       ${checkboxHtml}
       <div class="inv-card-header" onclick="${clickAction}">
         <div class="inv-card-title-group">
-          <span class="inv-card-name">${item.name}</span>
-          <span class="inv-card-cat">${item.category} • ${getStorageLocationBadgeHtml(item.storageLoc)}</span>
+          <span class="inv-card-name">${item.name} <small class="inv-card-price">(${formatCurrency(item.price || 0)})</small></span>
+          <span class="inv-card-cat">${getStorageLocationBadgeHtml(item.storageLoc)}</span>
         </div>
-        <span class="inv-card-life ${lifeClass}">${lifeText}</span>
+        <div class="inv-card-side">
+          <span class="inv-card-life ${lifeClass}">${lifeText}</span>
+          <div class="inv-card-quick-actions">
+            <span class="inv-card-stock ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'needs' : 'ready'}"><i class="fas ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i> ${item.remainingPercent <= 25 || item.currentQty <= 0 ? 'Low stock' : 'Ready'}</span>
+            <button type="button" class="inv-quick-action" aria-label="Edit ${item.name}" onclick="event.stopPropagation(); openEditGroceryModal('${item.id}')"><i class="fas fa-pen" aria-hidden="true"></i></button>
+            <button type="button" class="inv-quick-action delete" aria-label="Remove ${item.name}" onclick="event.stopPropagation(); removeItemDirectly('${item.id}')"><i class="fas fa-trash-can" aria-hidden="true"></i></button>
+          </div>
+        </div>
       </div>
       
       <div class="inv-card-details-row" onclick="${clickAction}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
@@ -3241,6 +3248,19 @@ function refreshInventoryList() {
       </div>
     `;
 
+    const cardHeader = card.querySelector(".inv-card-header");
+    if (cardHeader) {
+      cardHeader.setAttribute("tabindex", "0");
+      cardHeader.setAttribute("role", "button");
+      cardHeader.setAttribute("aria-label", "Show details for " + item.name);
+      cardHeader.addEventListener("keydown", e => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          card.classList.toggle("expanded");
+        }
+      });
+    }
     container.appendChild(card);
   });
 }
