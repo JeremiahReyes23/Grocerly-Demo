@@ -5,6 +5,15 @@
 (function () {
   "use strict";
   const rows = [
+    ["AI Integration Perms","Permisos de IA"],
+    ["Allow AI features","Permitir funciones de IA"],
+    ["Add groceries by scanning a receipt","Añadir productos escaneando un recibo"],
+    ["Photo of item","Foto del producto"],
+    ["Add manually","Añadir manualmente"],
+    ["Could not sign in. Please check your email and password and try again.","No se pudo iniciar sesión. Revisa tu correo y contraseña."],
+    ["We could not create your account. Please try again.","No pudimos crear tu cuenta. Inténtalo de nuevo."],
+    ["Enable AI Integration Perms in Settings first.","Primero activa los permisos de IA en Configuración."],
+
     ["See what you already have at home.","Mira lo que ya tienes en casa."],
     ["Home","Inicio"],
     ["My Meal Plan","Mi plan de comidas"],
