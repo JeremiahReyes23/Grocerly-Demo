@@ -854,9 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isLoggedIn) {
     transitionToPage("page-dashboard");
     document.getElementById("app-bottom-nav").classList.add("active");
-    if (State.firstLaunch) {
-      showWelcomeTutorial();
-    }
+    // No automatic tutorial or setup prompts: start directly on Home.
   } else {
     // Start splash screen countdown
     setTimeout(() => {
@@ -946,9 +944,11 @@ function initOnboardingFlow() {
           sessionStorage.setItem("grocerly_logged_in", "true");
         }
         saveStateToStorage();
-        alert("Account created successfully! Welcome to Grocerly.");
-        transitionToPage("page-profile-setup");
-        document.getElementById("app-bottom-nav").classList.remove("active");
+        // The profile, budget and preferences remain optional inside Settings.
+        refreshDashboard();
+        refreshInventoryList();
+        refreshRecipesList();
+        transitionToPage("page-dashboard");
       } catch (err) {
         console.error("Signup failed:", err);
         alert(err.message || "Failed to create account. Email may already be in use.");
@@ -984,24 +984,12 @@ function initOnboardingFlow() {
         sessionStorage.setItem("grocerly_logged_in", "true");
       }
       saveStateToStorage();
-      alert("Welcome! We've sent a welcome email to your inbox.");
       transitionToPage("page-dashboard");
       document.getElementById("app-bottom-nav").classList.add("active");
     } catch (err) {
-      console.warn("API Login failed, checking localStorage fallback:", err);
-      // Fallback local auth simulation
-      if (email === State.user.email) {
-        if (keepSigned) {
-          localStorage.setItem("grocerly_logged_in", "true");
-        } else {
-          sessionStorage.setItem("grocerly_logged_in", "true");
-        }
-        alert("Welcome! We've sent a welcome email to your inbox.");
-        transitionToPage("page-dashboard");
-        document.getElementById("app-bottom-nav").classList.add("active");
-      } else {
-        alert("Authentication failed: " + err.message);
-      }
+      console.warn("Login failed:", err);
+      // Do not bypass the password check when the server is offline.
+      alert("Could not sign in. Please check your email and password and try again.");
     }
   });
 
@@ -1106,12 +1094,9 @@ function initOnboardingFlow() {
       refreshProfileCard();
       refreshDashboard();
       
-      if (!State.user.goals || State.user.goals.length === 0) {
-        transitionToPage("page-profile-setup");
-      } else {
-        transitionToPage("page-dashboard");
-        document.getElementById("app-bottom-nav").classList.add("active");
-      }
+      // Google sign-in goes straight into the app, even for first-time accounts.
+      transitionToPage("page-dashboard");
+      document.getElementById("app-bottom-nav").classList.add("active");
     } catch (err) {
       console.error("Google Auth Integration failed:", err);
       alert("Failed to sign in with Google.");
@@ -1235,15 +1220,14 @@ function initOnboardingFlow() {
       State.customStores = response.customStores || [];
       localStorage.setItem("grocerly_logged_in", "true");
       saveStateToStorage();
-      alert("Welcome to Grocerly! We've sent a welcome email to your inbox.");
-      transitionToPage("page-profile-setup");
+      refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
+      transitionToPage("page-dashboard");
     } catch (err) {
-      console.warn("API Signup failed, running local registration fallback:", err);
-      State.user.email = email;
-      State.user.name = name;
-      localStorage.setItem("grocerly_logged_in", "true");
-      saveStateToStorage();
-      transitionToPage("page-profile-setup");
+      console.warn("Signup failed:", err);
+      // A server-side failure is not an authenticated account.
+      alert("We could not create your account. Please try again.");
     }
   });
 
@@ -1570,9 +1554,7 @@ document.getElementById("btn-congrats-finish").addEventListener("click", () => {
   saveStateToStorage();
   refreshDashboard();
   
-  if (State.firstLaunch) {
-    showWelcomeTutorial();
-  }
+  // Welcome tutorial intentionally not shown.
 });
 
 // Welcome Tutorial slider
