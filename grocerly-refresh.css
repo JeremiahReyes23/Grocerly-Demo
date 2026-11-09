@@ -152,10 +152,8 @@ body.dark-theme .grocerly-product-copy h2, body.dark-theme .grocerly-product-cop
   .bottom-nav .nav-more-wrap { height: auto; margin-top: 7px; }
   .bottom-nav .nav-more-toggle { flex-direction: row; align-items: center; justify-content: flex-start; padding: 14px !important; font-size: 15px; gap: 16px; border-radius: 12px; min-height: 52px; }
   .bottom-nav .nav-more-menu { left: calc(100% + 12px); top: 0; right: auto; bottom: auto; width: 235px; }
-  .page:not(#page-splash):not(#page-login):not(#page-register):not(#page-profile-setup):not(#page-goals):not(#page-dynamic-questions):not(#page-congrats) {
-    padding: 86px clamp(24px,4vw,72px) 60px !important;
-    overflow-y: auto;
-  }
+  /* Main app page padding now lives in grocerly-reference.css,
+     so the exact screenshot design wins without specificity conflicts. */
   #page-dashboard {
     display: grid !important; grid-template-columns: repeat(12,minmax(0,1fr)) !important;
     gap: clamp(16px,1.9vw,25px) !important; align-content: start !important;
