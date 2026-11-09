@@ -62,7 +62,21 @@ try {
               display:style.display,visibility:style.visibility,opacity:style.opacity,color:style.color,
               position:style.position,rect:{x:rect.x,y:rect.y,w:rect.width,h:rect.height}}];
           }));
-          return {width:view.width,screen:view.screen,sample};
+          const active=document.querySelector('#page-' + view.tab);
+          const globalHeader=document.querySelector('.grocerly-global-header');
+          const firstContent=active?.querySelector('.header-bar,#dash-welcome-text,h1,.grocerly-profile-intro');
+          function summary(el) {
+            if(!el)return null;
+            const c=getComputedStyle(el),r=el.getBoundingClientRect();
+            return {tag:el.tagName,cls:el.className,paddingTop:c.paddingTop,paddingBottom:c.paddingBottom,
+              marginTop:c.marginTop,marginBottom:c.marginBottom,display:c.display,position:c.position,
+              top:c.top,height:c.height,scrollTop:el.scrollTop,scrollHeight:el.scrollHeight,
+              bounds:{x:r.x,y:r.y,w:r.width,h:r.height}};
+          }
+          return {width:view.width,screen:view.screen,sample,layout:{
+            active:summary(active),globalHeader:summary(globalHeader),firstContent:summary(firstContent),
+            viewportScrollY:window.scrollY
+          }};
         }, {width:viewport.width,tab,screen}));
       }
       if ([390,768,1440].includes(viewport.width)) {
