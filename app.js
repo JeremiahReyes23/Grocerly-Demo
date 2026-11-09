@@ -2556,16 +2556,8 @@ function initReceiptScanning() {
           };
           renderReceiptReview(ocrTempReceiptData);
         } else {
-          try {
-            const rawData = await ClientAPI.request('/api/ocr', 'POST', { store: chosenStore });
-            ocrTempReceiptData = parseOcrReceiptData(rawData);
-            renderReceiptReview(ocrTempReceiptData);
-          } catch (err) {
-            console.warn("OCR API failed, falling back to local simulation:", err);
-            const template = OCR_TEMPLATES[chosenStore];
-            ocrTempReceiptData = parseOcrReceiptData(JSON.parse(JSON.stringify(template)));
-            renderReceiptReview(ocrTempReceiptData);
-          }
+          ocrTempReceiptData = null;
+          showToast("Could not read this receipt. Try a clearer photo or add items manually.", "warning");
         }
       }, 1500);
     });
@@ -2774,53 +2766,89 @@ function bindOptionGrid(selector) {
 }
 
 function renderReceiptReview(receiptData) {
-  const reviewContainer = document.getElementById("receipt-review-container");
-  const storeTitle = document.getElementById("review-receipt-store");
-  const dateLabel = document.getElementById("review-receipt-date");
-  const listContainer = document.getElementById("review-receipt-items-list");
-  const totalLabel = document.getElementById("review-receipt-total");
+  const container = document.getElementById("receipt-review-container");
+  const list = document.getElementById("review-receipt-items-list");
+  document.getElementById("review-receipt-store").textContent = receiptData.store || "Receipt";
+  document.getElementById("review-receipt-date").textContent = receiptData.date || "";
+  list.replaceChildren();
 
-  storeTitle.textContent = receiptData.store;
-  dateLabel.textContent = receiptData.date;
-  listContainer.innerHTML = "";
-
-  let receiptSum = 0;
   receiptData.items.forEach((item, index) => {
-    receiptSum += item.price;
     const row = document.createElement("div");
-    row.className = "review-item-row";
-    row.dataset.index = index;
-    
-    const isLow = item.lowConfidence;
-    if (isLow) row.classList.add("low-confidence");
-    const warningIcon = isLow ? `<i class="fas fa-triangle-exclamation" style="color: var(--accent-orange); font-size: 13px;" title="Low confidence OCR extraction - please verify"></i>` : '';
+    row.className = "review-item-row " + (item.lowConfidence ? "needs-review" : "ready");
+    row.dataset.index = String(index);
 
-    row.innerHTML = `
-      ${warningIcon}
-      <input type="text" class="form-control review-name-input" value="${item.name}" style="flex: 2; padding: 4px; font-size:12px; height: auto; min-width: 80px;">
-      <input type="number" class="form-control review-qty-input" value="${item.qty}" style="width: 50px; padding: 4px; font-size:12px; text-align:center; height: auto; flex-shrink: 0;">
-      <span style="font-size:11px; margin-left: 2px; flex-shrink: 0;">${item.unit}</span>
-      <span style="font-size:11px; margin-left: auto; color: var(--text-secondary); flex-shrink: 0;" class="currency-symbol-label">${getCurrencySymbol()}</span>
-      <input type="number" class="form-control review-price-input" value="${item.price.toFixed(2)}" step="0.01" style="width: 60px; padding: 4px; font-size:12px; text-align:right; height: auto; flex-shrink: 0;">
-      <i class="fas fa-trash-can review-item-delete" onclick="deleteReceiptReviewItem(this, ${item.price})" style="flex-shrink: 0;"></i>
-    `;
-    listContainer.appendChild(row);
+    const status = document.createElement("span");
+    status.className = "receipt-item-status";
+    status.title = item.lowConfidence ? "Please check this item" : "Recognized";
+    const icon = document.createElement("i");
+    icon.className = item.lowConfidence ? "fas fa-pen" : "fas fa-check";
+    icon.setAttribute("aria-hidden", "true");
+    status.append(icon);
+
+    const name = document.createElement("input");
+    name.type = "text";
+    name.className = "form-control review-name-input";
+    name.value = item.name || "";
+    name.setAttribute("aria-label", "Item name");
+
+    const quantity = document.createElement("input");
+    quantity.type = "number";
+    quantity.min = "0.01";
+    quantity.step = "any";
+    quantity.className = "form-control review-qty-input";
+    quantity.value = Number(item.qty) || 1;
+    quantity.setAttribute("aria-label", "Quantity");
+
+    const unit = document.createElement("span");
+    unit.className = "receipt-item-unit";
+    unit.textContent = item.unit || "each";
+
+    const priceWrap = document.createElement("span");
+    priceWrap.className = "receipt-item-price-wrap";
+    const currency = document.createElement("span");
+    currency.className = "currency-symbol-label";
+    currency.textContent = getCurrencySymbol();
+    const price = document.createElement("input");
+    price.type = "number";
+    price.min = "0";
+    price.step = "0.01";
+    price.className = "form-control review-price-input";
+    price.value = (Number(item.price) || 0).toFixed(2);
+    price.setAttribute("aria-label", "Item price");
+    price.addEventListener("input", recalculateReceiptReviewTotal);
+    priceWrap.append(currency, price);
+
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "review-item-delete";
+    remove.setAttribute("aria-label", "Remove " + (item.name || "item"));
+    remove.innerHTML = '<i class="fas fa-xmark" aria-hidden="true"></i>';
+    remove.addEventListener("click", () => deleteReceiptReviewItem(remove));
+
+    row.append(status, name, quantity, unit, priceWrap, remove);
+    list.appendChild(row);
   });
-
-  totalLabel.textContent = formatCurrency(receiptSum);
-  reviewContainer.style.display = "block";
+  recalculateReceiptReviewTotal();
+  container.style.display = "block";
 }
 
-function deleteReceiptReviewItem(btnEl, price) {
-  const row = btnEl.closest(".review-item-row");
-  row.remove();
-  
-  // Re-sum total
-  let totalSum = 0;
-  document.querySelectorAll(".review-item-row").forEach(r => {
-    totalSum += parseFloat(r.querySelector(".review-price-input").value) || 0;
+function recalculateReceiptReviewTotal() {
+  const rows = document.querySelectorAll("#review-receipt-items-list .review-item-row");
+  let total = 0;
+  rows.forEach(row => {
+    const field = row.querySelector(".review-price-input");
+    total += Math.max(0, Number(field && field.value) || 0);
   });
-  document.getElementById("review-receipt-total").textContent = formatCurrency(totalSum);
+  const totalLabel = document.getElementById("review-receipt-total");
+  if (totalLabel) totalLabel.textContent = formatCurrency(total);
+  const countLabel = document.getElementById("receipt-review-count");
+  if (countLabel) countLabel.textContent = rows.length + " items";
+}
+
+function deleteReceiptReviewItem(element) {
+  const row = element.closest(".review-item-row");
+  if (row) row.remove();
+  recalculateReceiptReviewTotal();
 }
 
 // ----------------------------------------------------
