@@ -139,7 +139,7 @@
       if(settings){
         const dark=settings.querySelector(".settings-item:has(#dark-theme-toggle)");
         const currency=settings.querySelector(".settings-item:has(#profile-currency-select)");
-        const ai=$("grocerly-ai-shortcut");
+        const ai=$("grocerly-ai-setting");
         const feedback=$("btn-profile-submit-feedback");
         const primary=[dark,currency,ai,feedback].filter(Boolean);
         const more=document.createElement("details");more.className="grocerly-advanced-settings";
@@ -173,8 +173,34 @@
         primary.forEach(child=>settings.appendChild(child));
         settings.appendChild(more);
       }
-      const ai=$("grocerly-ai-shortcut");
-      if(ai)ai.addEventListener("click",()=>$("btn-dashboard-ai")?.click());
+      // The fourth reference setting is an actual AI on/off preference, not an extra menu.
+      const aiPermission=$("grocerly-ai-permission");
+      if(aiPermission){
+        const key=()=> "grocerly_ai_features_" + (typeof State!=="undefined" && State.user?.email || "default");
+        const isEnabled=()=> localStorage.getItem(key())!=="false";
+        aiPermission.checked=isEnabled();
+        aiPermission.addEventListener("change",()=>{
+          localStorage.setItem(key(),String(aiPermission.checked));
+          if(!aiPermission.checked) $("modal-ai-assistant")?.classList.remove("active");
+        });
+        if(typeof ClientAPI!=="undefined"&&typeof ClientAPI.request==="function"){
+          const originalRequest=ClientAPI.request.bind(ClientAPI);
+          ClientAPI.request=function(endpoint,method,body){
+            if(typeof endpoint==="string" && /^\/api\/ai(?:\/|\?|$)/.test(endpoint) && !isEnabled()){
+              return Promise.reject(new Error("AI features are switched off in Settings."));
+            }
+            return originalRequest(endpoint,method,body);
+          };
+        }
+        document.addEventListener("click",event=>{
+          const button=event.target.closest("#btn-dashboard-ai,#btn-meals-ideas-trigger");
+          if(button&&!isEnabled()){
+            event.preventDefault();event.stopImmediatePropagation();
+            if(typeof showToast==="function")showToast("Enable AI Integration Perms in Settings first.","info");
+          }
+        },true);
+      }
+
       // Preserve the existing admin feature in Settings, rather than the bottom dock.
       const admin=$("admin-toggle-container");
       if(admin){
@@ -220,6 +246,23 @@
     document.querySelector(".device-wrapper")?.appendChild(authLanguage);
     const appLanguage=$("grocerly-language-switch");
     appLanguage?.addEventListener("click",()=>setTimeout(reflectLanguage,0));
+
+    // The primary Add button matches the reference, while opening the receipt camera.
+    const addTrigger=$("btn-inventory-add-trigger");
+    if(addTrigger){
+      addTrigger.innerHTML='<i class="fas fa-plus" aria-hidden="true"></i> Add';
+      addTrigger.setAttribute("aria-label","Add groceries by scanning a receipt");
+    }
+    const manualFromCamera=$("btn-camera-manual-add");
+    if(manualFromCamera)manualFromCamera.addEventListener("click",()=>{
+      $("btn-camera-close")?.click();
+      inventory?.querySelector(".grocerly-manual-add")?.click();
+    });
+    const productFromCamera=$("btn-camera-product-photo");
+    if(productFromCamera)productFromCamera.addEventListener("click",()=>{
+      $("btn-camera-close")?.click();
+      $("grocerly-product-photo")?.click();
+    });
 
     // Keep the user-visible main tab highlighted after returning from secondary screens.
     document.querySelectorAll("#app-bottom-nav .nav-item").forEach(a=>{
