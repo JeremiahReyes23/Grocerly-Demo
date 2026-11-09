@@ -18,8 +18,16 @@ jobs:
         run: npm ci
       - name: Install Playwright test driver
         run: npm install --no-save --no-package-lock playwright@1.56.1
-      - name: Install Chromium for viewport tests
-        run: npx playwright install chromium
+      - name: Locate a browser for viewport checks
+        run: |
+          CHROME_PATH="$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || command -v chromium-browser || true)"
+          if [ -n "$CHROME_PATH" ]; then
+            echo "GROCERLY_CHROME_PATH=$CHROME_PATH" >> "$GITHUB_ENV"
+            echo "Using preinstalled browser $CHROME_PATH"
+          else
+            echo "Preinstalled browser unavailable; trying Playwright Chromium."
+            npx playwright install chromium
+          fi
       - name: Start Grocerly application
         run: |
           npm start > /tmp/grocerly-server.log 2>&1 &
