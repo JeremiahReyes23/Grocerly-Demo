@@ -54,7 +54,7 @@ try {
           const header = document.querySelector(".grocerly-global-header").getBoundingClientRect();
           const nav = document.querySelector("#app-bottom-nav").getBoundingClientRect();
           const active = document.querySelector(".page.active").getBoundingClientRect();
-          const content = document.querySelector(".page.active > .grocerly-quick-panel, .page.active > .header-bar, .page.active .grocerly-profile-scroll")?.getBoundingClientRect();
+          const content = [...document.querySelectorAll(".page.active > .grocerly-quick-panel, .page.active > .header-bar, .page.active .grocerly-profile-scroll")].map(el=>el.getBoundingClientRect()).find(rect=>rect.width>0 && rect.height>0);
           return {frame:{left:frame.left,right:frame.right,width:frame.width},
             header:{left:header.left,right:header.right},
             nav:{left:nav.left,right:nav.right},
