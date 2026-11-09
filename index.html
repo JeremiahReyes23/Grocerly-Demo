@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Grocerly - Buy Smarter. Waste Less. Eat Better.</title>
   <!-- SEO Tags -->
   <meta name="description" content="Grocerly is your personal grocery intelligence assistant. Track budgets, inventory, reduce food waste, and plan healthy meals.">
   <!-- Fonts & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="grocerly-refresh.css">
   <!-- Google Identity API & Tesseract OCR engine -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
   
   <!-- PWA & Mobile Web App Meta Tags -->
-  <link rel="shortcut icon" href="/pwa/favicon.ico" type="image/x-icon">
-  <link rel="manifest" href="/pwa/manifest.json">
-  <meta name="theme-color" content="#2eb872">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2f6b50">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Grocerly">
-  <link rel="apple-touch-icon" href="/pwa/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -217,8 +218,8 @@
       <div id="page-dashboard" class="page">
         <div class="header-bar">
           <div style="display: flex; align-items: center; gap: 6px; padding: 10px 0;">
-            <img src="new_logo.png" class="app-logo-image header-logo-img" alt="Grocerly Logo" style="height: 56px;">
-            <h1 class="header-logo-text" style="font-size: 64px; margin-bottom: 0; font-weight: 800; line-height: 1; color: var(--primary-green);">Grocerly</h1>
+            <img src="new_logo.png" class="app-logo-image header-logo-img" alt="">
+            <h1 class="header-logo-text">Grocerly</h1>
           </div>
           <div class="header-actions">
             <div class="notif-bell" id="btn-dashboard-ai" style="margin-right: 4px;" title="Grocerly AI Hub">
@@ -233,6 +234,14 @@
         </div>
         
         <h1 id="dash-welcome-text" style="font-size: 24px; font-weight: 800; margin-bottom: 20px;">Welcome, Jane</h1>
+        <section class="grocerly-quick-panel" aria-label="Quick actions">
+          <h2>What would you like to do?</h2>
+          <div class="grocerly-quick-actions">
+            <button type="button" class="grocerly-quick-action primary" data-grocerly-page="groceries"><i class="fas fa-receipt" aria-hidden="true"></i><span>Scan receipt</span></button>
+            <button type="button" class="grocerly-quick-action" data-grocerly-page="meals"><i class="fas fa-utensils" aria-hidden="true"></i><span>Plan meals</span></button>
+            <button type="button" class="grocerly-quick-action" data-grocerly-page="inventory"><i class="fas fa-basket-shopping" aria-hidden="true"></i><span>My groceries</span></button>
+          </div>
+        </section>
 
         <!-- Section 1: 2x2 Stats Grid (Budget, Savings, Lifespan, Waste) -->
         <div class="dashboard-stats-2x2">
@@ -367,8 +376,8 @@
 
       <!-- T2. GROCERIES ENTRY -->
       <div id="page-groceries" class="page">
-        <h1>Add Purchases</h1>
-        <p style="margin-bottom: 16px;">Scan a receipt or upload a digital bill.</p>
+        <h1>Scan a receipt</h1>
+        <p style="margin-bottom: 16px;">Add groceries without typing every item.</p>
         
         <div class="entry-options" style="grid-template-columns: repeat(2, 1fr);">
           <div class="entry-btn active" id="btn-tab-ocr">
@@ -383,7 +392,8 @@
 
         <!-- Panel 1: OCR Receipts -->
         <div class="entry-panel active" id="panel-ocr">
-          <div class="store-list-title">Choose Store Receipt Template to Simulate OCR:</div>
+          <details class="grocerly-demo-options"><summary>Sample receipt options</summary>
+          <div class="store-list-title">Choose a sample store:</div>
           <div class="store-selector-grid" id="ocr-store-grid">
             <div class="store-chip selected" data-store="Costco">Costco</div>
             <div class="store-chip" data-store="Walmart">Walmart</div>
@@ -403,7 +413,8 @@
             </div>
           </div>
 
-          <div class="ocr-scanner-box" id="btn-ocr-scan-trigger" style="margin-top: 15px; cursor: pointer; border: 2px dashed var(--border-color); border-radius: var(--border-radius-md); padding: 20px; text-align: center; background: rgba(255,255,255,0.02); transition: all 0.2s ease;">
+          </details>
+          <div class="ocr-scanner-box" role="button" tabindex="0" id="btn-ocr-scan-trigger" style="margin-top: 15px; cursor: pointer; border: 2px dashed var(--border-color); border-radius: var(--border-radius-md); padding: 20px; text-align: center; background: rgba(255,255,255,0.02); transition: all 0.2s ease;">
             <i class="fas fa-camera ocr-scanner-icon" style="color: var(--primary-green); font-size: 32px; margin-bottom: 8px;"></i>
             <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">Scan Receipt Camera / Upload</div>
             <p style="font-size: 12px; margin-bottom: 12px; color: var(--text-secondary);">Tap to open camera scanner or choose from photo library</p>
@@ -419,10 +430,7 @@
                 <div class="receipt-store-title" id="review-receipt-store">Costco</div>
                 <div style="font-size: 11px; color: var(--text-secondary);" id="review-receipt-date">2026-06-29</div>
               </div>
-              <div style="text-align: right;">
-                <div style="font-size: 11px; font-weight: 600;">OCR STATUS</div>
-                <span class="recipe-tag" style="background-color: var(--primary-green-light); color: var(--primary-green); border: none;">98% CONFIDENCE</span>
-              </div>
+              <div id="receipt-review-count" class="receipt-review-count" aria-live="polite"></div>
             </div>
 
             <div class="receipt-review-items" id="review-receipt-items-list">
@@ -430,13 +438,13 @@
             </div>
 
             <div class="receipt-total-row">
-              <span>Receipt Total</span>
+              <span>Total</span>
               <span id="review-receipt-total">$0.00</span>
             </div>
             
             <div class="btn-group" style="flex-direction: row; margin-top: 15px; padding-top: 0;">
               <button class="btn btn-outline" id="btn-ocr-cancel" style="flex:1;">Cancel</button>
-              <button class="btn btn-primary" id="btn-ocr-save" style="flex:2;">Confirm & Add</button>
+              <button class="btn btn-primary" id="btn-ocr-save" style="flex:2;">Add to My Groceries</button>
             </div>
           </div>
         </div>
@@ -499,8 +507,8 @@
       <div id="page-meals" class="page">
         <div class="header-bar">
           <div class="meals-intro">
-            <h1>Meal Builder</h1>
-            <p>Develop recipes and cook using inventory ingredients.</p>
+            <h1>My Plan</h1>
+            <p>Find meals using what you already have.</p>
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-outline" id="btn-meals-ideas-trigger" style="width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--border-radius-sm); color: var(--primary-green); border-color: var(--primary-green); background: var(--primary-green-light);">
@@ -1020,36 +1028,21 @@
       </div>
 
     </div> <!-- End App Container -->    <!-- Bottom Navigation Bar Mockup -->
-    <div class="bottom-nav" id="app-bottom-nav">
-      <a class="nav-item active" data-tab="dashboard">
-        <i class="fas fa-house"></i>
-        <span>Home</span>
-      </a>
-      <a class="nav-item" data-tab="inventory">
-        <i class="fas fa-apple-whole"></i>
-        <span>Groceries</span>
-      </a>
-      <a class="nav-item" data-tab="meals">
-        <i class="fas fa-utensils"></i>
-        <span>Meals</span>
-      </a>
-      <a class="nav-item" data-tab="groceries">
-        <i class="fas fa-cart-shopping"></i>
-        <span>Purchases</span>
-      </a>
-      <a class="nav-item" data-tab="analytics">
-        <i class="fas fa-chart-simple"></i>
-        <span>Analytics</span>
-      </a>
-      <a class="nav-item" data-tab="profile">
-        <i class="fas fa-user-circle"></i>
-        <span>Profile</span>
-      </a>
-      <a class="nav-item" data-tab="admin" id="nav-item-admin" style="display: none;">
-        <i class="fas fa-screwdriver-wrench" style="color: var(--accent-orange);"></i>
-        <span>Admin</span>
-      </a>
-    </div>
+    <nav class="bottom-nav" id="app-bottom-nav" aria-label="Main navigation">
+      <div class="grocerly-sidebar-brand" aria-hidden="true"><img src="new_logo.png" alt=""><div><strong>Grocerly</strong><small>Simply better groceries.</small></div></div>
+      <a href="#" class="nav-item active" data-tab="dashboard"><i class="fas fa-house" aria-hidden="true"></i><span>Today</span></a>
+      <a href="#" class="nav-item" data-tab="meals"><i class="fas fa-calendar-days" aria-hidden="true"></i><span>My Plan</span></a>
+      <a href="#" class="nav-item" data-tab="inventory"><i class="fas fa-basket-shopping" aria-hidden="true"></i><span>Groceries</span></a>
+      <div class="nav-more-wrap">
+        <button type="button" class="nav-more-toggle" id="grocerly-more-toggle" aria-expanded="false" aria-controls="grocerly-more-menu"><i class="fas fa-ellipsis" aria-hidden="true"></i><span>More</span></button>
+        <div id="grocerly-more-menu" class="nav-more-menu" hidden>
+          <button type="button" class="more-link" data-grocerly-page="groceries"><i class="fas fa-receipt" aria-hidden="true"></i> Scan receipt</button>
+          <button type="button" class="more-link" data-grocerly-page="analytics"><i class="fas fa-chart-simple" aria-hidden="true"></i> Insights</button>
+          <button type="button" class="more-link" data-grocerly-page="profile"><i class="fas fa-gear" aria-hidden="true"></i> Settings</button>
+          <a href="#" class="nav-item more-link" data-tab="admin" id="nav-item-admin" style="display:none;"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i> Admin</a>
+        </div>
+      </div>
+    </nav>
 
 
   <!-- ========================================== -->
@@ -1802,6 +1795,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- Main Logic Engine -->
   <script src="app.js"></script>
+  <script src="grocerly-ux.js"></script>
+  <script src="grocerly-i18n.js"></script>
   
   <!-- Active Service Worker Unregistration to Prevent Cached File Overrides -->
   <script>
@@ -1816,6 +1811,12 @@
     }
   </script>
   
+  <!-- Language is available during sign-in as well as inside the app. -->
+  <div id="grocerly-language-switch" class="grocerly-language-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
+    <button type="button" data-lang="es" aria-pressed="false" lang="es">ES</button>
+  </div>
+
   <!-- Global toast notification wrapper -->
   <div id="toast-container"></div>
 </body>
