@@ -243,3 +243,19 @@ body.dark-theme .grocerly-product-copy h2, body.dark-theme .grocerly-product-cop
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* Final cross-breakpoint corrections */
+@media (min-width: 769px) {
+  #page-dashboard { padding-left: max(30px,calc((100vw - 242px - 1180px)/2)) !important; padding-right: max(30px,calc((100vw - 242px - 1180px)/2)) !important; }
+  #page-dashboard .header-bar { justify-content: flex-end !important; }
+  #page-dashboard .header-actions { margin-left: auto; }
+}
+@media (min-width: 769px) and (max-width: 1140px) {
+  #page-dashboard { padding-left: 26px !important; padding-right: 26px !important; }
+}
+body.dark-theme .bottom-nav { background: var(--bg-card) !important; }
+body.dark-theme .grocerly-sidebar-brand strong { color: var(--text-main); }
+body.dark-theme .grocerly-sidebar-brand small { color: var(--text-secondary); }
+body.dark-theme .grocerly-product-icon { background: var(--primary-green-light); }
+body.dark-theme .grocerly-product-button { background: var(--bg-card); color: var(--text-main); border-color: var(--border-color); }
+body.dark-theme #page-dashboard .stat-card { background: var(--bg-card); }
