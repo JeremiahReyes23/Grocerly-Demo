@@ -586,3 +586,24 @@ body.dark-theme #page-inventory #inventory-list-container .inv-card:hover{backgr
   .bottom-nav,.bottom-nav.active{height:65px!important;}
   .bottom-nav .nav-item i{font-size:20px!important;}
 }
+
+/* Visual QA refinements from the real 390px and 1440px viewport captures. */
+#page-dashboard #stat-duration-val span,
+#page-dashboard #stat-duration-val small { display:none!important; }
+@media(min-width:901px) {
+  .grocerly-global-header { top:18px!important; height:116px!important; }
+  #page-dashboard,#page-meals,#page-inventory,#page-profile,#page-groceries {
+    padding-top:145px!important;
+  }
+  #page-dashboard #dash-welcome-text { margin-bottom:18px!important; }
+  #page-dashboard .grocerly-quick-panel { margin-bottom:32px!important; }
+  #page-dashboard .dashboard-stats-2x2 .stat-card { min-height:178px!important; }
+  #page-dashboard .grocerly-quick-action { min-height:84px!important; }
+}
+@media(max-width:620px) {
+  #page-dashboard .grocerly-quick-action.primary { grid-column:auto!important; }
+  #page-dashboard .grocerly-quick-actions {
+    display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  }
+  #page-dashboard .grocerly-quick-action { min-height:79px!important; }
+}
