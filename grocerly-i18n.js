@@ -5,6 +5,7 @@
 (function () {
   "use strict";
   const rows = [
+    ["See what you already have at home.","Mira lo que ya tienes en casa."],
     ["Home","Inicio"],
     ["My Meal Plan","Mi plan de comidas"],
     ["Build Meals","Preparar comidas"],
