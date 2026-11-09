@@ -87,7 +87,7 @@ try {
             const titleGap = await page.evaluate(activeTab => {
         const titleSelector = activeTab === 'dashboard' ? '#dash-welcome-text'
           : activeTab === 'meals' || activeTab === 'inventory' ? '#page-' + activeTab + ' .header-bar'
-          : '#page-profile > h1';
+          : '#page-profile .grocerly-profile-scroll > h1';
         const target = document.querySelector(titleSelector);
         const brand = document.querySelector('.grocerly-global-brand');
         if (!target || !brand) return null;
