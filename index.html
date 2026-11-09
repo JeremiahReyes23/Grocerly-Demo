@@ -2,25 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Grocerly - Buy Smarter. Waste Less. Eat Better.</title>
   <!-- SEO Tags -->
   <meta name="description" content="Grocerly is your personal grocery intelligence assistant. Track budgets, inventory, reduce food waste, and plan healthy meals.">
   <!-- Fonts & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="grocerly-refresh.css">
   <!-- Google Identity API & Tesseract OCR engine -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
   
   <!-- PWA & Mobile Web App Meta Tags -->
-  <link rel="shortcut icon" href="/pwa/favicon.ico" type="image/x-icon">
-  <link rel="manifest" href="/pwa/manifest.json">
-  <meta name="theme-color" content="#2eb872">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#2f6b50">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Grocerly">
-  <link rel="apple-touch-icon" href="/pwa/icons/apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 
@@ -217,8 +218,8 @@
       <div id="page-dashboard" class="page">
         <div class="header-bar">
           <div style="display: flex; align-items: center; gap: 6px; padding: 10px 0;">
-            <img src="new_logo.png" class="app-logo-image header-logo-img" alt="Grocerly Logo" style="height: 56px;">
-            <h1 class="header-logo-text" style="font-size: 64px; margin-bottom: 0; font-weight: 800; line-height: 1; color: var(--primary-green);">Grocerly</h1>
+            <img src="new_logo.png" class="app-logo-image header-logo-img" alt="">
+            <h1 class="header-logo-text">Grocerly</h1>
           </div>
           <div class="header-actions">
             <div class="notif-bell" id="btn-dashboard-ai" style="margin-right: 4px;" title="Grocerly AI Hub">
@@ -1027,7 +1028,8 @@
       </div>
 
     </div> <!-- End App Container -->    <!-- Bottom Navigation Bar Mockup -->
-    <div class="bottom-nav" id="app-bottom-nav" aria-label="Main navigation">
+    <nav class="bottom-nav" id="app-bottom-nav" aria-label="Main navigation">
+      <div class="grocerly-sidebar-brand" aria-hidden="true"><img src="new_logo.png" alt=""><div><strong>Grocerly</strong><small>Simply better groceries.</small></div></div>
       <a href="#" class="nav-item active" data-tab="dashboard"><i class="fas fa-house" aria-hidden="true"></i><span>Today</span></a>
       <a href="#" class="nav-item" data-tab="meals"><i class="fas fa-calendar-days" aria-hidden="true"></i><span>My Plan</span></a>
       <a href="#" class="nav-item" data-tab="inventory"><i class="fas fa-basket-shopping" aria-hidden="true"></i><span>Groceries</span></a>
@@ -1040,7 +1042,7 @@
           <a href="#" class="nav-item more-link" data-tab="admin" id="nav-item-admin" style="display:none;"><i class="fas fa-screwdriver-wrench" aria-hidden="true"></i> Admin</a>
         </div>
       </div>
-    </div>
+    </nav>
 
 
   <!-- ========================================== -->
@@ -1794,6 +1796,7 @@
   <!-- Main Logic Engine -->
   <script src="app.js"></script>
   <script src="grocerly-ux.js"></script>
+  <script src="grocerly-i18n.js"></script>
   
   <!-- Active Service Worker Unregistration to Prevent Cached File Overrides -->
   <script>
@@ -1808,6 +1811,12 @@
     }
   </script>
   
+  <!-- Language is available during sign-in as well as inside the app. -->
+  <div id="grocerly-language-switch" class="grocerly-language-switch" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true" lang="en">EN</button>
+    <button type="button" data-lang="es" aria-pressed="false" lang="es">ES</button>
+  </div>
+
   <!-- Global toast notification wrapper -->
   <div id="toast-container"></div>
 </body>
