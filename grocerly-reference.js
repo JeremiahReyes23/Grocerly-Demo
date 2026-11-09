@@ -217,7 +217,14 @@
       // Keep the display name synced after backend profile refresh.
       const original=window.refreshProfileCard;
       if(typeof original==="function")window.refreshProfileCard=function(){
-        const result=original.apply(this,arguments);fillName();return result;
+        const result=original.apply(this,arguments);
+        fillName();
+        const permission=$("grocerly-ai-permission");
+        if(permission){
+          const key="grocerly_ai_features_" + (State.user?.email||"default");
+          permission.checked=localStorage.getItem(key)!=="false";
+        }
+        return result;
       };
     }
 
@@ -259,9 +266,12 @@
       inventory?.querySelector(".grocerly-manual-add")?.click();
     });
     const productFromCamera=$("btn-camera-product-photo");
+    const productInput=$("grocerly-product-photo");
+    // Keep the file picker outside the visually hidden extra-options container.
+    if(productInput) $("modal-camera")?.appendChild(productInput);
     if(productFromCamera)productFromCamera.addEventListener("click",()=>{
       $("btn-camera-close")?.click();
-      $("grocerly-product-photo")?.click();
+      productInput?.click();
     });
 
     // Keep the user-visible main tab highlighted after returning from secondary screens.
