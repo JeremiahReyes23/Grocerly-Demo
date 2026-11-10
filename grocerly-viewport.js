@@ -93,7 +93,7 @@
         // Calculate a conservative initial size, then verify the actual rendered
         // rows. Responsive labels and editable fields can make later rows taller
         // than the first measured row (especially at 1024x768).
-        let pageSize=Math.max(1,Math.min(8,Math.floor((area+gap)/(height+gap))));
+        let pageSize=Math.max(1,Math.min(8,Math.floor((area+gap)/(height+gap)))-1);
         const showPage=()=>{
           const count=Math.max(1,Math.ceil(rows.length/pageSize));
           currentPage=Math.max(0,Math.min(currentPage,count-1));
