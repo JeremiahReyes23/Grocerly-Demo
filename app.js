@@ -1755,7 +1755,7 @@ function refreshDashboard() {
 
   // 3. Grocery Lifespan
   const durationValEl = document.getElementById("stat-duration-val");
-  if (durationValEl) durationValEl.innerHTML = `${State.user.desiredStorageWeeks * 7} days${estLabel}`;
+  if (durationValEl) durationValEl.innerHTML = `${Math.max(1, Math.round((Number(State.user.desiredStorageWeeks) || 2) * 7))} days${estLabel}`;
 
   // 4. Food Waste
   const totalWastedVal = State.wasteLogs.reduce((acc, w) => acc + w.cost, 0);
