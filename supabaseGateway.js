@@ -55,7 +55,7 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
           apikey: publishableKey,
           Authorization: 'Bearer ' + req.grocerlyToken,
           'Content-Type': 'application/json',
-          Prefer: 'return=representation'
+          Prefer: 'return=representation,resolution=merge-duplicates'
         },
         ...(body === undefined ? {} : { body: JSON.stringify(body) }),
         signal: AbortSignal.timeout(10000)
@@ -68,6 +68,52 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
       res.status(502).json({ error: 'Database temporarily unavailable' });
     }
   }
+
+  // Profile data is keyed exclusively to the verified token subject.
+  router.get('/profile', async (req, res) => {
+    const q = new URLSearchParams({ user_id: 'eq.' + req.grocerlyUser.id, select: 'display_name,household_size,preferences' });
+    try {
+      const response = await fetchImpl(PROJECT_URL + '/rest/v1/profiles?' + q.toString(), {
+        headers: { apikey: publishableKey, Authorization: 'Bearer ' + req.grocerlyToken },
+        signal: AbortSignal.timeout(10000)
+      });
+      if (!response.ok) return res.status(502).json({ error: 'Profile fetch failed' });
+      const data = await response.json();
+      const profile = Array.isArray(data) ? data[0] : null;
+      const allowed = profile?.preferences && typeof profile.preferences === 'object' ? profile.preferences : {};
+      const { isAdmin: _admin, isPremium: _premium, ...preferences } = allowed;
+      res.json({
+        ...preferences, name: profile?.display_name || 'Grocerly Member',
+        householdSize: profile?.household_size || 1, email: req.grocerlyUser.email, uid: req.grocerlyUser.id,
+        isAdmin: false, isPremium: false
+      });
+    } catch (_error) {
+      res.status(502).json({ error: 'Profile fetch unavailable' });
+    }
+  });
+
+  router.put('/profile', async (req, res) => {
+    const profile = req.body?.profile;
+    if (!profile || typeof profile !== 'object' || Array.isArray(profile)) {
+      return res.status(400).json({ error: 'Profile is required' });
+    }
+    const householdSize = Number(profile.householdSize || 1);
+    if (!Number.isInteger(householdSize) || householdSize < 1 || householdSize > 100) {
+      return res.status(400).json({ error: 'Invalid household size' });
+    }
+    const { email, uid, userId, isAdmin, isPremium, name, householdSize: ignored, ...preferences } = profile;
+    if (JSON.stringify(preferences).length > 100000) return res.status(413).json({ error: 'Profile too large' });
+    return query(req, res, 'profiles?on_conflict=user_id', {
+      method: 'POST',
+      body: {
+        user_id: req.grocerlyUser.id,
+        display_name: String(name || 'Grocerly Member').slice(0, 120),
+        household_size: householdSize,
+        preferences,
+        updated_at: new Date().toISOString()
+      }
+    });
+  });
 
   router.get('/me', (req, res) => {
     res.json({ id: req.grocerlyUser.id, email: req.grocerlyUser.email });
