@@ -288,10 +288,13 @@
             </div>
           </div>
           <!-- 3. Grocery Lifespan -->
-          <div class="stat-card" id="card-stat-duration" style="cursor: pointer;">
-            <div class="stat-card-row">
-              <div class="stat-card-icon-container" style="background: var(--primary-green-light); color: var(--primary-green);"><i class="fas fa-hourglass-half"></i></div>
-              <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Lifespan</span>
+          <div class="stat-card" id="card-stat-duration">
+            <div class="grocerly-lifespan-topline">
+              <div class="stat-card-row">
+                <div class="stat-card-icon-container" style="background: var(--primary-green-light); color: var(--primary-green);"><i class="fas fa-hourglass-half"></i></div>
+                <span style="font-size: 10px; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.3px;">Lifespan</span>
+              </div>
+              <button type="button" id="btn-edit-lifespan-trigger" class="grocerly-edit-pencil" aria-label="Edit Lifespan" title="Edit Lifespan"><i class="fas fa-pen" aria-hidden="true"></i></button>
             </div>
             <div style="margin-top: 8px;">
               <div class="stat-value" id="stat-duration-val" style="font-size: 18px; font-weight: 800;">14 days</div>
@@ -782,7 +785,7 @@
         <p class="grocerly-profile-intro">Manage your account and preferences.</p>
 
         <div class="profile-card">
-          <div class="profile-avatar-wrapper" id="profile-avatar-trigger">
+          <div class="profile-avatar-wrapper" id="profile-avatar-trigger" role="button" tabindex="0" aria-label="Upload profile photo" title="Upload profile photo">
             <img id="profile-card-img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Profile Picture" class="profile-avatar-img-circle" title="Click to upload your photo">
             <div class="profile-avatar-plus-badge"><i class="fas fa-plus"></i></div>
           </div>
@@ -1358,6 +1361,25 @@
           <button class="btn btn-primary" id="btn-save-budget">Save Changes</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit grocery trip lifespan without repeating onboarding -->
+  <div class="modal-overlay" id="modal-edit-lifespan" role="dialog" aria-modal="true" aria-labelledby="grocerly-lifespan-modal-title">
+    <div class="modal-box grocerly-lifespan-modal">
+      <div class="modal-header">
+        <h3 id="grocerly-lifespan-modal-title">Edit Lifespan</h3>
+        <button type="button" class="modal-close" id="btn-lifespan-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="form-edit-lifespan" class="modal-content">
+        <div class="form-group">
+          <label for="edit-lifespan-days">Days between grocery trips</label>
+          <input type="number" id="edit-lifespan-days" class="form-control" min="1" max="365" step="1" required inputmode="numeric" value="14">
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary" id="btn-lifespan-save" type="submit">Save Changes</button>
+        </div>
+      </form>
     </div>
   </div>
 
