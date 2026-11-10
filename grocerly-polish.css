@@ -502,3 +502,21 @@ body.dark-theme #page-inventory .grocerly-category-filters button[aria-pressed="
   color: var(--grocerly-ink) !important;
   transition: none !important; /* prevents a dark-text flash during theme changes */
 }
+
+
+/* Short laptop screens need a few pixels reclaimed around existing controls. */
+@media (min-width: 621px) and (max-height: 840px) {
+  #page-profile .grocerly-profile-identity {
+    margin-bottom: 10px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-name,
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-email {
+    margin-bottom: 8px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .settings-list {
+    gap: 7px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-settings-heading {
+    margin-bottom: 7px !important;
+  }
+}
