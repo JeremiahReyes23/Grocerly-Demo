@@ -4184,37 +4184,25 @@ function initProfileSettings() {
       canvas.height = 180;
       const ctx = canvas.getContext("2d");
 
-      const wWidth = cropperWorkarea.clientWidth;
-      const wHeight = cropperWorkarea.clientHeight;
-      
       const iWidth = cropperImg.naturalWidth;
       const iHeight = cropperImg.naturalHeight;
-      if (!cropperImg.complete || !iWidth || !iHeight) {
-        throw new Error("Photo has not finished loading");
+      if (!cropperImg.complete || iWidth < 1 || iHeight < 1) {
+        throw new Error("The selected photo has not loaded");
       }
 
-      // Match the editor's centered image. posX/posY contain the initial
-      // centering offset plus the user's drag; only the drag belongs in
-      // the 180x180 cropped output.
-      const initialX = (wWidth - iWidth) / 2;
-      const initialY = (wHeight - iHeight) / 2;
-      const dragX = posX - initialX;
-      const dragY = posY - initialY;
+      // Crop from original image pixels, not CSS-transformed screen coordinates.
+      // This guarantees the photo occupies the avatar rather than a blank/black canvas.
+      const square = Math.min(iWidth, iHeight);
       const minScale = Math.max(180 / iWidth, 180 / iHeight);
-      const actualScale = Math.max(Number(zoom) || 0, minScale);
-      const dw = iWidth * actualScale;
-      const dh = iHeight * actualScale;
-      const dx = (180 - dw) / 2 + dragX;
-      const dy = (180 - dh) / 2 + dragY;
+      const zoomFactor = Math.max(1, (Number(zoom) || minScale) / minScale);
+      const sourceSize = square / zoomFactor;
+      const sourceX = (iWidth - sourceSize) / 2;
+      const sourceY = (iHeight - sourceSize) / 2;
+      ctx.drawImage(cropperImg, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 180, 180);
 
-      // White backing avoids black JPEG backgrounds if the crop is shifted
-      // beyond the photo, and clipping keeps a circular profile preview.
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, 180, 180);
-      ctx.beginPath();
-      ctx.arc(90, 90, 90, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(cropperImg, dx, dy, dw, dh);
+      // Avoid storing a blank avatar if decoding/drawing unexpectedly failed.
+      const centerPixel = ctx.getImageData(90, 90, 1, 1).data;
+      if (centerPixel[3] === 0) throw new Error("Empty photo output");
 
       croppedBase64 = canvas.toDataURL("image/jpeg", 0.72);
     } catch (err) {
