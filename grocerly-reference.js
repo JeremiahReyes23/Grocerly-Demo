@@ -178,6 +178,7 @@
         if(category==="Protein")return /meat|poultry|seafood|protein/i.test(cat) || protein.test(name);
         if(category==="Dairy")return /dairy/i.test(cat) || /\b(milk|cheese|yogurt|butter|cream)\b/i.test(name);
         if(category==="Herbs")return /spice|herb/i.test(cat) || herb.test(name);
+        if(category==="Drinks")return /drink|beverage|juice|soda|water|coffee|tea/i.test(cat) || /\b(water|juice|soda|coffee|tea|lemonade|smoothie|cola|sparkling|energy drink)\b/i.test(name);
         return true;
       }
       function showMatching(){
@@ -202,7 +203,7 @@
       const bar=document.createElement("div");
       bar.className="grocerly-category-filters";
       bar.setAttribute("role","group");bar.setAttribute("aria-label","Filter groceries");
-      ["All","Vegetables","Fruits","Grains","Protein","Dairy","Herbs"].forEach(label=>{
+      ["All","Vegetables","Fruits","Grains","Protein","Dairy","Herbs","Drinks"].forEach(label=>{
         const button=document.createElement("button");button.type="button";button.textContent=label;
         button.setAttribute("aria-pressed",String(label==="All"));
         button.addEventListener("click",()=>{
