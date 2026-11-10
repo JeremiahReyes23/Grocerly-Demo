@@ -1,0 +1,34 @@
+name: Grocerly Supabase foundation checks
+
+on:
+  push:
+    branches:
+      - feature/supabase-foundation
+  pull_request:
+    paths:
+      - 'supabaseGateway.js'
+      - 'grocerly-auth.js'
+      - 'server.js'
+      - 'app.js'
+      - 'tests/supabase-gateway.test.js'
+      - '.github/workflows/supabase-foundation.yml'
+  workflow_dispatch:
+
+jobs:
+  verify-foundation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Check JavaScript syntax
+        run: |
+          node --check server.js
+          node --check app.js
+          node --check grocerly-auth.js
+          node --check supabaseGateway.js
+      - name: Test rejected unauthenticated access
+        run: npm run test:supabase
