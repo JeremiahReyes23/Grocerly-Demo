@@ -174,6 +174,8 @@
     e.preventDefault(); e.stopImmediatePropagation();
     btn.disabled = true;
     const needsLoading = ['btn-login-signin', 'btn-login-signup', 'btn-register-signup'].includes(id);
+    const loginStartedAt = Date.now();
+    let loginSucceeded = false;
     if (needsLoading) showAuthLoading(id === 'btn-login-signin' ? 'Signing you in…' : 'Setting up your account…');
     try {
       if(id==='btn-logout') {
@@ -187,6 +189,7 @@
       } else if (id==='btn-login-signin') {
         await signIn(document.getElementById('login-email').value.trim(),document.getElementById('login-password').value,
           document.getElementById('login-keep-signed-in').checked);
+        loginSucceeded = true;
       } else {
         const register = id==='btn-register-signup';
         const email=document.getElementById(register?'reg-email':'login-email').value.trim();
@@ -197,7 +200,16 @@
         await signUp(email,password,name);
       }
     } catch(err) { alert(err.message || 'Please try again'); }
-    finally { hideAuthLoading(); btn.disabled=false; }
+    finally {
+      // Keep the branded transition visible for at least 4 seconds on a
+      // successful sign-in. Failed logins show their errors immediately.
+      if (loginSucceeded) {
+        const remaining = Math.max(0, 4000 - (Date.now() - loginStartedAt));
+        if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
+      }
+      hideAuthLoading();
+      btn.disabled = false;
+    }
   }
   document.addEventListener('click', handleClick, true);
   window.GrocerlyAuth = { isAuthenticated, apiRequest, get configured(){return configured;} };
