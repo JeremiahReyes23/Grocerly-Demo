@@ -50,6 +50,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// New authenticated Supabase gateway (additive; legacy routes remain pending migration).
+app.use('/api/v2', require('./supabaseGateway').createGrocerlyV2Router());
+
 // Serve Service Worker with no-cache headers and allow root scope
 app.get('/pwa/sw.js', (req, res) => {
   res.setHeader('Service-Worker-Allowed', '/');
