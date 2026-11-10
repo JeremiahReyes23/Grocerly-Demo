@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPremiumSubscription(); // Premium checkout initialization
 
   // If already logged in, skip onboarding
-  const isLoggedIn = window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
+  const isLoggedIn = window.GrocerlyAuth ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn) {
     transitionToPage("page-dashboard");
     document.getElementById("app-bottom-nav").classList.add("active");
@@ -4560,6 +4560,15 @@ function renderGlobalSearchResults(term) {
 // 14. LOCAL STORAGE CACHING
 // ----------------------------------------------------
 function saveStateToStorage() {
+  // The Supabase version must never store one account's grocery data in a
+  // shared browser-wide cache or sync without a verified session.
+  if (window.GrocerlyAuth) {
+    if (typeof updateInventoryDatalist === 'function') updateInventoryDatalist();
+    if (window.GrocerlyAuth.isAuthenticated()) {
+      ClientAPI.syncBackend().catch(err => console.warn('Cloud sync failed:', err));
+    }
+    return;
+  }
   try {
     localStorage.setItem("grocerly_state_cache", JSON.stringify(State));
   } catch (e) {
@@ -4592,7 +4601,7 @@ function loadStateFromStorage() {
     document.body.classList.remove("dark-theme");
   }
 
-  const cached = window.GrocerlyAuth?.configured ? null : localStorage.getItem("grocerly_state_cache");
+  const cached = window.GrocerlyAuth ? null : localStorage.getItem("grocerly_state_cache");
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -4622,7 +4631,7 @@ function loadStateFromStorage() {
   populateStoreDropdowns();
 
   // Attempt server state sync
-  const isLoggedIn = window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
+  const isLoggedIn = window.GrocerlyAuth ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn && State.user.email) {
     loadStateFromServer();
   }
