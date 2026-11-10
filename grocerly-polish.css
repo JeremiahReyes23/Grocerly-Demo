@@ -520,3 +520,227 @@ body.dark-theme #page-inventory .grocerly-category-filters button[aria-pressed="
     margin-bottom: 7px !important;
   }
 }
+
+
+/* Every food filter is visible without side-scrolling. Grocery categories
+   use two tidy rows on phones and seven equal-width pills on desktop. */
+#page-inventory .grocerly-category-filters {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: 7px !important;
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  padding: 2px 0 10px !important;
+  overflow: visible !important;
+  scrollbar-width: none !important;
+  scroll-snap-type: none !important;
+}
+#page-inventory .grocerly-category-filters > button,
+#page-inventory .grocerly-category-filters > button:first-child {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 41px !important;
+  padding: 7px 3px !important;
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  line-height: 1.15 !important;
+  font-size: clamp(11px, 1.2vw, 12px) !important;
+  font-weight: 650 !important;
+  border-radius: 999px !important;
+  flex: initial !important;
+  scroll-snap-align: none !important;
+}
+#page-meals #meal-type-filter-chips {
+  display: grid !important;
+  grid-template-columns: .72fr 1.48fr 1fr 1fr !important;
+  gap: 8px !important;
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  padding: 0 0 12px !important;
+}
+#page-meals #meal-type-filter-chips > .filter-chip {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  min-height: 42px !important;
+  padding: 8px 5px !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  white-space: normal !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  line-height: 1.15 !important;
+  text-align: center !important;
+  border-radius: 999px !important;
+}
+@media (max-width: 620px) {
+  #page-inventory .grocerly-category-filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    padding: 1px 0 9px !important;
+  }
+  #page-inventory .grocerly-category-filters > button,
+  #page-inventory .grocerly-category-filters > button:first-child {
+    min-height: 39px !important;
+    font-size: clamp(10px, 2.75vw, 12px) !important;
+    padding: 5px 2px !important;
+  }
+  #page-meals #meal-type-filter-chips {
+    gap: 6px !important;
+    grid-template-columns: .7fr 1.45fr 1fr 1fr !important;
+    padding-bottom: 9px !important;
+  }
+  #page-meals #meal-type-filter-chips > .filter-chip {
+    font-size: clamp(11px, 2.95vw, 13px) !important;
+    min-height: 39px !important;
+    padding: 6px 3px !important;
+  }
+}
+
+/* Consistent dark-mode controls; no pale text on pale-green surfaces. */
+body.dark-theme #page-meals #meal-type-filter-chips > .filter-chip,
+body.dark-theme #page-inventory .grocerly-category-filters > button {
+  background: #273e30 !important;
+  color: #f0f8f1 !important;
+  border: 1.25px solid #799b86 !important;
+  box-shadow: none !important;
+}
+body.dark-theme #page-meals #meal-type-filter-chips > .filter-chip.active,
+body.dark-theme #page-inventory .grocerly-category-filters > button[aria-pressed="true"] {
+  background: #a5e0bc !important;
+  color: #122d20 !important;
+  border-color: #a5e0bc !important;
+}
+body.dark-theme #page-meals #btn-meals-ideas-trigger {
+  background: #294936 !important;
+  color: #f2fbf4 !important;
+  border: 1.4px solid #a5e0bc !important;
+}
+body.dark-theme #page-meals #btn-meals-ideas-trigger i {
+  color: #a5e0bc !important;
+}
+body.dark-theme #page-meals #btn-meals-create-trigger,
+body.dark-theme #page-inventory #btn-inventory-add-trigger {
+  background: #a5e0bc !important;
+  color: #122d20 !important;
+  border: 1.4px solid #a5e0bc !important;
+}
+body.dark-theme #page-meals #btn-meals-create-trigger i,
+body.dark-theme #page-inventory #btn-inventory-add-trigger i {
+  color: #122d20 !important;
+}
+body.dark-theme #inventory-total-price {
+  background: #294936 !important;
+  color: #f2fbf4 !important;
+  border-color: #a5e0bc !important;
+}
+body.dark-theme #page-inventory .search-wrapper-input .form-control,
+body.dark-theme #page-meals .search-wrapper-input .form-control {
+  color: #f0f8f1 !important;
+  background: #263b2d !important;
+  border-color: #769582 !important;
+}
+body.dark-theme #page-inventory .search-wrapper-input .form-control::placeholder,
+body.dark-theme #page-meals .search-wrapper-input .form-control::placeholder {
+  color: #bbcfbf !important;
+  opacity: 1 !important;
+}
+body.dark-theme #page-inventory .search-wrapper-input i,
+body.dark-theme #page-meals .search-wrapper-input i {
+  color: #cce2d1 !important;
+}
+body.dark-theme #page-profile #btn-logout,
+body.dark-theme #page-profile #btn-logout i {
+  color: #ffc47d !important;
+  border-color: #ffc47d !important;
+}
+body.dark-theme #page-dashboard #card-stat-duration .grocerly-edit-pencil i,
+body.dark-theme #page-dashboard #card-stat-budget #btn-edit-budget-trigger i {
+  color: #bfcac4 !important;
+}
+body.dark-theme .grocerly-lifespan-modal {
+  background: #213629 !important;
+  color: #f0f8f1 !important;
+}
+body.dark-theme .grocerly-lifespan-modal .modal-header h3,
+body.dark-theme .grocerly-lifespan-modal label {
+  color: #f0f8f1 !important;
+}
+body.dark-theme .grocerly-lifespan-modal .form-control {
+  background: #2b4334 !important;
+  color: #f0f8f1 !important;
+  border-color: #779b84 !important;
+}
+
+/* Lifespan editor exactly parallels the existing gray Budget pencil. */
+#page-dashboard #card-stat-duration .grocerly-lifespan-topline {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 7px;
+  width: 100%;
+}
+#page-dashboard #card-stat-duration .grocerly-lifespan-topline .stat-card-row {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#page-dashboard #card-stat-duration .grocerly-edit-pencil {
+  flex: 0 0 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: transparent !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  color: #6f7973 !important;
+  padding: 0 !important;
+}
+#page-dashboard #card-stat-duration .grocerly-edit-pencil i {
+  color: #6f7973 !important;
+  font-size: 20px !important;
+}
+#page-dashboard #card-stat-duration .grocerly-edit-pencil:hover {
+  background: rgba(110,145,119,.13) !important;
+}
+@media (max-width: 620px) {
+  #page-dashboard #card-stat-duration .grocerly-edit-pencil {
+    flex-basis: 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  #page-dashboard #card-stat-duration .grocerly-edit-pencil i {
+    font-size: 15px !important;
+  }
+}
+#btn-edit-lifespan-trigger:focus-visible,
+#profile-avatar-trigger:focus-visible {
+  outline: 3px solid var(--primary-green) !important;
+  outline-offset: 3px !important;
+}
+
+/* Pull the photo closer to the Profile heading without overlapping its copy.
+   On phones it still reflows within the narrower frame. */
+#page-profile .grocerly-profile-identity {
+  max-width: 435px !important;
+  width: min(100%, 435px) !important;
+  column-gap: 7px !important;
+}
+@media (max-width: 620px) {
+  #page-profile .grocerly-profile-identity {
+    max-width: 322px !important;
+    width: min(100%, 322px) !important;
+  }
+}
+#page-profile .grocerly-profile-identity #profile-card-img {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+#page-profile .grocerly-profile-identity .profile-avatar-wrapper {
+  cursor: pointer !important;
+}
