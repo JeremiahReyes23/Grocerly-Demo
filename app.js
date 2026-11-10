@@ -3644,15 +3644,16 @@ function refreshRecipesList() {
   const filterChip = document.querySelector("#meal-type-filter-chips .filter-chip.active");
   const mealFilter = filterChip ? filterChip.dataset.filter : "All";
 
-  const list = State.recipes.filter(r => {
-    const matchesSearch = 
-      r.name.toLowerCase().includes(query) || 
-      r.description.toLowerCase().includes(query) ||
-      (r.ingredients && r.ingredients.some(ing => ing.name.toLowerCase().includes(query)));
-    
+  const list = (Array.isArray(State.recipes) ? State.recipes : []).filter(r => {
+    if (!r || typeof r !== "object") return false;
+    const nameLower = String(r.name || "").toLowerCase();
+    const descLower = String(r.description || "").toLowerCase();
+    const matchesSearch =
+      nameLower.includes(query) ||
+      descLower.includes(query) ||
+      (Array.isArray(r.ingredients) && r.ingredients.some(ing => String(ing?.name || "").toLowerCase().includes(query)));
+
     let type = "Dinner"; // Heuristic
-    const nameLower = r.name.toLowerCase();
-    const descLower = r.description.toLowerCase();
     if (nameLower.includes("toast") || nameLower.includes("breakfast") || nameLower.includes("egg") || descLower.includes("breakfast")) {
       type = "Breakfast";
     } else if (nameLower.includes("bowl") || nameLower.includes("lunch") || nameLower.includes("salad") || descLower.includes("lunch")) {
@@ -3688,6 +3689,13 @@ function refreshRecipesList() {
 
     const servingsAvailable = getRecipeServingsAvailable(recipe);
     const recipeCost = getRecipeCostValue(recipe);
+    // Imported and older recipes may not have calculated nutrition.
+    const nutrition = recipe.nutrition && typeof recipe.nutrition === "object" ? recipe.nutrition : null;
+    const macro = (field) => {
+      const value = nutrition?.[field];
+      return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value))
+        ? String(Number(value)) : "—";
+    };
 
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 4px; margin-bottom: 2px;">
@@ -3697,7 +3705,7 @@ function refreshRecipesList() {
       <p class="recipe-card-desc" style="font-size: 13px; margin-bottom: 6px; color: var(--text-secondary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.25;">${recipe.description}</p>
       
       <div style="display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px; font-size: 11.5px; color: var(--text-secondary); border-left: 2px solid var(--border-color); padding-left: 6px;">
-        <div><strong>Macros:</strong> ${recipe.nutrition.calories}kcal | P:${recipe.nutrition.protein}g | C:${recipe.nutrition.carbs}g | F:${recipe.nutrition.fat}g</div>
+        <div><strong>Macros:</strong> ${macro("calories")} kcal | P:${macro("protein")}g | C:${macro("carbs")}g | F:${macro("fat")}g</div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2px;">
           <span><strong>Servings:</strong> ${servingsAvailable > 0 ? `${servingsAvailable}x` : '<span style="color:var(--accent-orange); font-weight:700;">Out</span>'}</span>
           <span><strong>Cost:</strong> <span style="color: var(--primary-green); font-weight: 700;">${formatCurrency(recipeCost)}</span></span>
