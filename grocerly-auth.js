@@ -160,11 +160,22 @@
     await finishLogin();
   }
   async function signOut() {
-    if (session?.access_token) {
-      await authFetch('logout', {}, session.access_token).catch(() => {});
+    showAuthLoading('Signing you out…');
+    const started = Date.now();
+    try {
+      if (session?.access_token) {
+        await authFetch('logout', {}, session.access_token).catch(() => {});
+      }
+    } finally {
+      session = null;
+      persist(false);
+      clearOldFlags();
+      clearLegacyCache();
+      // Keep the branded sign-out transition visible for at least 3 seconds.
+      const remaining = Math.max(0, 3000 - (Date.now() - started));
+      if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
+      location.reload();
     }
-    session = null; persist(false); clearOldFlags(); clearLegacyCache();
-    location.reload();
   }
   async function handleClick(e) {
     const btn=e.target.closest('button');
@@ -201,10 +212,10 @@
       }
     } catch(err) { alert(err.message || 'Please try again'); }
     finally {
-      // Keep the branded transition visible for at least 4 seconds on a
+      // Keep the branded transition visible for at least 3 seconds on a
       // successful sign-in. Failed logins show their errors immediately.
       if (loginSucceeded) {
-        const remaining = Math.max(0, 4000 - (Date.now() - loginStartedAt));
+        const remaining = Math.max(0, 3000 - (Date.now() - loginStartedAt));
         if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
       }
       hideAuthLoading();
