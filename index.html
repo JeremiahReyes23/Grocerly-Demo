@@ -14,6 +14,8 @@
   <link rel="stylesheet" href="grocerly-viewport.css">
   <link rel="stylesheet" href="grocerly-compact.css">
   <link rel="stylesheet" href="grocerly-polish.css?v=compact-profile-20261110">
+  <!-- Client-side PDF export for Download List -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js" defer></script>
   <!-- Receipt OCR engine -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
   
@@ -400,28 +402,10 @@
 
         <!-- Panel 1: OCR Receipts -->
         <div class="entry-panel active" id="panel-ocr">
-          <details class="grocerly-demo-options"><summary>Sample receipt options</summary>
-          <div class="store-list-title">Choose a sample store:</div>
-          <div class="store-selector-grid" id="ocr-store-grid">
-            <div class="store-chip selected" data-store="Costco">Costco</div>
-            <div class="store-chip" data-store="Walmart">Walmart</div>
-            <div class="store-chip" data-store="Trader Joe's">Trader Joe's</div>
-            <div class="store-chip" data-store="Aldi">Aldi</div>
-            <div class="store-chip" data-store="Target">Target</div>
-            <div class="store-chip" data-store="Whole Foods">Whole Foods</div>
-            <div class="store-chip" data-store="Other" style="border: 1px dashed var(--accent-orange); color: var(--accent-orange);">Other</div>
-          </div>
+          <!-- Receipt store is determined from uploaded content when available; no sample-store UI. -->
+          <div id="ocr-store-grid" hidden><div class="store-chip selected" data-store="Other"></div></div>
+          <div id="ocr-custom-store-group" hidden><input id="ocr-custom-store-input" type="text"></div>
 
-          <!-- Custom Store Creator Form -->
-          <div id="ocr-custom-store-group" style="display: none; margin-top: 10px; background: rgba(255,255,255,0.02); padding: 12px; border-radius: var(--border-radius-md); border: 1px solid var(--border-color);">
-            <div style="font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 6px;">ENTER CUSTOM STORE NAME</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <input type="text" id="ocr-custom-store-input" class="form-control" placeholder="e.g. Sprouts Market" style="flex: 1; height: 38px;">
-              <button class="btn btn-primary" id="btn-ocr-add-custom-store" style="width: 38px; height: 38px; padding: 0; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background-color: var(--primary-green); border-color: var(--primary-green);"><i class="fas fa-plus" style="font-size: 14px; margin: 0;"></i></button>
-            </div>
-          </div>
-
-          </details>
           <div class="ocr-scanner-box" role="button" tabindex="0" id="btn-ocr-scan-trigger" style="margin-top: 15px; cursor: pointer; border: 2px dashed var(--border-color); border-radius: var(--border-radius-md); padding: 20px; text-align: center; background: rgba(255,255,255,0.02); transition: all 0.2s ease;">
             <i class="fas fa-camera ocr-scanner-icon" style="color: var(--primary-green); font-size: 32px; margin-bottom: 8px;"></i>
             <div style="font-weight: 700; font-size: 15px; margin-bottom: 4px;">Scan Receipt Camera / Upload</div>
@@ -1548,16 +1532,6 @@
             <option value="Condiments">Condiments</option>
             <option value="Spices/Herbs">Spices/Herbs</option>
           </select>
-            <div class="grid-option compact" data-cat="Meat & Poultry" style="padding: 6px 4px; font-size: 11px;">Meat & Poultry</div>
-            <div class="grid-option compact" data-cat="Dairy & Eggs" style="padding: 6px 4px; font-size: 11px;">Dairy & Eggs</div>
-            <div class="grid-option compact" data-cat="Bakery" style="padding: 6px 4px; font-size: 11px;">Bakery & Grain</div>
-            <div class="grid-option compact" data-cat="Frozen" style="padding: 6px 4px; font-size: 11px;">Frozen</div>
-            <div class="grid-option compact" data-cat="Pantry" style="padding: 6px 4px; font-size: 11px;">Pantry</div>
-            <div class="grid-option compact" data-cat="Snacks" style="padding: 6px 4px; font-size: 11px;">Snacks</div>
-            <div class="grid-option compact" data-cat="Drinks" style="padding: 6px 4px; font-size: 11px;">Drinks</div>
-            <div class="grid-option compact" data-cat="Condiments" style="padding: 6px 4px; font-size: 11px;">Condiments</div>
-            <div class="grid-option compact" data-cat="Spices/Herbs" style="padding: 6px 4px; font-size: 11px;">Spices/Herbs</div>
-          </div>
         </div>
 
         <!-- QTY, Unit, Price -->
@@ -1610,9 +1584,6 @@
             <option value="Freezer">Freezer</option>
             <option value="Pantry">Pantry</option>
           </select>
-            <div class="grid-option compact" data-cat="Freezer" style="padding: 8px; font-size: 12px;">Freezer</div>
-            <div class="grid-option compact" data-cat="Pantry" style="padding: 8px; font-size: 12px;">Pantry</div>
-          </div>
         </div>
 
         <!-- Store Purchased From -->
@@ -1682,16 +1653,6 @@
             <option value="Condiments">Condiments</option>
             <option value="Spices/Herbs">Spices/Herbs</option>
           </select>
-            <div class="grid-option compact" data-cat="Meat & Poultry" style="padding: 6px 4px; font-size: 11px;">Meat & Poultry</div>
-            <div class="grid-option compact" data-cat="Dairy & Eggs" style="padding: 6px 4px; font-size: 11px;">Dairy & Eggs</div>
-            <div class="grid-option compact" data-cat="Bakery" style="padding: 6px 4px; font-size: 11px;">Bakery & Grain</div>
-            <div class="grid-option compact" data-cat="Frozen" style="padding: 6px 4px; font-size: 11px;">Frozen</div>
-            <div class="grid-option compact" data-cat="Pantry" style="padding: 6px 4px; font-size: 11px;">Pantry</div>
-            <div class="grid-option compact" data-cat="Snacks" style="padding: 6px 4px; font-size: 11px;">Snacks</div>
-            <div class="grid-option compact" data-cat="Drinks" style="padding: 6px 4px; font-size: 11px;">Drinks</div>
-            <div class="grid-option compact" data-cat="Condiments" style="padding: 6px 4px; font-size: 11px;">Condiments</div>
-            <div class="grid-option compact" data-cat="Spices/Herbs" style="padding: 6px 4px; font-size: 11px;">Spices/Herbs</div>
-          </div>
         </div>
 
         <!-- QTY, Unit, Price -->
@@ -1743,9 +1704,6 @@
             <option value="Freezer">Freezer</option>
             <option value="Pantry">Pantry</option>
           </select>
-            <div class="grid-option compact" data-cat="Freezer" style="padding: 8px; font-size: 12px;">Freezer</div>
-            <div class="grid-option compact" data-cat="Pantry" style="padding: 8px; font-size: 12px;">Pantry</div>
-          </div>
         </div>
 
         <!-- Store Purchased From -->
