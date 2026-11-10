@@ -19,6 +19,31 @@
   let session = null;
   let configured = false;
 
+  function showAuthLoading(message = 'Signing you in…') {
+    let overlay = document.getElementById('grocerly-auth-loading');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'grocerly-auth-loading';
+      overlay.setAttribute('role', 'status');
+      overlay.setAttribute('aria-live', 'polite');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(246,250,246,.97);display:flex;align-items:center;justify-content:center;padding:24px;text-align:center;';
+      overlay.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:14px;color:#307455;font-family:inherit"><img src="/grocerly-leaf.svg" alt="" width="66" height="66"><div style="font-size:25px;font-weight:800">Grocerly</div><div class="grocerly-loading-spinner" style="height:32px;width:32px;border:3px solid #cae1d3;border-top-color:#307455;border-radius:50%;animation:grocerly-auth-spin .75s linear infinite"></div><div id="grocerly-auth-loading-message" style="font-size:14px;font-weight:600">Signing you in…</div></div>';
+      if (!document.getElementById('grocerly-auth-animation')) {
+        const style = document.createElement('style');
+        style.id = 'grocerly-auth-animation';
+        style.textContent = '@keyframes grocerly-auth-spin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){.grocerly-loading-spinner{animation:none!important}}';
+        document.head.appendChild(style);
+      }
+      document.body.appendChild(overlay);
+    }
+    document.getElementById('grocerly-auth-loading-message').textContent = message;
+    overlay.hidden = false;
+    overlay.style.display = 'flex';
+  }
+  function hideAuthLoading() {
+    const overlay = document.getElementById('grocerly-auth-loading');
+    if (overlay) { overlay.hidden = true; overlay.style.display = 'none'; }
+  }
   function clearOldFlags() {
     localStorage.removeItem('grocerly_logged_in');
     sessionStorage.removeItem('grocerly_logged_in');
@@ -148,6 +173,8 @@
     if (!['btn-login-signin','btn-login-signup','btn-register-signup','btn-login-forgot','btn-logout'].includes(id)) return;
     e.preventDefault(); e.stopImmediatePropagation();
     btn.disabled = true;
+    const needsLoading = ['btn-login-signin', 'btn-login-signup', 'btn-register-signup'].includes(id);
+    if (needsLoading) showAuthLoading(id === 'btn-login-signin' ? 'Signing you in…' : 'Setting up your account…');
     try {
       if(id==='btn-logout') {
         if(confirm('Sign out of Grocerly?')) await signOut();
@@ -170,7 +197,7 @@
         await signUp(email,password,name);
       }
     } catch(err) { alert(err.message || 'Please try again'); }
-    finally { btn.disabled=false; }
+    finally { hideAuthLoading(); btn.disabled=false; }
   }
   document.addEventListener('click', handleClick, true);
   window.GrocerlyAuth = { isAuthenticated, apiRequest, get configured(){return configured;} };
@@ -187,7 +214,13 @@
       document.querySelectorAll('[data-social-provider],#btn-login-apple').forEach(el=>el.style.display='none');
       clearOldFlags();
       restore();
-      if (await verify()) await finishLogin();
+      if (session?.access_token) {
+        showAuthLoading('Restoring your Grocerly account…');
+        try {
+          if (await verify()) await finishLogin();
+          else transitionToPage('page-login');
+        } finally { hideAuthLoading(); }
+      }
       else {
         clearLegacyCache();
         transitionToPage('page-login');
