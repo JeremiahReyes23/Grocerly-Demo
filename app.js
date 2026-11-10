@@ -6136,10 +6136,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Bind option grids in new modal
-  if(typeof bindOptionGrid === 'function') {
-    bindOptionGrid('#groc-cat-grid');
-    bindOptionGrid('#groc-loc-grid');
-  }
+
 
   if (btnGrocSave) {
     btnGrocSave.addEventListener('click', () => {
@@ -6161,10 +6158,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
       
-      const catEl = document.querySelector('#groc-cat-grid .grid-option.selected');
-      const locEl = document.querySelector('#groc-loc-grid .grid-option.selected');
-      const category = catEl ? catEl.dataset.cat : 'Other';
-      const location = locEl ? locEl.dataset.cat : 'Fridge';
+      const category = document.getElementById('groc-cat-select').value || 'Produce';
+      const location = document.getElementById('groc-loc-select').value || 'Fridge';
 
       if (!name) return alert('Please enter an ingredient name.');
 
@@ -6255,14 +6250,10 @@ window.openEditGroceryModal = function(id) {
   document.getElementById('edit-groc-store').value = item.store || 'Unknown';
 
   // Set category
-  document.querySelectorAll('#edit-groc-cat-grid .grid-option').forEach(el => el.classList.remove('selected'));
-  const catEl = document.querySelector(`#edit-groc-cat-grid .grid-option[data-cat="${item.category}"]`);
-  if (catEl) catEl.classList.add('selected');
+  document.getElementById('edit-groc-cat-select').value = item.category || 'Produce';
 
   // Set location
-  document.querySelectorAll('#edit-groc-loc-grid .grid-option').forEach(el => el.classList.remove('selected'));
-  const locEl = document.querySelector(`#edit-groc-loc-grid .grid-option[data-cat="${item.storageLoc}"]`);
-  if (locEl) locEl.classList.add('selected');
+  document.getElementById('edit-groc-loc-select').value = item.storageLoc || 'Fridge';
 
   document.getElementById('modal-edit-grocery').classList.add('active');
 
@@ -6282,10 +6273,7 @@ window.openEditGroceryModal = function(id) {
 
 document.addEventListener("DOMContentLoaded", () => {
   // Bind Option Grids for Edit Modal
-  if(typeof bindOptionGrid === 'function') {
-    bindOptionGrid('#edit-groc-cat-grid');
-    bindOptionGrid('#edit-groc-loc-grid');
-  }
+
 
   // Bind scroll listener for bouncing scroll indicator arrow
   const modalContent = document.querySelector('#modal-edit-grocery .modal-content');
@@ -6346,11 +6334,9 @@ document.addEventListener("DOMContentLoaded", () => {
         item.isEstimatedDate = false; // Manually changed, no longer estimated
       }
 
-      const catEl = document.querySelector('#edit-groc-cat-grid .grid-option.selected');
-      if (catEl) item.category = catEl.dataset.cat;
+      item.category = document.getElementById('edit-groc-cat-select').value;
 
-      const locEl = document.querySelector('#edit-groc-loc-grid .grid-option.selected');
-      if (locEl) item.storageLoc = locEl.dataset.cat;
+      item.storageLoc = document.getElementById('edit-groc-loc-select').value;
 
       item.costPerUnit = item.price / item.currentQty;
 
