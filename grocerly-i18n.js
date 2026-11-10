@@ -5,6 +5,65 @@
 (function () {
   "use strict";
   const rows = [
+    // Core four-screen strings, including accessible empty states and Settings.
+    ["Dark Theme","Tema oscuro"],
+    ["Your Meal Builder is Empty","Tu plan de comidas está vacío"],
+    ["Your Pantry is Empty","Tu despensa está vacía"],
+    ["Create custom meal recipes manually, or pull automated meal recommendations from the AI assistant to populate ideas.","Crea tus propias recetas o utiliza el asistente de IA para encontrar ideas de comidas."],
+    ["Add pantry or freezer items manually, or scan your store receipt using live OCR to load them automatically.","Añade productos de la despensa o el congelador, o escanea un recibo para registrarlos."],
+    ["No ingredients in inventory. Add some in Purchases!","Aún no hay ingredientes. ¡Añade productos desde Compras!"],
+    ["Your Meal Builder is Empty","Tu plan de comidas está vacío"],
+    ["My Profile","Mi perfil"],
+    ["Dark Theme","Tema oscuro"],
+    ["Sign Out","Cerrar sesión"],
+    ["APP OPTIONS","OPCIONES"],
+    ["AI Integration Perms","Permisos de IA"],
+    ["Submit App Feedback","Enviar comentarios"],
+    ["Preferred Currency","Moneda preferida"],
+    ["Your Pantry is Empty","Tu despensa está vacía"],
+    ["What would you like to do?","¿Qué te gustaría hacer?"],
+    ["Your Current Grocery Plan","Tu plan de compras actual"],
+    ["Current Grocery List","Lista actual de compras"],
+    ["Your groceries","Tus compras"],
+    ["My Groceries","Mis compras"],
+    ["My Meal Plan","Mi plan de comidas"],
+    ["Home","Inicio"],
+    ["Scan Receipt","Escanear recibo"],
+    ["Build Meals","Preparar comidas"],
+    ["Add","Añadir"],
+    ["Ideas","Ideas"],
+    ["Download List","Descargar lista"],
+    ["Budget","Presupuesto"],
+    ["Lifespan","Duración"],
+    ["Average store loop","Promedio entre compras"],
+    ["Ingredient","Ingrediente"],
+    ["Ingredients","Ingredientes"],
+    ["INGREDIENT","INGREDIENTE"],
+    ["QTY","CANT."],
+    ["STORAGE","ALMACÉN"],
+    ["STATUS","ESTADO"],
+    ["No ingredients","Sin ingredientes"],
+    ["All","Todos"],
+    ["Vegetables","Verduras"],
+    ["Fruits","Frutas"],
+    ["Grains","Cereales"],
+    ["Protein","Proteínas"],
+    ["Dairy","Lácteos"],
+    ["Herbs","Hierbas"],
+    ["Your name","Tu nombre"],
+    ["Email Address","Correo electrónico"],
+    ["Name","Nombre"],
+    ["Settings","Configuración"],
+    ["Profile Picture","Foto de perfil"],
+    ["Click to upload your photo","Haz clic para subir tu foto"],
+    ["Search storage items...","Buscar productos..."],
+    ["Search recipe name...","Buscar recetas..."],
+    ["Ready","Disponible"],
+    ["Low stock","Quedan pocos"],
+    ["EXPIRED","VENCIDO"],
+    ["Not entered","Sin registrar"],
+    ["View details","Ver detalles"],
+
     ["AI Integration Perms","Permisos de IA"],
     ["Allow AI features","Permitir funciones de IA"],
     ["Add groceries by scanning a receipt","Añadir productos escaneando un recibo"],
@@ -310,6 +369,9 @@
       else if ((m = /^(\d+)\s+Ideas?$/.exec(value))) target = m[1] + " ideas";
       else if ((m = /^Spend:\s*(.+)\s+of\s+(.+)$/.exec(value))) target = "Gastado: " + m[1] + " de " + m[2];
       else if ((m = /^(\d+)\s+People$/.exec(value))) target = m[1] + " personas";
+      else if ((m = /^Total:\s*(.+)$/.exec(value))) target = "Total: " + m[1];
+      else if ((m = /^(\d+)\s+Days?\s+[Ll]eft$/.exec(value))) target = "Quedan " + m[1] + " días";
+      else if ((m = /^(\d+) ingredients? in storage$/.exec(value))) target = m[1] + " ingredientes en casa";
     }
     return target === undefined ? source : match[1] + target + match[3];
   }
@@ -369,7 +431,7 @@
       }
     } finally {
       translating = false;
-      if (observer) observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+      if (observer) observer.observe(document.body, { childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"], subtree: true });
     }
   }
 
