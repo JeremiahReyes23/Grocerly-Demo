@@ -358,7 +358,64 @@
     ["Quick actions","Acciones rápidas"],
     ["Choose a product label photo","Elegir foto de la etiqueta"],
     ["No spending data logged yet. Add your first grocery trip!","Todavía no hay gastos registrados. ¡Añade tu primera compra!"]
+    ["Days Left (Estimated)","Días restantes (estimado)"],
+    ["Days Left","Días restantes"],
+    ["Refrigerador","Refrigerador"],
+    ["FREEZER","CONGELADOR"],
+    ["REFRIGERATOR","REFRIGERADOR"],
+    ["Fridge","Refrigerador"],
+    ["Pantry","Despensa"],
+    ["Available","Disponible"],
+    ["Budget Amount (¥)","Presupuesto (¥)"],
+    ["Camera unavailable. Choose Gallery to upload a receipt photo.","Cámara no disponible. Elige Galería para subir una foto del recibo."],
+    ["Signing you in…","Iniciando sesión…"],
+    ["Signing you out…","Cerrando sesión…"],
+    ["Restoring your Grocerly account…","Restaurando tu cuenta de Grocerly…"],
+    ["Add to Groceries","Añadir a mis compras"],
+    ["More details","Más detalles"],
+    ["Dates, store & notes","Fechas, tienda y notas"],
+    ["Recipe details","Detalles de la receta"],
+    ["Description & instructions","Descripción e instrucciones"],
   ];
+  // UI translations do not modify the original user-entered grocery names.
+  // This offline bilingual glossary covers common ingredients in either direction.
+  // Unknown product names remain in their original language; arbitrary names
+  // need an opt-in translation service for full coverage.
+  const ingredientPairs = [
+    ["beef","carne de res"],["milk","leche"],["shredded cheese","queso rallado"],
+    ["cheese","queso"],["pasta","pasta"],["chicken breast","pechuga de pollo"],
+    ["chicken","pollo"],["eggs","huevos"],["egg","huevo"],["rice","arroz"],
+    ["bread","pan"],["butter","mantequilla"],["apples","manzanas"],["apple","manzana"],
+    ["bananas","bananas"],["banana","banana"],["tomatoes","tomates"],["tomato","tomate"],
+    ["onions","cebollas"],["onion","cebolla"],["potatoes","papas"],["potato","papa"],
+    ["flour","harina"],["sugar","azúcar"],["salt","sal"],["pepper","pimienta"],
+    ["garlic","ajo"],["carrots","zanahorias"],["carrot","zanahoria"],
+    ["fish sauce","salsa de pescado"],["soy sauce","salsa de soja"],
+    ["palm sugar","azúcar de palma"],["sirloin steak","bistec de solomillo"],
+    ["cloves","clavos de olor"],["beef pho","pho de res"],["beans","frijoles"],
+    ["beef steak","bistec de res"],["olive oil","aceite de oliva"],
+    ["shredded","rallado"],["organic","orgánico"],["whole","entera"],
+    ["lettuce","lechuga"],["yogurt","yogur"],["corn","maíz"]
+  ];
+  const normalizedName = value => value.normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLowerCase();
+  const enToEs = new Map(ingredientPairs.map(([en,es])=>[normalizedName(en),es]));
+  const esToEn = new Map(ingredientPairs.map(([en,es])=>[normalizedName(es),en]));
+  function translateIngredient(value, language) {
+    const raw = String(value || "");
+    const target = language === "es" ? enToEs : esToEn;
+    const exact = target.get(normalizedName(raw));
+    if (exact) return exact.charAt(0).toUpperCase() + exact.slice(1);
+    // Translate multi-word labels only when every token has a known equivalent.
+    const parts = raw.trim().split(/\s+/);
+    if (parts.length > 1 && parts.every(part => target.has(normalizedName(part)))) {
+      return parts.map(part=>target.get(normalizedName(part))).join(" ");
+    }
+    return raw;
+  }
+  const displayNameSelector = ".inv-card-name,.recipe-card-title,.ing-row-name option,.inv-card-title,.shopping-item-name,.recipe-ingredient-name,.receipt-item-name";
+  function isIngredientText(node) {
+    return !!node.parentElement?.closest(displayNameSelector);
+  }
   const es = new Map(rows);
   const textRecords = new WeakMap();
   const attrRecords = new WeakMap();
@@ -373,6 +430,12 @@
     const value = match[2];
     let target = es.get(value);
     if (target === undefined) {
+      const amountLabel = /^Budget Amount\s*\(([^)]+)\)$/i.exec(value);
+      if (amountLabel) target = "Presupuesto (" + amountLabel[1] + ")";
+      const remaining = /^(\d+)\s+Days? Left(?:\s*\((Estimated)\))?$/i.exec(value);
+      if (remaining) target = remaining[1] + " días restantes" + (remaining[2] ? " (estimado)" : "");
+    }
+    if (target === undefined) {
       let m;
       if ((m = /^Welcome,\s*(.+)$/.exec(value))) target = "Hola, " + m[1];
       else if ((m = /^(\d+)\s+ingredients? in storage$/.exec(value))) target = m[1] + " ingredientes en casa";
@@ -383,6 +446,10 @@
       else if ((m = /^Total:\s*(.+)$/.exec(value))) target = "Total: " + m[1];
       else if ((m = /^(\d+)\s+Days?\s+[Ll]eft$/.exec(value))) target = "Quedan " + m[1] + " días";
       else if ((m = /^(\d+) ingredients? in storage$/.exec(value))) target = m[1] + " ingredientes en casa";
+      else if ((m = /^Camera unavailable\. Choose Gallery to upload a receipt photo\.$/.exec(value))) target = "Cámara no disponible. Elige Galería para subir una foto del recibo.";
+      else if ((m = /^Signing you in…$/.exec(value))) target = "Iniciando sesión…";
+      else if ((m = /^Signing you out…$/.exec(value))) target = "Cerrando sesión…";
+      else if ((m = /^Restoring your Grocerly account…$/.exec(value))) target = "Restaurando tu cuenta de Grocerly…";
     }
     return target === undefined ? source : match[1] + target + match[3];
   }
@@ -398,7 +465,9 @@
     if (shouldSkip(node) || !node.nodeValue.trim()) return;
     let record = textRecords.get(node);
     if (!record || record.rendered !== node.nodeValue) record = { source: node.nodeValue, rendered: node.nodeValue };
-    const next = locale === "es" ? localized(record.source) : record.source;
+    const next = isIngredientText(node)
+      ? translateIngredient(record.source, locale)
+      : locale === "es" ? localized(record.source) : record.source;
     if (node.nodeValue !== next) node.nodeValue = next;
     record.rendered = next;
     textRecords.set(node, record);
