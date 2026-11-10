@@ -2334,7 +2334,8 @@ function initReceiptScanning() {
 
       if (btn.id === "btn-tab-ocr") {
         document.getElementById("panel-ocr").classList.add("active");
-        openCameraModal();
+        // Selecting this tab only displays the scanning instructions.
+        // Camera/gallery actions require a separate explicit click.
       }
       if (btn.id === "btn-tab-digital") document.getElementById("panel-digital").classList.add("active");
     });
@@ -2399,8 +2400,19 @@ function initReceiptScanning() {
 
       startLiveScanningSimulation();
     } catch (err) {
-      console.warn("Camera access failed, fallback to file upload:", err);
-      if (fileInput) fileInput.click();
+      console.warn("Camera unavailable; user may choose Gallery instead:", err);
+      // Never open the file picker automatically after camera denial.
+      video.style.display = "none";
+      preview.style.display = "none";
+      btnCapture.style.display = "none";
+      btnUpload.style.display = "block";
+      btnRetake.style.display = "none";
+      btnUse.style.display = "none";
+      if (hudText) {
+        hudText.style.display = "block";
+        hudText.textContent = "Camera unavailable. Choose Gallery to upload a receipt photo.";
+      }
+      cameraModal.classList.add("active");
     }
   };
 
