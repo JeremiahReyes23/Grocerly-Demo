@@ -38,7 +38,6 @@
       if (tab === "groceries") refreshPurchasesFolders();
       if (tab === "analytics") renderAnalyticsCharts();
       if (tab === "profile") refreshProfileCard();
-      if (tab === "groceries") document.getElementById("btn-ocr-scan-trigger")?.click();
       closeMenu();
     }
 
@@ -64,29 +63,12 @@
       if (header) header.insertAdjacentElement("afterend", details);
       else meals.prepend(details);
     }
-    // Receipt-first inventory: manual entry remains available as a secondary option.
+    // Keep "Add +" as a direct entry to the existing manual grocery form.
+    // Its original click handler in app.js opens and validates the form.
     const inventoryAdd = document.getElementById("btn-inventory-add-trigger");
-    let openManualOnce = false;
     if (inventoryAdd) {
-      inventoryAdd.innerHTML = '<i class="fas fa-camera" aria-hidden="true"></i> Scan receipt';
-      inventoryAdd.setAttribute("title", "Scan or upload a grocery receipt");
-      inventoryAdd.addEventListener("click", function (event) {
-        // Allow the existing form initialization when manual entry is explicitly requested.
-        if (openManualOnce) { openManualOnce = false; return; }
-        event.stopImmediatePropagation();
-        go("groceries");
-        document.getElementById("btn-ocr-scan-trigger")?.focus();
-      }, true);
-      const actions = inventoryAdd.parentElement;
-      const manual = document.createElement("button");
-      manual.type = "button";
-      manual.className = "btn btn-outline grocerly-manual-add";
-      manual.innerHTML = '<i class="fas fa-plus" aria-hidden="true"></i> Add manually';
-      manual.addEventListener("click", function () {
-        openManualOnce = true;
-        inventoryAdd.click(); // Reuses existing date/default setup and validation.
-      });
-      actions.appendChild(manual);
+      inventoryAdd.setAttribute("aria-label", "Add a grocery item manually");
+      inventoryAdd.setAttribute("title", "Add an ingredient manually");
     }
 
     // Product-label photo recognition is an assisted draft, never an unverified inventory update.
@@ -120,10 +102,10 @@
           const price = priceMatches.length === 1 ? Number(priceMatches[0][1].replace(",", ".")) : null;
           const name = lines.find(x => /[a-zA-Z]{3}/.test(x) && !/^\$?\s*\d/.test(x)) || "";
           if (!name) {
-            feedback.textContent = "We couldn't read a product name. Try a clearer photo or add it manually.";
+            feedback.textContent = "We couldn't read a product name. Try a clearer photo or use Add +.";
             return;
           }
-          manual.click(); // Open the original form with its default dates and fields.
+          inventoryAdd?.click(); // Open the manual grocery form for review.
           const modal = document.getElementById("modal-add-grocery");
           const nameInput = document.getElementById("groc-name");
           const priceInput = document.getElementById("groc-price");
@@ -139,7 +121,7 @@
           if (content && !notice.isConnected) content.prepend(notice);
           nameInput?.focus();
         } catch (err) {
-          feedback.textContent = "We couldn't read that photo. Try again or use Add manually.";
+          feedback.textContent = "We couldn't read that photo. Try again or use Add +.";
         } finally {
           photo.value = "";
         }
