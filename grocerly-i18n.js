@@ -357,7 +357,7 @@
     ["Main navigation","Navegación principal"],
     ["Quick actions","Acciones rápidas"],
     ["Choose a product label photo","Elegir foto de la etiqueta"],
-    ["No spending data logged yet. Add your first grocery trip!","Todavía no hay gastos registrados. ¡Añade tu primera compra!"]
+    ["No spending data logged yet. Add your first grocery trip!","Todavía no hay gastos registrados. ¡Añade tu primera compra!"],
     ["Days Left (Estimated)","Días restantes (estimado)"],
     ["Days Left","Días restantes"],
     ["Refrigerador","Refrigerador"],
