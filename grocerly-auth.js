@@ -190,7 +190,7 @@
     if (needsLoading) showAuthLoading(id === 'btn-login-signin' ? 'Signing you in…' : 'Setting up your account…');
     try {
       if(id==='btn-logout') {
-        if(confirm('Sign out of Grocerly?')) await signOut();
+        await signOut();
       } else if (id==='btn-login-forgot') {
         const email=document.getElementById('login-email').value.trim() || prompt('Email address for password reset:');
         if (email) {
