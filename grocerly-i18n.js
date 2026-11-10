@@ -528,7 +528,7 @@
       button.addEventListener("click", () => setLanguage(button.dataset.lang));
     });
     observer = new MutationObserver(() => {
-      if (scheduled || translating || locale !== "es") return;
+      if (scheduled || translating) return;
       scheduled = true;
       requestAnimationFrame(() => { scheduled = false; translateAll(); });
     });
