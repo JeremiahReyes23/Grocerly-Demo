@@ -1122,3 +1122,20 @@ body.dark-theme .grocerly-lifespan-modal .form-control {
 @media (max-height: 610px) {
   #modal-add-grocery .modal-box, #modal-edit-grocery .modal-box { max-height: 96%; }
 }
+
+
+/* Profile pictures are intentionally not part of the Grocerly interface.
+   Leave underlying DOM nodes intact because legacy setup logic references them. */
+#profile-avatar-trigger,
+#profile-card-upload,
+#dash-avatar-img,
+#profile-avatar-select,
+#profile-avatar-upload,
+#page-profile-setup .avatar-setup,
+#modal-image-editor,
+#profile-card-img-sidebar {
+  display: none !important;
+}
+#page-profile .profile-card {
+  padding-top: 16px;
+}
