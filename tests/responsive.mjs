@@ -81,6 +81,62 @@ try {
                groceryHeader.total.right <= groceryHeader.add.left + 2,
           `Groceries heading/total/Add overlap at ${viewport.width}: ${JSON.stringify(groceryHeader)}`);
       }
+
+      if (tab === 'meals' || tab === 'inventory') {
+        const row = await page.evaluate(tab => {
+          const node = document.querySelector(tab === 'meals' ? '#meal-type-filter-chips' : '.grocerly-category-filters');
+          const buttons = [...node.children];
+          const parent = node.getBoundingClientRect();
+          return {
+            total: buttons.length,
+            scrollDifference: node.scrollWidth-node.clientWidth,
+            rowHeight: parent.height,
+            allVisible: buttons.every(button => {
+              const r=button.getBoundingClientRect();
+              return r.width>=36 && r.height>=30 && r.left>=parent.left-2 && r.right<=parent.right+2 &&
+                r.top>=parent.top-2 && r.bottom<=parent.bottom+2;
+            })
+          };
+        }, tab);
+        assert(row.total === (tab === 'meals' ? 4 : 7),
+          screen + ' wrong filter count: '+JSON.stringify(row));
+        assert(row.scrollDifference <= 3 && row.allVisible,
+          screen + ' food filters should all be visible with no sideways scrolling at '+viewport.width+': '+JSON.stringify(row));
+      }
+      if (tab === 'dashboard' && [390,1440].includes(viewport.width)) {
+        const pencil = page.locator('#btn-edit-lifespan-trigger');
+        await pencil.click();
+        await page.locator('#modal-edit-lifespan.active').waitFor();
+        await page.locator('#edit-lifespan-days').fill('21');
+        await page.locator('#btn-lifespan-save').click();
+        await page.waitForFunction(() => document.querySelector('#stat-duration-val')?.textContent?.trim().startsWith('21 days'));
+        const weeks = await page.evaluate(() => State.user.desiredStorageWeeks);
+        assert(Math.abs(weeks-3)<0.0001,'Edited Lifespan not saved as 21 days: '+weeks);
+        await pencil.click();
+        await page.locator('#edit-lifespan-days').fill('14');
+        await page.locator('#btn-lifespan-save').click();
+      }
+      if ((tab==='meals' || tab==='inventory') && [390,1440].includes(viewport.width)) {
+        await page.evaluate(() => document.body.classList.add('dark-theme'));
+        const buttons = await page.evaluate(tab => {
+          const rgb = color => [...(color.match(/[\d.]+/g)||[])].slice(0,3).map(Number);
+          const lum=vals=>vals.map(c=>{c/=255;return c<.04045?c/12.92:((c+.055)/1.055)**2.4})
+            .reduce((a,v,i)=>a+v*[.2126,.7152,.0722][i],0);
+          const selectors=tab==='meals'?
+            ['#meal-type-filter-chips .filter-chip.active','#meal-type-filter-chips .filter-chip:not(.active)','#btn-meals-ideas-trigger','#btn-meals-create-trigger']:
+            ['.grocerly-category-filters button[aria-pressed="true"]','.grocerly-category-filters button[aria-pressed="false"]','#inventory-total-price','#btn-inventory-add-trigger'];
+          return selectors.map(selector=>{
+            const st=getComputedStyle(document.querySelector(selector));
+            const a=lum(rgb(st.color)),b=lum(rgb(st.backgroundColor));
+            return {selector,contrast:(Math.max(a,b)+.05)/(Math.min(a,b)+.05),fg:st.color,bg:st.backgroundColor};
+          });
+        },tab);
+        for(const button of buttons) assert(button.contrast >= 4.5,
+          'Low-contrast dark-mode control '+viewport.width+': '+JSON.stringify(button));
+        await page.screenshot({path:'test-artifacts/'+viewport.width+'-'+tab+'-dark.png',fullPage:false});
+        await page.evaluate(() => document.body.classList.remove('dark-theme'));
+      }
+
       assert(bounds.header.left >= -2 && bounds.header.right <= viewport.width + 2, `${screen} header overflow at ${viewport.width}`);
       assert(bounds.nav.left >= -2 && bounds.nav.right <= viewport.width + 2, `${screen} bottom nav overflow at ${viewport.width}`);
       for (const item of bounds.navItems) assert(item.width >= 40 && item.right <= viewport.width + 2, `${screen} nav item clipped at ${viewport.width}`);
