@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPremiumSubscription(); // Premium checkout initialization
 
   // If already logged in, skip onboarding
-  const isLoggedIn = localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true";
+  const isLoggedIn = window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn) {
     transitionToPage("page-dashboard");
     document.getElementById("app-bottom-nav").classList.add("active");
@@ -4578,7 +4578,7 @@ function saveStateToStorage() {
   if (typeof updateInventoryDatalist === 'function') {
     updateInventoryDatalist();
   }
-  if (State.user.email) {
+  if (window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : !!State.user.email) {
     ClientAPI.syncBackend().catch(err => console.warn("Background API sync failed:", err));
   }
 }
@@ -4592,7 +4592,7 @@ function loadStateFromStorage() {
     document.body.classList.remove("dark-theme");
   }
 
-  const cached = localStorage.getItem("grocerly_state_cache");
+  const cached = window.GrocerlyAuth?.configured ? null : localStorage.getItem("grocerly_state_cache");
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -4622,7 +4622,7 @@ function loadStateFromStorage() {
   populateStoreDropdowns();
 
   // Attempt server state sync
-  const isLoggedIn = localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true";
+  const isLoggedIn = window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn && State.user.email) {
     loadStateFromServer();
   }
@@ -5107,6 +5107,9 @@ const MockBackend = {
 
 const ClientAPI = {
   async request(endpoint, method = 'GET', body = null) {
+    if (window.GrocerlyAuth?.configured && (endpoint.startsWith('/api/profile') || /^\/api\/(inventory|recipes|trips|waste|notifications|calendar|custom-stores)(\?|$)/.test(endpoint))) {
+      return window.GrocerlyAuth.apiRequest(endpoint, method, body);
+    }
     const isWrite = (method === 'PUT' || method === 'POST');
     if (isWrite && !endpoint.includes('/api/auth')) {
       updateCloudSyncBadge("syncing");
@@ -5134,6 +5137,7 @@ const ClientAPI = {
       if (endpoint.startsWith('/api/auth/') && endpoint !== '/api/auth/config') {
         throw e;
       }
+      if (window.GrocerlyAuth?.configured) throw e;
       console.warn(`API server error on ${endpoint}, falling back to local simulation:`, e.message);
       if (isWrite && !endpoint.includes('/api/auth')) {
         updateCloudSyncBadge("offline");
@@ -5143,7 +5147,7 @@ const ClientAPI = {
   },
 
   async syncBackend() {
-    if (!State.user.email) return;
+    if (!State.user.email || (window.GrocerlyAuth?.configured && !window.GrocerlyAuth.isAuthenticated())) return;
     const uid = State.user.uid || null;
     updateCloudSyncBadge("syncing");
     try {
