@@ -3733,7 +3733,7 @@ function refreshRecipesList() {
               : ing.qty === 0.75 ? '3/4' 
               : ing.qty === 1.0 ? 'Full' 
               : ing.qty;
-            return `<li>${displayQty} of ${ing.name}</li>`;
+            return `<li>${displayQty} of <span class="recipe-ingredient-name">${ing.name}</span></li>`;
           }).join('')}
         </ul>
         <strong style="margin-top: 4px; font-size: 11px; display: block;">Instructions:</strong>
