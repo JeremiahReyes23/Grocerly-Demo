@@ -274,6 +274,78 @@
       productInput?.click();
     });
 
+    // The Lifespan pencil edits days between shopping trips, while the existing
+    // desiredStorageWeeks field remains the persisted source of truth.
+    const lifespanButton=$("btn-edit-lifespan-trigger");
+    const lifespanModal=$("modal-edit-lifespan");
+    const lifespanForm=$("form-edit-lifespan");
+    const lifespanInput=$("edit-lifespan-days");
+    const lifespanClose=$("btn-lifespan-close");
+    function closeLifespan(){
+      lifespanModal?.classList.remove("active");
+      lifespanButton?.focus();
+    }
+    if(lifespanButton && lifespanModal && lifespanForm && lifespanInput){
+      lifespanButton.addEventListener("click",()=>{
+        const current=Number(State?.user?.desiredStorageWeeks);
+        lifespanInput.value=String(Number.isFinite(current)&&current>0?Math.round(current*7):14);
+        lifespanModal.classList.add("active");
+        lifespanInput.focus();
+        lifespanInput.select();
+      });
+      lifespanClose?.addEventListener("click",closeLifespan);
+      lifespanModal.addEventListener("click",event=>{
+        if(event.target===lifespanModal)closeLifespan();
+      });
+      lifespanModal.addEventListener("keydown",event=>{
+        if(event.key==="Escape"){
+          event.preventDefault();
+          closeLifespan();
+        }
+      });
+      lifespanForm.addEventListener("submit",event=>{
+        event.preventDefault();
+        const days=Number(lifespanInput.value);
+        if(!Number.isInteger(days)||days<1||days>365){
+          lifespanInput.setCustomValidity("Choose a whole number from 1 to 365.");
+          lifespanInput.reportValidity();
+          return;
+        }
+        lifespanInput.setCustomValidity("");
+        if(!State?.user)return;
+        State.user.desiredStorageWeeks=days/7;
+        if(typeof saveStateToStorage==="function")saveStateToStorage();
+        if(typeof refreshDashboard==="function")refreshDashboard();
+        closeLifespan();
+      });
+      lifespanInput.addEventListener("input",()=>lifespanInput.setCustomValidity(""));
+    }
+
+    // The existing image cropper owns saving/syncing. Make its file picker
+    // accessible from keyboard and ensure the thumbnail refreshes after crop.
+    const avatarTrigger=$("profile-avatar-trigger");
+    const avatarFile=$("profile-card-upload");
+    const avatarImage=$("profile-card-img");
+    if(avatarTrigger && avatarFile){
+      avatarTrigger.addEventListener("keydown",event=>{
+        if(event.key==="Enter"||event.key===" "){
+          event.preventDefault();
+          avatarFile.click();
+        }
+      });
+      avatarFile.addEventListener("change",()=>{
+        // Resetting after selection allows reusing the same file for a retry.
+        setTimeout(()=>{avatarFile.value="";},0);
+      });
+    }
+    if(avatarImage){
+      avatarImage.addEventListener("error",()=>{
+        // Fail gracefully for broken remote image references, without modifying
+        // the saved user data. A new upload can replace the unavailable image.
+        avatarImage.style.background="var(--primary-green-light)";
+      });
+    }
+
     // Keep the user-visible main tab highlighted after returning from secondary screens.
     document.querySelectorAll("#app-bottom-nav .nav-item").forEach(a=>{
       a.addEventListener("click",()=>{document.querySelectorAll("#app-bottom-nav .nav-item").forEach(item=>item.classList.toggle("active",item===a));});
