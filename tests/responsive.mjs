@@ -195,6 +195,7 @@ try {
         });
         assert(contrast.ratio>=4.5,
           'Dark-mode Home greeting contrast insufficient at '+viewport.width+': '+JSON.stringify(contrast));
+        await page.screenshot({path: 'test-artifacts/'+viewport.width+'-home-dark.png', fullPage: false});
         await page.evaluate(()=>document.body.classList.remove('dark-theme'));
       }
 
@@ -205,6 +206,28 @@ try {
         assert.equal(await page.locator('#page-profile .grocerly-profile-identity h1').innerText(),'Mi perfil');
         assert((await page.locator('#page-profile #btn-logout').innerText()).includes('Cerrar sesión'));
         assert.equal(await page.evaluate(()=>document.documentElement.lang),'es');
+        await page.screenshot({path:'test-artifacts/'+viewport.width+'-settings-es.png',fullPage:false});
+        // Verify EN/ES applies to the four main screens, not just Settings.
+        const checks=[
+          {tab:'dashboard',selector:'#page-dashboard .grocerly-plan-heading',expected:'Tu plan de compras actual'},
+          {tab:'meals',selector:'#page-meals .meals-intro h1',expected:'Mi plan de comidas'},
+          {tab:'inventory',selector:'#page-inventory .grocerly-inventory-heading h1',expected:'Mis compras'},
+        ];
+        for(const check of checks){
+          await page.locator('#app-bottom-nav .nav-item[data-tab="'+check.tab+'"]').click();
+          await page.locator('#page-'+check.tab+'.active').waitFor();
+          await page.waitForFunction(({selector,expected})=>
+            document.querySelector(selector)?.textContent?.trim()===expected,check);
+          const empty=page.locator('#page-'+check.tab+' .empty-state-card');
+          if(await empty.count() && check.tab==='meals'){
+            assert((await empty.innerText()).includes('Tu plan de comidas está vacío'),'Meal empty state untranslated');
+          }
+          if(await empty.count() && check.tab==='inventory'){
+            assert((await empty.innerText()).includes('Tu despensa está vacía'),'Pantry empty state untranslated');
+          }
+        }
+        await page.locator('#app-bottom-nav .nav-item[data-tab="profile"]').click();
+        await page.locator('#page-profile.active').waitFor();
         await page.locator('#grocerly-language-switch [data-lang="en"]').click();
         await page.waitForFunction(()=>[...document.querySelectorAll('#page-profile .settings-item-left span')]
           .some(span=>span.textContent.trim()==='Dark Theme'));
