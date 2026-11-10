@@ -164,7 +164,7 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
         signal:AbortSignal.timeout(12000)
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || result.data?.failed > 0 || result.data?.succeeded === 0) {
+      if (!response.ok || result.data?.failed > 0 || !(result.data?.succeeded > 0)) {
         throw new Error('Email provider rejected feedback');
       }
       return res.json({success:true,delivered:true});
