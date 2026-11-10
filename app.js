@@ -4164,7 +4164,7 @@ function initProfileSettings() {
     cropperModal.classList.remove("active");
   };
 
-  document.getElementById("btn-cropper-save").onclick = () => {
+  document.getElementById("btn-cropper-save").onclick = async () => {
     let croppedBase64 = "";
     try {
       const canvas = document.createElement("canvas");
@@ -4192,20 +4192,38 @@ function initProfileSettings() {
 
       ctx.drawImage(cropperImg, dx, dy, dw, dh);
 
-      croppedBase64 = canvas.toDataURL("image/png");
+      croppedBase64 = canvas.toDataURL("image/jpeg", 0.72);
     } catch (err) {
-      console.warn("Canvas crop failed (CORS or canvas exception), falling back to raw image src:", err);
-      croppedBase64 = cropperImg.src;
+      console.warn("Profile photo crop failed:", err);
+      alert("Could not process this photo. Please try another image.");
+      return;
     }
 
-    if (croppedBase64) {
-      State.user.avatar = croppedBase64;
-      updateAllAvatarElements();
-      saveStateToStorage();
-      ClientAPI.syncBackend();
+    if (!croppedBase64 || croppedBase64.length > 75000) {
+      alert("This profile photo is too large. Please choose a smaller image.");
+      return;
     }
-    cropperModal.classList.remove("active");
-    alert("Profile photo updated successfully!");
+    const previousAvatar = State.user.avatar;
+    State.user.avatar = croppedBase64;
+    updateAllAvatarElements();
+    const saveButton = document.getElementById("btn-cropper-save");
+    if (saveButton) saveButton.disabled = true;
+    try {
+      if (window.GrocerlyAuth?.configured) {
+        await ClientAPI.request('/api/profile', 'PUT', {profile: State.user});
+      } else {
+        await ClientAPI.syncBackend();
+      }
+      saveStateToStorage();
+      cropperModal.classList.remove("active");
+      alert("Profile photo saved successfully!");
+    } catch (err) {
+      State.user.avatar = previousAvatar;
+      updateAllAvatarElements();
+      alert("Could not save your profile photo. Please try again. " + (err.message || ""));
+    } finally {
+      if (saveButton) saveButton.disabled = false;
+    }
   };
 
   // Edit Budget Modal Bindings
