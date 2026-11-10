@@ -1082,3 +1082,43 @@ body.dark-theme .grocerly-lifespan-modal .form-control {
   #modal-camera .modal-content { padding: 7px !important; gap: 6px !important; }
   #modal-camera .grocerly-scanner-alternatives button { min-height: 30px !important; padding: 5px 8px !important; }
 }
+
+
+/* Compact, accessible manual-entry forms: keep common actions in view. */
+#modal-add-grocery .modal-box,
+#modal-edit-grocery .modal-box {
+  max-height: min(94%, 780px);
+  width: min(96%, 480px);
+  padding-bottom: 8px !important;
+}
+#modal-add-grocery .modal-header,
+#modal-edit-grocery .modal-header { padding: 10px 16px; flex-shrink: 0; }
+#modal-add-grocery .modal-content,
+#modal-edit-grocery .modal-content {
+  padding: 10px 16px !important;
+  gap: 8px !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+#modal-add-grocery .form-group,
+#modal-edit-grocery .form-group { margin-bottom: 0 !important; min-width: 0; }
+#modal-add-grocery .form-control,
+#modal-edit-grocery .form-control { min-width: 0; max-width: 100%; min-height: 36px; padding: 6px 9px; font-size: 13px; }
+.grocerly-compact-select { appearance: auto; width: 100%; }
+.grocerly-more-fields { border: 1px solid var(--border-color); border-radius: 9px; padding: 0; background: var(--bg-card); }
+.grocerly-more-fields summary { cursor: pointer; list-style: none; padding: 10px 12px; color: var(--primary-green); font-size: 13px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.grocerly-more-fields summary::-webkit-details-marker { display: none; }
+.grocerly-more-fields summary::after { content: "⌄"; margin-left: auto; font-size: 18px; line-height: 1; }
+.grocerly-more-fields[open] summary::after { content: "⌃"; }
+.grocerly-optional-hint { color: var(--text-secondary); font-size: 11px; font-weight: 400; }
+.grocerly-more-fields-inner { display: flex; flex-direction: column; gap: 9px; padding: 0 10px 10px; }
+#modal-add-grocery #btn-groc-save,
+#modal-edit-grocery #btn-edit-groc-save { min-height: 42px; padding: 9px !important; position: sticky; bottom: 0; z-index: 1; }
+#recipe-inline-editor { padding: 12px !important; }
+#recipe-inline-editor .form-group { margin-bottom: 8px !important; }
+#recipe-inline-editor .recipe-edit-ingredients-list { max-height: 32vh; overflow-y: auto; }
+#recipe-inline-editor .grocerly-more-fields-inner { padding: 8px 10px; }
+#recipe-inline-editor .grocerly-more-fields .form-group { margin-bottom: 8px !important; }
+@media (max-height: 610px) {
+  #modal-add-grocery .modal-box, #modal-edit-grocery .modal-box { max-height: 96%; }
+}
