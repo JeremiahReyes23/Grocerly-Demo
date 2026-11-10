@@ -125,6 +125,56 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
     });
   });
 
+  // User feedback is delivered only from verified accounts.
+  // Vercel's filesystem is ephemeral; do not pretend a local JSON save is an inbox.
+  const lastFeedbackAt = new Map();
+  router.post('/feedback', async (req, res) => {
+    const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+    if (message.length < 5 || message.length > 4000) {
+      return res.status(400).json({error:'Please enter feedback between 5 and 4000 characters.'});
+    }
+    const destination = process.env.FEEDBACK_TO_EMAIL;
+    const sender = process.env.SMTP2GO_SENDER_EMAIL;
+    const apiKey = process.env.SMTP2GO_API_KEY;
+    if (!destination || !sender || !apiKey) {
+      return res.status(503).json({error:'Feedback email is not configured yet. Please try again later.'});
+    }
+    const userId = req.grocerlyUser.id;
+    const now = Date.now();
+    if (now - (lastFeedbackAt.get(userId) || 0) < 60000) {
+      return res.status(429).json({error:'Please wait a minute before sending another message.'});
+    }
+    lastFeedbackAt.set(userId, now);
+    const textBody = [
+      'New Grocerly app feedback',
+      'Account email: ' + (req.grocerlyUser.email || 'Not provided'),
+      'Account ID: ' + userId,
+      'Submitted: ' + new Date(now).toISOString(),
+      '',
+      message
+    ].join('\n');
+    try {
+      const response = await fetchImpl('https://api.smtp2go.com/v3/email/send', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          api_key:apiKey, sender, to:[destination],
+          subject:'Grocerly app feedback', text_body:textBody
+        }),
+        signal:AbortSignal.timeout(12000)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.data?.failed > 0 || result.data?.succeeded === 0) {
+        throw new Error('Email provider rejected feedback');
+      }
+      return res.json({success:true,delivered:true});
+    } catch (error) {
+      lastFeedbackAt.delete(userId);
+      console.error('Grocerly feedback email delivery failed:', error.message);
+      return res.status(502).json({error:'Could not deliver feedback. Please try again later.'});
+    }
+  });
+
   router.get('/me', (req, res) => {
     res.json({ id: req.grocerlyUser.id, email: req.grocerlyUser.email });
   });
