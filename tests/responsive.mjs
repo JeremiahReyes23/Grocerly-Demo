@@ -116,19 +116,88 @@ try {
       assert(viewportFrame.pageScrollTop === 0, `${screen} scrolls the whole page at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
       assert(viewportFrame.pageOverflow <= 3, `${screen} page contents overflow the viewport at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
       assert(viewportFrame.documentOverflow <= 3, `${screen} document height exceeds the viewport at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
-      assert(['auto', 'scroll'].includes(viewportFrame.innerOverflowY), `${screen} missing contained scrolling at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
+      assert((tab==='profile' ? viewportFrame.innerOverflowY==='hidden' : ['auto', 'scroll'].includes(viewportFrame.innerOverflowY)), `${screen} missing contained scrolling at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
       assert(viewportFrame.innerHeight >= 15, `${screen} inner content panel collapsed at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
       assert(viewportFrame.innerBottom <= viewportFrame.navTop + 3, `${screen} inner content overlaps bottom navigation at ${viewport.width}px: ${JSON.stringify(viewportFrame)}`);
             const titleGap = await page.evaluate(activeTab => {
         const titleSelector = activeTab === 'dashboard' ? '#dash-welcome-text'
           : activeTab === 'meals' || activeTab === 'inventory' ? '#page-' + activeTab + ' .header-bar'
-          : '#page-profile .grocerly-profile-scroll > h1';
+          : '#page-profile .grocerly-profile-identity > h1';
         const target = document.querySelector(titleSelector);
         const brand = document.querySelector('.grocerly-global-brand');
         if (!target || !brand) return null;
         return target.getBoundingClientRect().top - brand.getBoundingClientRect().bottom;
       }, tab);
       assert(titleGap !== null && titleGap >= 8, `${screen} starts behind the Grocerly brand at ${viewport.width}px: gap ${titleGap}`);
+
+      if (tab === 'profile') {
+        const layout = await page.evaluate(() => {
+          const panel = document.querySelector('#page-profile .grocerly-profile-scroll');
+          const identity = document.querySelector('#page-profile .grocerly-profile-identity');
+          const heading = identity?.querySelector('h1')?.getBoundingClientRect();
+          const avatar = identity?.querySelector('#profile-card-img')?.getBoundingClientRect();
+          const signout = document.querySelector('#page-profile #btn-logout')?.getBoundingClientRect();
+          const nav = document.querySelector('#app-bottom-nav')?.getBoundingClientRect();
+          panel.scrollTop = 100;
+          return {
+            scrollHeight:panel.scrollHeight,clientHeight:panel.clientHeight,scrollTop:panel.scrollTop,
+            heading:heading?{left:heading.left,right:heading.right,top:heading.top}:null,
+            avatar:avatar?{left:avatar.left,right:avatar.right,top:avatar.top}:null,
+            signoutBottom:signout?.bottom,navTop:nav?.top,
+            visibleRows:[...document.querySelectorAll('#page-profile .settings-list > .settings-item')]
+              .filter(row=>getComputedStyle(row).display!=='none').length
+          };
+        });
+        assert(layout.scrollHeight <= layout.clientHeight+3,
+          'Profile must fit without internal scrolling at '+viewport.width+': '+JSON.stringify(layout));
+        assert(layout.scrollTop===0,
+          'Profile must stay fixed at '+viewport.width+': '+JSON.stringify(layout));
+        assert(layout.heading && layout.avatar && layout.heading.right <= layout.avatar.left+2,
+          'Profile avatar overlaps heading at '+viewport.width+': '+JSON.stringify(layout));
+        assert(layout.signoutBottom <= layout.navTop-3,
+          'Sign Out overlaps the navigation at '+viewport.width+': '+JSON.stringify(layout));
+        assert(layout.visibleRows===4,
+          'Profile must show four settings options at '+viewport.width+': '+JSON.stringify(layout));
+      }
+
+      if ((tab==='meals' || tab==='inventory') && [390,1440].includes(viewport.width)) {
+        const empty = await page.evaluate(tab => {
+          const parent=document.querySelector(tab==='meals'?'#recipes-list-container':'#inventory-list-container');
+          const card=parent?.querySelector('.empty-state-card');
+          if(!card)return null;
+          return {parent:parent.getBoundingClientRect().width,card:card.getBoundingClientRect().width};
+        },tab);
+        if(empty) assert(empty.card>=empty.parent*0.80,
+          screen+' empty-state should span collection at '+viewport.width+': '+JSON.stringify(empty));
+      }
+
+      if(tab==='dashboard' && [390,1440].includes(viewport.width)){
+        await page.evaluate(()=>document.body.classList.add('dark-theme'));
+        const contrast=await page.evaluate(()=>{
+          const parse = color => (color.match(/[\d.]+/g)||[]).slice(0,3).map(Number);
+          const lum = values => values.map(c=>{c/=255;return c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4})
+            .reduce((sum,value,i)=>sum+value*[0.2126,0.7152,0.0722][i],0);
+          const pageBg=getComputedStyle(document.querySelector('#page-dashboard')).backgroundColor;
+          const heading=getComputedStyle(document.querySelector('#dash-welcome-text')).color;
+          const a=lum(parse(pageBg)),b=lum(parse(heading));
+          return {ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05),pageBg,heading};
+        });
+        assert(contrast.ratio>=4.5,
+          'Dark-mode Home greeting contrast insufficient at '+viewport.width+': '+JSON.stringify(contrast));
+        await page.evaluate(()=>document.body.classList.remove('dark-theme'));
+      }
+
+      if(tab==='profile' && [390,1440].includes(viewport.width)){
+        await page.locator('#grocerly-language-switch [data-lang="es"]').click();
+        await page.waitForFunction(()=>[...document.querySelectorAll('#page-profile .settings-item-left span')]
+          .some(span=>span.textContent.trim()==='Tema oscuro'));
+        assert.equal(await page.locator('#page-profile .grocerly-profile-identity h1').innerText(),'Mi perfil');
+        assert((await page.locator('#page-profile #btn-logout').innerText()).includes('Cerrar sesión'));
+        assert.equal(await page.evaluate(()=>document.documentElement.lang),'es');
+        await page.locator('#grocerly-language-switch [data-lang="en"]').click();
+        await page.waitForFunction(()=>[...document.querySelectorAll('#page-profile .settings-item-left span')]
+          .some(span=>span.textContent.trim()==='Dark Theme'));
+      }
 
       if ([390,1440].includes(viewport.width)) {
         visualDiagnostics.push(await page.evaluate((view) => {
