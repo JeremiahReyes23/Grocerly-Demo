@@ -616,7 +616,7 @@
               <button class="btn btn-outline" id="btn-inventory-done-shopping" style="width: auto; padding: 6px 10px; font-size: 11.5px; border-radius: var(--border-radius-sm); border-color: var(--primary-green); color: var(--primary-green); background: var(--primary-green-light);">
                 <i class="fas fa-check"></i> Done
               </button>
-              <button class="btn btn-primary" id="btn-inventory-add-trigger" aria-label="Scan a receipt to add groceries" style="width: auto; padding: 6px 10px; font-size: 11.5px; border-radius: var(--border-radius-sm);">
+              <button class="btn btn-primary" id="btn-inventory-add-trigger" aria-label="Add a grocery item manually" style="width: auto; padding: 6px 10px; font-size: 11.5px; border-radius: var(--border-radius-sm);">
                 <i class="fas fa-plus"></i> Add
               </button>
             </div>
@@ -1532,8 +1532,18 @@
         <!-- Categories (all visible grid-options, small buttons, no scroll) -->
         <div class="form-group" style="margin-bottom: 4px;">
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Category</label>
-          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px;" id="groc-cat-grid">
-            <div class="grid-option compact selected" data-cat="Produce" style="padding: 6px 4px; font-size: 11px;">Produce</div>
+          <select id="groc-cat-select" class="form-control grocerly-compact-select" aria-label="Category">
+            <option value="Produce" selected>Produce</option>
+            <option value="Meat & Poultry">Meat & Poultry</option>
+            <option value="Dairy & Eggs">Dairy & Eggs</option>
+            <option value="Bakery">Bakery & Grain</option>
+            <option value="Frozen">Frozen</option>
+            <option value="Pantry">Pantry</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Drinks">Drinks</option>
+            <option value="Condiments">Condiments</option>
+            <option value="Spices/Herbs">Spices/Herbs</option>
+          </select>
             <div class="grid-option compact" data-cat="Meat & Poultry" style="padding: 6px 4px; font-size: 11px;">Meat & Poultry</div>
             <div class="grid-option compact" data-cat="Dairy & Eggs" style="padding: 6px 4px; font-size: 11px;">Dairy & Eggs</div>
             <div class="grid-option compact" data-cat="Bakery" style="padding: 6px 4px; font-size: 11px;">Bakery & Grain</div>
@@ -1588,8 +1598,11 @@
         <!-- Storage Location -->
         <div class="form-group" style="margin-bottom: 4px;">
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Storage Location</label>
-          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 6px; gap: 8px;" id="groc-loc-grid">
-            <div class="grid-option compact selected" data-cat="Fridge" style="padding: 8px; font-size: 12px;">Fridge</div>
+          <select id="groc-loc-select" class="form-control grocerly-compact-select" aria-label="Storage Location">
+            <option value="Fridge" selected>Fridge</option>
+            <option value="Freezer">Freezer</option>
+            <option value="Pantry">Pantry</option>
+          </select>
             <div class="grid-option compact" data-cat="Freezer" style="padding: 8px; font-size: 12px;">Freezer</div>
             <div class="grid-option compact" data-cat="Pantry" style="padding: 8px; font-size: 12px;">Pantry</div>
           </div>
@@ -1647,8 +1660,18 @@
         <!-- Categories (all visible grid-options, small buttons, no scroll) -->
         <div class="form-group" style="margin-bottom: 4px;">
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Category</label>
-          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px;" id="edit-groc-cat-grid">
-            <div class="grid-option compact" data-cat="Produce" style="padding: 6px 4px; font-size: 11px;">Produce</div>
+          <select id="edit-groc-cat-select" class="form-control grocerly-compact-select" aria-label="Category">
+            <option value="Produce" selected>Produce</option>
+            <option value="Meat & Poultry">Meat & Poultry</option>
+            <option value="Dairy & Eggs">Dairy & Eggs</option>
+            <option value="Bakery">Bakery & Grain</option>
+            <option value="Frozen">Frozen</option>
+            <option value="Pantry">Pantry</option>
+            <option value="Snacks">Snacks</option>
+            <option value="Drinks">Drinks</option>
+            <option value="Condiments">Condiments</option>
+            <option value="Spices/Herbs">Spices/Herbs</option>
+          </select>
             <div class="grid-option compact" data-cat="Meat & Poultry" style="padding: 6px 4px; font-size: 11px;">Meat & Poultry</div>
             <div class="grid-option compact" data-cat="Dairy & Eggs" style="padding: 6px 4px; font-size: 11px;">Dairy & Eggs</div>
             <div class="grid-option compact" data-cat="Bakery" style="padding: 6px 4px; font-size: 11px;">Bakery & Grain</div>
@@ -1702,8 +1725,11 @@
         <!-- Storage Location -->
         <div class="form-group" style="margin-bottom: 4px;">
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Storage Location</label>
-          <div class="options-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 6px; gap: 8px;" id="edit-groc-loc-grid">
-            <div class="grid-option compact" data-cat="Fridge" style="padding: 8px; font-size: 12px;">Fridge</div>
+          <select id="edit-groc-loc-select" class="form-control grocerly-compact-select" aria-label="Storage Location">
+            <option value="Fridge" selected>Fridge</option>
+            <option value="Freezer">Freezer</option>
+            <option value="Pantry">Pantry</option>
+          </select>
             <div class="grid-option compact" data-cat="Freezer" style="padding: 8px; font-size: 12px;">Freezer</div>
             <div class="grid-option compact" data-cat="Pantry" style="padding: 8px; font-size: 12px;">Pantry</div>
           </div>
