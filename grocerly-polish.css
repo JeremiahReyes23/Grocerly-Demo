@@ -446,3 +446,51 @@ body.dark-theme #page-inventory .grocerly-category-filters button[aria-pressed="
     font-size: 11px !important;
   }
 }
+
+
+/* At 320×568 we still display every control without scrolling or moving
+   the dock; the margins compact before the controls themselves do. */
+@media (max-width: 620px) and (max-height: 710px) {
+  #page-profile {
+    padding-top: calc(76px + env(safe-area-inset-top)) !important;
+    padding-bottom: calc(65px + env(safe-area-inset-bottom)) !important;
+  }
+  #page-profile .grocerly-profile-identity {
+    grid-template-columns: minmax(0, 1fr) 54px !important;
+    margin-bottom: 3px !important;
+  }
+  #page-profile .grocerly-profile-identity > .profile-card {
+    width: 52px !important;
+    height: 52px !important;
+    max-height: 52px !important;
+  }
+  #page-profile .grocerly-profile-identity .profile-avatar-wrapper {
+    width: 51px !important;
+    height: 51px !important;
+  }
+  #page-profile .grocerly-profile-identity #profile-card-img {
+    width: 49px !important;
+    height: 49px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-name,
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-email {
+    margin-bottom: 3px !important;
+  }
+  #page-profile .grocerly-profile-scroll .form-control {
+    height: 32px !important;
+    min-height: 32px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-settings-heading {
+    margin: 1px 0 3px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .settings-list {
+    gap: 3px !important;
+  }
+  #page-profile .grocerly-profile-scroll .settings-item {
+    min-height: 37px !important;
+    padding: 4px 10px !important;
+  }
+  #page-profile > .btn-group {
+    margin-top: 3px !important;
+  }
+}
