@@ -819,7 +819,7 @@ document.addEventListener("DOMContentLoaded", () => {
         message: msg
       })
       .then(() => {
-        showToast("Your support request has been sent to our inbox! We will get back to you shortly.", "success");
+        showToast("Your support request was emailed successfully.", "success");
         txtContactMessage.value = "";
         
         // If logged in as admin, refresh the dashboard lists instantly
@@ -829,7 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .catch(err => {
         console.error("Failed to send support feedback", err);
-        showToast("Failed to submit support request. Please try again.", "error");
+        showToast(err?.message || "Failed to submit support request. Please try again.", "error");
       });
     });
   }
@@ -4425,7 +4425,7 @@ function initProfileSettings() {
       })
       .catch(err => {
         console.error("Failed to submit feedback", err);
-        showToast("Failed to send feedback. Please try again.", "error");
+        showToast(err?.message || "Failed to send feedback. Please try again.", "error");
       });
     };
   }
@@ -5154,7 +5154,7 @@ const MockBackend = {
 
 const ClientAPI = {
   async request(endpoint, method = 'GET', body = null) {
-    if (window.GrocerlyAuth?.configured && (endpoint.startsWith('/api/profile') || /^\/api\/(inventory|recipes|trips|waste|notifications|calendar|custom-stores)(\?|$)/.test(endpoint))) {
+    if (window.GrocerlyAuth?.configured && (endpoint.startsWith('/api/profile') || endpoint === '/api/feedback' || /^\/api\/(inventory|recipes|trips|waste|notifications|calendar|custom-stores)(\?|$)/.test(endpoint))) {
       return window.GrocerlyAuth.apiRequest(endpoint, method, body);
     }
     const isWrite = (method === 'PUT' || method === 'POST');
