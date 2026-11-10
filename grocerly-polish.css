@@ -1,0 +1,448 @@
+/* Grocerly visual fidelity fixes: contrast, empty states, filters, profile.
+   Loaded LAST so the reference design stays authoritative. */
+
+/* Dark mode: the original forest-green headings have poor contrast against
+   a dark forest background. Use lighter sage for all informational text. */
+body.dark-theme {
+  --grocerly-paper: #15251c;
+  --grocerly-ink: #f0f8f1;
+  --grocerly-forest: #9ed8b4;
+  --grocerly-slate: #c7ddcd;
+  --grocerly-outline: #719680;
+  --grocerly-orange: #f7b25c;
+  --primary-green: #9ed8b4;
+  --primary-green-hover: #b3e7c3;
+  --primary-green-light: #2a4b35;
+  --bg-primary: #15251c;
+  --bg-card: #23382b;
+  --text-main: #eef8f0;
+  --text-secondary: #c7ddcd;
+  --border-color: #668370;
+  --accent-orange: #f7b25c;
+  --accent-orange-light: #543b22;
+}
+body.dark-theme #page-dashboard #dash-welcome-text,
+body.dark-theme #page-meals .header-bar h1,
+body.dark-theme #page-inventory .header-bar h1,
+body.dark-theme #page-profile .grocerly-profile-identity h1 {
+  color: var(--grocerly-ink) !important;
+}
+body.dark-theme #page-dashboard .grocerly-quick-panel {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+body.dark-theme #page-dashboard .grocerly-quick-panel h2,
+body.dark-theme #page-dashboard .grocerly-plan-heading,
+body.dark-theme #page-dashboard .stat-card-row span,
+body.dark-theme #page-dashboard .stat-value,
+body.dark-theme #page-dashboard .stat-desc,
+body.dark-theme #dash-grocery-list-dropdown .dropdown-header-left h2,
+body.dark-theme #dash-grocery-list-dropdown .dropdown-header-left i,
+body.dark-theme #dash-grocery-list-dropdown .grocery-table th,
+body.dark-theme #dash-grocery-list-dropdown .grocery-table td,
+body.dark-theme #page-meals .meals-intro p,
+body.dark-theme #page-inventory .grocerly-inventory-heading p {
+  color: var(--text-main) !important;
+}
+body.dark-theme #page-dashboard .dashboard-stats-2x2 .stat-card,
+body.dark-theme #page-dashboard #dash-grocery-list-dropdown,
+body.dark-theme #page-meals #recipes-list-container,
+body.dark-theme #page-inventory #inventory-list-container {
+  background: var(--bg-card) !important;
+  border-color: var(--grocerly-outline) !important;
+}
+body.dark-theme #page-dashboard .stat-value {
+  color: var(--grocerly-forest) !important;
+}
+body.dark-theme #page-dashboard .grocerly-quick-action,
+body.dark-theme #page-dashboard .grocerly-quick-action.primary {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border-color: var(--grocerly-outline) !important;
+}
+body.dark-theme #page-dashboard .grocerly-quick-action i {
+  color: var(--grocerly-forest) !important;
+}
+body.dark-theme #page-dashboard #btn-edit-budget-trigger i {
+  color: var(--text-secondary) !important;
+}
+body.dark-theme #page-dashboard #dash-grocery-list-dropdown #btn-dash-go-meals {
+  background: var(--bg-card) !important;
+  border-color: var(--grocerly-forest) !important;
+  color: var(--grocerly-forest) !important;
+}
+body.dark-theme #page-meals .recipe-card,
+body.dark-theme #page-inventory .inv-card {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border-color: var(--grocerly-outline) !important;
+}
+body.dark-theme #page-meals .recipe-card-title,
+body.dark-theme #page-meals .recipe-card-desc,
+body.dark-theme #page-inventory .inv-card-name,
+body.dark-theme #page-inventory .inv-card-cat,
+body.dark-theme #page-inventory .inv-card-price {
+  color: var(--text-main) !important;
+}
+body.dark-theme #page-inventory .inv-card-life,
+body.dark-theme #page-inventory .inv-card-stock,
+body.dark-theme #page-meals .recipe-ingredients-check {
+  color: var(--grocerly-forest) !important;
+}
+body.dark-theme #page-inventory .inv-card-life.warn,
+body.dark-theme #page-inventory .inv-card-stock.needs {
+  color: var(--grocerly-orange) !important;
+}
+body.dark-theme #page-profile .settings-item,
+body.dark-theme #page-profile .form-control {
+  color: var(--text-main) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+body.dark-theme #page-profile .settings-item-left,
+body.dark-theme #page-profile .settings-item-left span,
+body.dark-theme #page-profile .grocerly-settings-heading,
+body.dark-theme #page-profile .form-group label {
+  color: var(--text-main) !important;
+}
+body.dark-theme .grocerly-global-brand span { color: var(--grocerly-forest) !important; }
+body.dark-theme .bottom-nav .nav-item.active,
+body.dark-theme .bottom-nav .nav-item.active i,
+body.dark-theme .bottom-nav .nav-item.active span {
+  color: var(--grocerly-forest) !important;
+}
+body.dark-theme .bottom-nav {
+  background: var(--bg-card) !important;
+  border-top-color: var(--border-color) !important;
+}
+
+/* Meal empty state: span both recipe-grid columns, exactly like the wide pantry
+   empty state. The dashed inner panel fills the outer scrollable card. */
+#page-meals #recipes-list-container > .empty-state-card,
+#page-inventory #inventory-list-container > .empty-state-card {
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 12px 0 !important;
+  min-height: clamp(190px, 32dvh, 325px) !important;
+  padding: clamp(24px, 4vw, 43px) 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  border: 1.5px dashed var(--border-color) !important;
+  border-radius: 19px !important;
+  background: var(--bg-card) !important;
+  box-shadow: none !important;
+  text-align: center !important;
+  justify-self: stretch !important;
+}
+#page-meals #recipes-list-container > .empty-state-card > i,
+#page-inventory #inventory-list-container > .empty-state-card > i {
+  font-size: 42px !important;
+}
+#page-meals #recipes-list-container > .empty-state-card > div,
+#page-inventory #inventory-list-container > .empty-state-card > div {
+  color: var(--text-main) !important;
+  font-size: clamp(16px, 2vw, 19px) !important;
+  font-weight: 750 !important;
+}
+#page-meals #recipes-list-container > .empty-state-card > p,
+#page-inventory #inventory-list-container > .empty-state-card > p {
+  color: var(--text-secondary) !important;
+  max-width: 355px !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+}
+body.dark-theme #page-meals #recipes-list-container > .empty-state-card,
+body.dark-theme #page-inventory #inventory-list-container > .empty-state-card {
+  background: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+}
+body.dark-theme #page-meals #recipes-list-container > .empty-state-card > div,
+body.dark-theme #page-inventory #inventory-list-container > .empty-state-card > div {
+  color: var(--text-main) !important;
+}
+body.dark-theme #page-meals #recipes-list-container > .empty-state-card > p,
+body.dark-theme #page-inventory #inventory-list-container > .empty-state-card > p {
+  color: var(--text-secondary) !important;
+}
+
+/* Grocery category controls: readable extended pills with preserved horizontal
+   scrolling on narrow phone screens, not squeezed tiny chips. */
+#page-inventory .grocerly-category-filters {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  gap: 10px !important;
+  padding: 2px 0 11px !important;
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scrollbar-width: thin;
+  scroll-snap-type: x proximity;
+}
+#page-inventory .grocerly-category-filters button {
+  box-sizing: border-box !important;
+  flex: 0 0 auto !important;
+  min-height: 43px !important;
+  min-width: 76px !important;
+  padding: 9px 20px !important;
+  border-radius: 999px !important;
+  font-size: 13px !important;
+  font-weight: 650 !important;
+  text-align: center !important;
+  scroll-snap-align: start;
+  white-space: nowrap !important;
+}
+#page-inventory .grocerly-category-filters button:first-child {
+  min-width: 56px !important;
+  padding-inline: 15px !important;
+}
+body.dark-theme #page-inventory .grocerly-category-filters button {
+  background: var(--bg-card) !important;
+  color: var(--text-main) !important;
+  border-color: var(--grocerly-outline) !important;
+}
+body.dark-theme #page-inventory .grocerly-category-filters button[aria-pressed="true"] {
+  background: var(--primary-green-light) !important;
+  color: #f2fbf4 !important;
+  border-color: var(--primary-green) !important;
+}
+
+/* Profile: one coherent heading/face group, no absolute positioning. No
+   vertical scrolling of the page OR settings panel, even on compact phones. */
+#page-profile { overflow: hidden !important; }
+#page-profile .grocerly-profile-scroll {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  padding-right: 0 !important;
+  gap: 0 !important;
+  justify-content: flex-start !important;
+}
+#page-profile .grocerly-profile-identity {
+  flex: 0 0 auto !important;
+  min-width: 0;
+  width: 100%;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 86px;
+  grid-template-rows: auto auto;
+  column-gap: 10px;
+  align-items: center;
+  margin: 0 0 15px !important;
+}
+#page-profile .grocerly-profile-identity > h1 {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 27px !important;
+  line-height: 1.2 !important;
+  margin: 0 0 3px !important;
+  padding: 0 !important;
+}
+#page-profile .grocerly-profile-identity > .grocerly-profile-intro {
+  grid-column: 1;
+  grid-row: 2;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.3 !important;
+  overflow-wrap: anywhere;
+}
+#page-profile .grocerly-profile-identity > .profile-card {
+  position: relative !important;
+  grid-column: 2;
+  grid-row: 1 / 3;
+  align-self: center !important;
+  justify-self: end !important;
+  width: 82px !important;
+  height: 82px !important;
+  min-height: 0 !important;
+  max-height: 82px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  inset: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  display: block !important;
+  overflow: visible !important;
+}
+#page-profile .grocerly-profile-identity .profile-avatar-wrapper {
+  position: relative !important;
+  width: 78px !important;
+  height: 78px !important;
+  overflow: visible !important;
+}
+#page-profile .grocerly-profile-identity #profile-card-img {
+  width: 74px !important;
+  height: 74px !important;
+  display: block;
+  object-fit: cover;
+  margin: 0 !important;
+  border-radius: 50% !important;
+  border: 1.5px solid var(--grocerly-forest) !important;
+  background: var(--primary-green-light) !important;
+}
+#page-profile .grocerly-profile-identity .profile-avatar-plus-badge {
+  position: absolute !important;
+  bottom: 2px !important;
+  right: 0 !important;
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: 13px !important;
+  background: var(--grocerly-forest) !important;
+  color: var(--grocerly-paper) !important;
+}
+#page-profile .grocerly-profile-scroll > .grocerly-profile-name,
+#page-profile .grocerly-profile-scroll > .grocerly-profile-email {
+  flex: 0 0 auto !important;
+  margin: 0 0 11px !important;
+  width: 100% !important;
+}
+#page-profile .grocerly-profile-scroll .form-group label {
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  margin: 0 0 5px !important;
+}
+#page-profile .grocerly-profile-scroll .form-control {
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 8px 12px !important;
+  font-size: 14px !important;
+}
+#page-profile .grocerly-profile-scroll > .grocerly-settings-heading {
+  font-size: 16px !important;
+  margin: 2px 0 9px !important;
+  line-height: 1.25 !important;
+  flex: 0 0 auto !important;
+}
+#page-profile .grocerly-profile-scroll > .settings-list {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 9px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+}
+#page-profile .grocerly-profile-scroll .settings-item {
+  flex: 0 0 auto !important;
+  min-height: 53px !important;
+  padding: 8px 13px !important;
+  border-radius: 11px !important;
+}
+#page-profile .grocerly-profile-scroll .settings-item-left {
+  gap: 9px !important;
+  font-size: 14px !important;
+}
+#page-profile .grocerly-profile-scroll .settings-item-left i {
+  min-width: 20px;
+  font-size: 17px !important;
+}
+#page-profile .grocerly-profile-scroll .theme-toggle-switch {
+  flex: 0 0 auto;
+}
+#page-profile > .btn-group {
+  flex: 0 0 auto !important;
+  margin: 8px 0 0 !important;
+  padding: 0 !important;
+  width: 100%;
+}
+#page-profile > .btn-group #btn-logout {
+  min-height: 48px !important;
+  font-size: 18px !important;
+  font-weight: 750 !important;
+}
+
+/* Shorter phones and landscape: reflow rather than hiding essential settings. */
+@media (max-height: 710px) {
+  #page-profile .grocerly-profile-identity {
+    grid-template-columns: minmax(0, 1fr) 60px;
+    margin-bottom: 7px !important;
+  }
+  #page-profile .grocerly-profile-identity > h1 {
+    font-size: 22px !important;
+    margin-bottom: 0 !important;
+  }
+  #page-profile .grocerly-profile-identity > .grocerly-profile-intro {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+  }
+  #page-profile .grocerly-profile-identity > .profile-card {
+    width: 58px !important;
+    height: 58px !important;
+    max-height: 58px !important;
+  }
+  #page-profile .grocerly-profile-identity .profile-avatar-wrapper {
+    width: 56px !important;
+    height: 56px !important;
+  }
+  #page-profile .grocerly-profile-identity #profile-card-img {
+    width: 53px !important;
+    height: 53px !important;
+  }
+  #page-profile .grocerly-profile-identity .profile-avatar-plus-badge {
+    width: 23px !important;
+    height: 23px !important;
+    font-size: 11px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-name,
+  #page-profile .grocerly-profile-scroll > .grocerly-profile-email {
+    margin-bottom: 5px !important;
+  }
+  #page-profile .grocerly-profile-scroll .form-group label {
+    font-size: 12px !important;
+    margin-bottom: 2px !important;
+  }
+  #page-profile .grocerly-profile-scroll .form-control {
+    height: 35px !important;
+    min-height: 35px !important;
+    font-size: 13px !important;
+    padding: 6px 10px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .grocerly-settings-heading {
+    font-size: 14px !important;
+    margin: 2px 0 5px !important;
+  }
+  #page-profile .grocerly-profile-scroll > .settings-list {
+    gap: 5px !important;
+  }
+  #page-profile .grocerly-profile-scroll .settings-item {
+    min-height: 41px !important;
+    padding: 6px 10px !important;
+  }
+  #page-profile .grocerly-profile-scroll .settings-item-left {
+    font-size: 12px !important;
+    gap: 7px !important;
+  }
+  #page-profile .grocerly-profile-scroll .settings-item-left i {
+    font-size: 14px !important;
+    min-width: 16px !important;
+  }
+  #page-profile > .btn-group {
+    margin-top: 5px !important;
+  }
+  #page-profile > .btn-group #btn-logout {
+    min-height: 39px !important;
+    font-size: 15px !important;
+  }
+}
+@media (max-width: 370px) {
+  #page-profile .grocerly-profile-identity {
+    grid-template-columns: minmax(0, 1fr) 58px;
+  }
+  #page-profile .grocerly-profile-identity > .grocerly-profile-intro {
+    font-size: 11px !important;
+  }
+}
