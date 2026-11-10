@@ -338,6 +338,88 @@ try {
       }
       console.log(`${viewport.width}×${viewport.height} ${screen}: OK`);
     }
+    // The Meals list should start as close to its filters as the Groceries list.
+    const gaps=await page.evaluate(()=>{
+      const gap=(chips,list)=>{
+        const a=document.querySelector(chips).getBoundingClientRect();
+        const b=document.querySelector(list).getBoundingClientRect();
+        return b.top-a.bottom;
+      };
+      return {meals:gap('#meal-type-filter-chips','#recipes-list-container'),
+        groceries:gap('.grocerly-category-filters','#inventory-list-container')};
+    });
+    assert(gaps.meals>=-1 && gaps.meals<=gaps.groceries+9,
+      'Meal category to list gap should match Groceries at '+viewport.width+': '+JSON.stringify(gaps));
+
+    // Profile avatar must be on the far right of the same content frame.
+    const avatarAlignment=await page.evaluate(()=>{
+      const row=document.querySelector('.grocerly-profile-identity').getBoundingClientRect();
+      const content=document.querySelector('#page-profile .grocerly-profile-scroll').getBoundingClientRect();
+      const avatar=document.querySelector('#profile-card-img').getBoundingClientRect();
+      return {rowWidth:row.width,contentWidth:content.width,rightGap:content.right-avatar.right};
+    });
+    assert(avatarAlignment.rowWidth>=avatarAlignment.contentWidth-5 &&
+           avatarAlignment.rightGap<=35,
+      'Profile avatar needs to stay toward the right edge at '+viewport.width+': '+JSON.stringify(avatarAlignment));
+
+    // Receipt scanning is a dedicated one-screen task, including digital import
+    // and an itemized review with non-scrollable, paginated rows.
+    await page.evaluate(()=>transitionToPage('page-groceries'));
+    await page.locator('#page-groceries.active').waitFor();
+    const scanCheck=async mode => {
+      const v=await page.evaluate(()=>{
+        const page=document.querySelector('#page-groceries');
+        const panel=page.querySelector('.grocerly-receipt-task-scroll');
+        const task=page.querySelector('.entry-panel.active');
+        const rect=page.getBoundingClientRect();
+        const nav=document.querySelector('#app-bottom-nav').getBoundingClientRect();
+        const children=[...task.children].filter(el=>getComputedStyle(el).display!=='none');
+        return {
+          pageOverflow:page.scrollHeight-page.clientHeight,
+          taskOverflow:task.scrollHeight-task.clientHeight,
+          panelOverflow:panel.scrollHeight-panel.clientHeight,
+          panelScroll:panel.scrollTop,pageScroll:page.scrollTop,
+          titleBottom:page.querySelector('h1').getBoundingClientRect().bottom,
+          taskBounds:task.getBoundingClientRect().toJSON(),navTop:nav.top,
+          overflowingChildren:children.filter(c=>c.getBoundingClientRect().bottom>task.getBoundingClientRect().bottom+2)
+            .map(c=>({name:c.className,bottom:c.getBoundingClientRect().bottom}))
+        };
+      });
+      assert(v.pageOverflow<=3 && v.panelOverflow<=3 && v.taskOverflow<=3 &&
+          v.panelScroll===0 && v.pageScroll===0 &&
+          v.taskBounds.bottom<=v.navTop+3 && v.overflowingChildren.length===0,
+        'Scan a receipt must fit in one viewport for '+mode+' at '+viewport.width+': '+JSON.stringify(v));
+    };
+    await scanCheck('scan');
+    if([390,1440].includes(viewport.width)) await page.screenshot({path:'test-artifacts/'+viewport.width+'-scan.png',fullPage:false});
+    await page.locator('#btn-tab-digital').click();
+    await scanCheck('digital');
+    await page.evaluate(()=>{
+      document.querySelector('#btn-tab-digital').classList.remove('active');
+      document.querySelector('#btn-tab-ocr').classList.add('active');
+      document.querySelector('#panel-digital').classList.remove('active');
+      document.querySelector('#panel-ocr').classList.add('active');
+      renderReceiptReview({store:'Test Store',date:'2026-11-10',
+        items:Array.from({length:12},(_,i)=>({name:'Ingredient '+i,qty:1,unit:'each',price:1.25,lowConfidence:i%4===0}))});
+    });
+    await page.waitForFunction(()=>document.querySelectorAll('#review-receipt-items-list .review-item-row').length===12 &&
+      !!document.querySelector('#receipt-review-page-status')?.textContent?.match(/\d+/));
+    await scanCheck('review');
+    const reviewData=await page.evaluate(()=>{
+      const list=document.querySelector('#review-receipt-items-list');
+      const visible=[...list.children].filter(el=>!el.hidden);
+      const rect=list.getBoundingClientRect();
+      return {n:visible.length,all:list.children.length,nextDisabled:document.querySelector('#receipt-review-next').disabled,
+        rowsFit:visible.every(el=>el.getBoundingClientRect().bottom<=rect.bottom+2),
+        overflow:list.scrollHeight-list.clientHeight,status:document.querySelector('#receipt-review-page-status').textContent};
+    });
+    assert(reviewData.all===12 && reviewData.n>0 && reviewData.rowsFit && reviewData.overflow<=3 && !reviewData.nextDisabled,
+      'Receipt pagination must expose each item without scrolling at '+viewport.width+': '+JSON.stringify(reviewData));
+    await page.locator('#receipt-review-next').click();
+    assert((await page.locator('#receipt-review-page-status').innerText()).includes('2'),
+      'Next receipt page should navigate without scrolling');
+    if([390,1440].includes(viewport.width))await page.screenshot({path:'test-artifacts/'+viewport.width+'-scan-review.png',fullPage:false});
+
     await context.close();
   }
 
