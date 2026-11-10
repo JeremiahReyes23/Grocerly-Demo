@@ -1237,8 +1237,8 @@ body.dark-theme .grocerly-lifespan-modal .form-control {
   flex: 0 0 auto;
 }
 #page-meals #recipe-inline-editor .grocerly-recipe-details[open] {
-  max-height: 38%;
-  overflow-y: auto;
+  max-height: none;
+  overflow: visible;
 }
 #page-meals #recipe-inline-editor > .btn-group {
   flex-shrink: 0;
