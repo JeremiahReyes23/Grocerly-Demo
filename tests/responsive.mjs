@@ -416,8 +416,8 @@ try {
     assert(reviewData.all===12 && reviewData.n>0 && reviewData.rowsFit && reviewData.overflow<=3 && !reviewData.nextDisabled,
       'Receipt pagination must expose each item without scrolling at '+viewport.width+': '+JSON.stringify(reviewData));
     await page.locator('#receipt-review-next').click();
-    assert((await page.locator('#receipt-review-page-status').innerText()).includes('2'),
-      'Next receipt page should navigate without scrolling');
+    await page.waitForFunction(()=>/Page 2 of|Página 2 de/.test(
+      document.querySelector('#receipt-review-page-status')?.textContent||''),null,{timeout:3500});
     if([390,1440].includes(viewport.width))await page.screenshot({path:'test-artifacts/'+viewport.width+'-scan-review.png',fullPage:false});
 
     await context.close();
