@@ -9,13 +9,27 @@
       panel.className="grocerly-profile-scroll";
       panel.setAttribute("role","region");
       panel.setAttribute("aria-label","Account settings");
-      const keep=node=>node.classList?.contains("profile-card") ||
-        (node.classList?.contains("btn-group") && node.querySelector("#btn-logout"));
+      const keep=node=>node.classList?.contains("btn-group") && node.querySelector("#btn-logout");
       const nodes=[...profile.children].filter(node=>!keep(node));
       const anchor=nodes[0];
       if(anchor){
         profile.insertBefore(panel,anchor);
         nodes.forEach(node=>panel.appendChild(node));
+        // Keep avatar and title in a single responsive heading; no floating
+        // absolute positioning that overlaps controls or shifts with language.
+        const heading=panel.querySelector(":scope > h1");
+        const subtitle=panel.querySelector(":scope > .grocerly-profile-intro");
+        const avatar=panel.querySelector(":scope > .profile-card");
+        if(heading && subtitle && avatar){
+          const identity=document.createElement("div");
+          identity.className="grocerly-profile-identity";
+          panel.insertBefore(identity,heading);
+          identity.append(heading,subtitle,avatar);
+        }
+        // The original decorative spacer wastes precious height on mobile.
+        const spacer=[...panel.children].find(node=>
+          node.tagName==="DIV" && /height:\\s*30px/.test(node.getAttribute("style")||""));
+        if(spacer)spacer.remove();
       }
     }
 
