@@ -171,8 +171,8 @@
       persist(false);
       clearOldFlags();
       clearLegacyCache();
-      // Keep the branded sign-out transition visible for at least 3 seconds.
-      const remaining = Math.max(0, 3000 - (Date.now() - started));
+      // Keep the branded sign-out transition visible for at least 1 second.
+      const remaining = Math.max(0, 1000 - (Date.now() - started));
       if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
       location.reload();
     }
@@ -212,10 +212,10 @@
       }
     } catch(err) { alert(err.message || 'Please try again'); }
     finally {
-      // Keep the branded transition visible for at least 3 seconds on a
+      // Keep the branded transition visible for at least 1 second on a
       // successful sign-in. Failed logins show their errors immediately.
       if (loginSucceeded) {
-        const remaining = Math.max(0, 3000 - (Date.now() - loginStartedAt));
+        const remaining = Math.max(0, 1000 - (Date.now() - loginStartedAt));
         if (remaining) await new Promise(resolve => setTimeout(resolve, remaining));
       }
       hideAuthLoading();
