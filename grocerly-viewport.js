@@ -90,10 +90,27 @@
         const height=Math.max(55,first.getBoundingClientRect().height||72);
         const gap=parseFloat(getComputedStyle(reviewItems).gap)||5;
         const area=Math.max(0,reviewItems.clientHeight);
-        const pageSize=Math.max(1,Math.min(8,Math.floor((area+gap)/(height+gap))));
+        // Calculate a conservative initial size, then verify the actual rendered
+        // rows. Responsive labels and editable fields can make later rows taller
+        // than the first measured row (especially at 1024x768).
+        let pageSize=Math.max(1,Math.min(8,Math.floor((area+gap)/(height+gap)))-1);
+        const showPage=()=>{
+          const count=Math.max(1,Math.ceil(rows.length/pageSize));
+          currentPage=Math.max(0,Math.min(currentPage,count-1));
+          rows.forEach((row,i)=>{row.hidden=Math.floor(i/pageSize)!==currentPage;});
+        };
+        showPage();
+        // Never leave a visible receipt item clipped behind the navigation.
+        // Reduce items per page instead of introducing nested scrolling.
+        while(pageSize>1){
+          const visible=rows.filter(row=>!row.hidden);
+          const bottom=reviewItems.getBoundingClientRect().bottom;
+          const clipped=visible.some(row=>row.getBoundingClientRect().bottom>bottom+1);
+          if(!clipped && reviewItems.scrollHeight<=reviewItems.clientHeight+2) break;
+          pageSize--;
+          showPage();
+        }
         const pages=Math.max(1,Math.ceil(rows.length/pageSize));
-        currentPage=Math.max(0,Math.min(currentPage,pages-1));
-        rows.forEach((row,i)=>{row.hidden=Math.floor(i/pageSize)!==currentPage;});
         status.textContent=es
           ? "Página "+(currentPage+1)+" de "+pages
           : "Page "+(currentPage+1)+" of "+pages;

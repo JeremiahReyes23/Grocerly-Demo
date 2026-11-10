@@ -50,6 +50,28 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// New authenticated Supabase gateway (additive; legacy routes remain pending migration).
+app.use('/api/v2', require('./supabaseGateway').createGrocerlyV2Router());
+
+// The publishable key is designed for browser use; secrets are never exposed.
+app.get('/api/public-config', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.json({
+    supabaseUrl: process.env.SUPABASE_URL || 'https://qbmcsqvyeozgetznlgjc.supabase.co',
+    supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || null
+  });
+});
+
+// A configured Supabase preview must not expose the legacy plaintext-password
+// endpoints or user-ID/email-based data endpoints while migration is underway.
+app.use('/api', (req, res, next) => {
+  if (!process.env.SUPABASE_PUBLISHABLE_KEY) return next();
+  const protectedLegacy = /^\/(auth\/(login|signup|google)|profile|inventory|recipes|trips|waste|notifications|calendar|custom-stores|admin\/|ai\/)/.test(req.path);
+  if (protectedLegacy) return res.status(410).json({ error: 'Legacy account endpoint retired; use verified Supabase session' });
+  next();
+});
+
+
 // Serve Service Worker with no-cache headers and allow root scope
 app.get('/pwa/sw.js', (req, res) => {
   res.setHeader('Service-Worker-Allowed', '/');
@@ -888,6 +910,10 @@ app.put('/api/custom-stores', async (req, res) => {
 });
 
 // Start listening
-app.listen(PORT, () => {
-  console.log(`Grocerly backend running at http://localhost:${PORT}`);
-});
+// Local development runs the listener; Vercel imports the Express app as a function.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Grocerly backend running at http://localhost:${PORT}`);
+  });
+}
+module.exports = app;

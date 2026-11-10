@@ -35,7 +35,7 @@ function updateAllAvatarElements() {
   const suppliedAvatar = (State && State.user && State.user.avatar) || "";
   const genericStock = /images\.unsplash\.com\/photo-(1494790108377|1534528741775|1535713875002)/.test(suppliedAvatar);
   const avatar = (!suppliedAvatar || genericStock)
-    ? 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>'
+    ? 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#e0eee5"/><circle cx="12" cy="8.5" r="4" fill="#347658"/><path d="M4 22c0-5.4 3.1-8 8-8s8 2.6 8 8" fill="#347658"/></svg>')
     : suppliedAvatar;
   
   const ids = ["dash-avatar-img", "profile-card-img", "profile-card-img-sidebar"];
@@ -46,11 +46,11 @@ function updateAllAvatarElements() {
 
   const select = document.getElementById("profile-avatar-select");
   if (select) {
-    if (avatar.startsWith("data:image/svg+xml")) {
-      select.innerHTML = `${avatar.replace("data:image/svg+xml;utf8,", "")}`;
-    } else {
-      select.innerHTML = `<img src="${avatar}" alt="Profile avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-    }
+    const previewImage = document.createElement("img");
+    previewImage.alt = "Profile avatar";
+    previewImage.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%";
+    previewImage.src = avatar;
+    select.replaceChildren(previewImage);
   }
 }
 
@@ -854,7 +854,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initPremiumSubscription(); // Premium checkout initialization
 
   // If already logged in, skip onboarding
-  const isLoggedIn = localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true";
+  const isLoggedIn = window.GrocerlyAuth ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn) {
     transitionToPage("page-dashboard");
     document.getElementById("app-bottom-nav").classList.add("active");
@@ -2334,7 +2334,8 @@ function initReceiptScanning() {
 
       if (btn.id === "btn-tab-ocr") {
         document.getElementById("panel-ocr").classList.add("active");
-        openCameraModal();
+        // Selecting this tab only displays the scanning instructions.
+        // Camera/gallery actions require a separate explicit click.
       }
       if (btn.id === "btn-tab-digital") document.getElementById("panel-digital").classList.add("active");
     });
@@ -2399,8 +2400,19 @@ function initReceiptScanning() {
 
       startLiveScanningSimulation();
     } catch (err) {
-      console.warn("Camera access failed, fallback to file upload:", err);
-      if (fileInput) fileInput.click();
+      console.warn("Camera unavailable; user may choose Gallery instead:", err);
+      // Never open the file picker automatically after camera denial.
+      video.style.display = "none";
+      preview.style.display = "none";
+      btnCapture.style.display = "none";
+      btnUpload.style.display = "block";
+      btnRetake.style.display = "none";
+      btnUse.style.display = "none";
+      if (hudText) {
+        hudText.style.display = "block";
+        hudText.textContent = "Camera unavailable. Choose Gallery to upload a receipt photo.";
+      }
+      cameraModal.classList.add("active");
     }
   };
 
@@ -4164,7 +4176,7 @@ function initProfileSettings() {
     cropperModal.classList.remove("active");
   };
 
-  document.getElementById("btn-cropper-save").onclick = () => {
+  document.getElementById("btn-cropper-save").onclick = async () => {
     let croppedBase64 = "";
     try {
       const canvas = document.createElement("canvas");
@@ -4172,40 +4184,58 @@ function initProfileSettings() {
       canvas.height = 180;
       const ctx = canvas.getContext("2d");
 
-      const wWidth = cropperWorkarea.clientWidth;
-      const wHeight = cropperWorkarea.clientHeight;
-      
-      const circleX = wWidth / 2;
-      const circleY = wHeight / 2;
-
       const iWidth = cropperImg.naturalWidth;
       const iHeight = cropperImg.naturalHeight;
+      if (!cropperImg.complete || iWidth < 1 || iHeight < 1) {
+        throw new Error("The selected photo has not loaded");
+      }
 
-      ctx.beginPath();
-      ctx.arc(90, 90, 90, 0, Math.PI * 2);
-      ctx.clip();
+      // Crop from original image pixels, not CSS-transformed screen coordinates.
+      // This guarantees the photo occupies the avatar rather than a blank/black canvas.
+      const square = Math.min(iWidth, iHeight);
+      const minScale = Math.max(180 / iWidth, 180 / iHeight);
+      const zoomFactor = Math.max(1, (Number(zoom) || minScale) / minScale);
+      const sourceSize = square / zoomFactor;
+      const sourceX = (iWidth - sourceSize) / 2;
+      const sourceY = (iHeight - sourceSize) / 2;
+      ctx.drawImage(cropperImg, sourceX, sourceY, sourceSize, sourceSize, 0, 0, 180, 180);
 
-      const dx = posX - (circleX - 90);
-      const dy = posY - (circleY - 90);
-      const dw = iWidth * zoom;
-      const dh = iHeight * zoom;
+      // Avoid storing a blank avatar if decoding/drawing unexpectedly failed.
+      const centerPixel = ctx.getImageData(90, 90, 1, 1).data;
+      if (centerPixel[3] === 0) throw new Error("Empty photo output");
 
-      ctx.drawImage(cropperImg, dx, dy, dw, dh);
-
-      croppedBase64 = canvas.toDataURL("image/png");
+      croppedBase64 = canvas.toDataURL("image/jpeg", 0.72);
     } catch (err) {
-      console.warn("Canvas crop failed (CORS or canvas exception), falling back to raw image src:", err);
-      croppedBase64 = cropperImg.src;
+      console.warn("Profile photo crop failed:", err);
+      alert("Could not process this photo. Please try another image.");
+      return;
     }
 
-    if (croppedBase64) {
-      State.user.avatar = croppedBase64;
-      updateAllAvatarElements();
-      saveStateToStorage();
-      ClientAPI.syncBackend();
+    if (!croppedBase64 || croppedBase64.length > 75000) {
+      alert("This profile photo is too large. Please choose a smaller image.");
+      return;
     }
-    cropperModal.classList.remove("active");
-    alert("Profile photo updated successfully!");
+    const previousAvatar = State.user.avatar;
+    State.user.avatar = croppedBase64;
+    updateAllAvatarElements();
+    const saveButton = document.getElementById("btn-cropper-save");
+    if (saveButton) saveButton.disabled = true;
+    try {
+      if (window.GrocerlyAuth?.configured) {
+        await ClientAPI.request('/api/profile', 'PUT', {profile: State.user});
+      } else {
+        await ClientAPI.syncBackend();
+      }
+      saveStateToStorage();
+      cropperModal.classList.remove("active");
+      alert("Profile photo saved successfully!");
+    } catch (err) {
+      State.user.avatar = previousAvatar;
+      updateAllAvatarElements();
+      alert("Could not save your profile photo. Please try again. " + (err.message || ""));
+    } finally {
+      if (saveButton) saveButton.disabled = false;
+    }
   };
 
   // Edit Budget Modal Bindings
@@ -4560,6 +4590,15 @@ function renderGlobalSearchResults(term) {
 // 14. LOCAL STORAGE CACHING
 // ----------------------------------------------------
 function saveStateToStorage() {
+  // The Supabase version must never store one account's grocery data in a
+  // shared browser-wide cache or sync without a verified session.
+  if (window.GrocerlyAuth) {
+    if (typeof updateInventoryDatalist === 'function') updateInventoryDatalist();
+    if (window.GrocerlyAuth.isAuthenticated()) {
+      ClientAPI.syncBackend().catch(err => console.warn('Cloud sync failed:', err));
+    }
+    return;
+  }
   try {
     localStorage.setItem("grocerly_state_cache", JSON.stringify(State));
   } catch (e) {
@@ -4578,7 +4617,7 @@ function saveStateToStorage() {
   if (typeof updateInventoryDatalist === 'function') {
     updateInventoryDatalist();
   }
-  if (State.user.email) {
+  if (window.GrocerlyAuth?.configured ? window.GrocerlyAuth.isAuthenticated() : !!State.user.email) {
     ClientAPI.syncBackend().catch(err => console.warn("Background API sync failed:", err));
   }
 }
@@ -4592,7 +4631,7 @@ function loadStateFromStorage() {
     document.body.classList.remove("dark-theme");
   }
 
-  const cached = localStorage.getItem("grocerly_state_cache");
+  const cached = window.GrocerlyAuth ? null : localStorage.getItem("grocerly_state_cache");
   if (cached) {
     try {
       const parsed = JSON.parse(cached);
@@ -4622,7 +4661,7 @@ function loadStateFromStorage() {
   populateStoreDropdowns();
 
   // Attempt server state sync
-  const isLoggedIn = localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true";
+  const isLoggedIn = window.GrocerlyAuth ? window.GrocerlyAuth.isAuthenticated() : (localStorage.getItem("grocerly_logged_in") === "true" || sessionStorage.getItem("grocerly_logged_in") === "true");
   if (isLoggedIn && State.user.email) {
     loadStateFromServer();
   }
@@ -5107,6 +5146,9 @@ const MockBackend = {
 
 const ClientAPI = {
   async request(endpoint, method = 'GET', body = null) {
+    if (window.GrocerlyAuth?.configured && (endpoint.startsWith('/api/profile') || /^\/api\/(inventory|recipes|trips|waste|notifications|calendar|custom-stores)(\?|$)/.test(endpoint))) {
+      return window.GrocerlyAuth.apiRequest(endpoint, method, body);
+    }
     const isWrite = (method === 'PUT' || method === 'POST');
     if (isWrite && !endpoint.includes('/api/auth')) {
       updateCloudSyncBadge("syncing");
@@ -5134,6 +5176,7 @@ const ClientAPI = {
       if (endpoint.startsWith('/api/auth/') && endpoint !== '/api/auth/config') {
         throw e;
       }
+      if (window.GrocerlyAuth?.configured) throw e;
       console.warn(`API server error on ${endpoint}, falling back to local simulation:`, e.message);
       if (isWrite && !endpoint.includes('/api/auth')) {
         updateCloudSyncBadge("offline");
@@ -5143,7 +5186,7 @@ const ClientAPI = {
   },
 
   async syncBackend() {
-    if (!State.user.email) return;
+    if (!State.user.email || (window.GrocerlyAuth?.configured && !window.GrocerlyAuth.isAuthenticated())) return;
     const uid = State.user.uid || null;
     updateCloudSyncBadge("syncing");
     try {

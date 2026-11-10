@@ -3,3 +3,6 @@ node_modules/
 db.json
 new_logo.png
 *.log
+.env.local
+.env.*.local
+!.env.example
