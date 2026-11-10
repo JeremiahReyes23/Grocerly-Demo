@@ -27,8 +27,9 @@
     function go(tab) {
       if (!allowed.has(tab) || typeof transitionToPage !== "function") return;
       State.activeTab = tab;
+      const highlightedTab = tab === "groceries" ? "inventory" : tab;
       if (nav) nav.querySelectorAll(".nav-item").forEach(function (item) {
-        item.classList.toggle("active", item.dataset.tab === tab);
+        item.classList.toggle("active", item.dataset.tab === highlightedTab);
       });
       transitionToPage("page-" + tab);
       if (tab === "dashboard") refreshDashboard();
@@ -37,6 +38,7 @@
       if (tab === "groceries") refreshPurchasesFolders();
       if (tab === "analytics") renderAnalyticsCharts();
       if (tab === "profile") refreshProfileCard();
+      if (tab === "groceries") document.getElementById("btn-ocr-scan-trigger")?.click();
       closeMenu();
     }
 

@@ -4,10 +4,16 @@
   "description": "Buy Smarter. Waste Less. Eat Better. Your personal grocery intelligence assistant.",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f7f7f7",
-  "theme_color": "#2eb872",
+  "orientation": "any",
+  "background_color": "#f2f8f1",
+  "theme_color": "#357457",
   "icons": [
+    {
+      "src": "/grocerly-leaf.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/pwa/icons/favicon-32x32.png",
       "sizes": "32x32",

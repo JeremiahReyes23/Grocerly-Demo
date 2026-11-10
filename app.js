@@ -32,7 +32,11 @@ function showToast(message, type = "success") {
 }
 
 function updateAllAvatarElements() {
-  const avatar = (State && State.user && State.user.avatar) || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23a0aec0"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+  const suppliedAvatar = (State && State.user && State.user.avatar) || "";
+  const genericStock = /images\.unsplash\.com\/photo-(1494790108377|1534528741775|1535713875002)/.test(suppliedAvatar);
+  const avatar = (!suppliedAvatar || genericStock)
+    ? 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>'
+    : suppliedAvatar;
   
   const ids = ["dash-avatar-img", "profile-card-img", "profile-card-img-sidebar"];
   ids.forEach(id => {
@@ -854,14 +858,10 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isLoggedIn) {
     transitionToPage("page-dashboard");
     document.getElementById("app-bottom-nav").classList.add("active");
-    if (State.firstLaunch) {
-      showWelcomeTutorial();
-    }
+    // No automatic tutorial or setup prompts: start directly on Home.
   } else {
-    // Start splash screen countdown
-    setTimeout(() => {
-      transitionToPage("page-login");
-    }, 2000);
+    // No artificial wait or extra setup step: show the login screen immediately.
+    transitionToPage("page-login");
   }
 
   // Refresh lists
@@ -946,9 +946,12 @@ function initOnboardingFlow() {
           sessionStorage.setItem("grocerly_logged_in", "true");
         }
         saveStateToStorage();
-        alert("Account created successfully! Welcome to Grocerly.");
-        transitionToPage("page-profile-setup");
-        document.getElementById("app-bottom-nav").classList.remove("active");
+        // The profile, budget and preferences remain optional inside Settings.
+        refreshDashboard();
+        refreshInventoryList();
+        refreshRecipesList();
+        refreshProfileCard();
+        transitionToPage("page-dashboard");
       } catch (err) {
         console.error("Signup failed:", err);
         alert(err.message || "Failed to create account. Email may already be in use.");
@@ -984,24 +987,16 @@ function initOnboardingFlow() {
         sessionStorage.setItem("grocerly_logged_in", "true");
       }
       saveStateToStorage();
-      alert("Welcome! We've sent a welcome email to your inbox.");
+      refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
+      refreshProfileCard();
       transitionToPage("page-dashboard");
       document.getElementById("app-bottom-nav").classList.add("active");
     } catch (err) {
-      console.warn("API Login failed, checking localStorage fallback:", err);
-      // Fallback local auth simulation
-      if (email === State.user.email) {
-        if (keepSigned) {
-          localStorage.setItem("grocerly_logged_in", "true");
-        } else {
-          sessionStorage.setItem("grocerly_logged_in", "true");
-        }
-        alert("Welcome! We've sent a welcome email to your inbox.");
-        transitionToPage("page-dashboard");
-        document.getElementById("app-bottom-nav").classList.add("active");
-      } else {
-        alert("Authentication failed: " + err.message);
-      }
+      console.warn("Login failed:", err);
+      // Do not bypass the password check when the server is offline.
+      alert("Could not sign in. Please check your email and password and try again.");
     }
   });
 
@@ -1105,13 +1100,12 @@ function initOnboardingFlow() {
       saveStateToStorage();
       refreshProfileCard();
       refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
       
-      if (!State.user.goals || State.user.goals.length === 0) {
-        transitionToPage("page-profile-setup");
-      } else {
-        transitionToPage("page-dashboard");
-        document.getElementById("app-bottom-nav").classList.add("active");
-      }
+      // Google sign-in goes straight into the app, even for first-time accounts.
+      transitionToPage("page-dashboard");
+      document.getElementById("app-bottom-nav").classList.add("active");
     } catch (err) {
       console.error("Google Auth Integration failed:", err);
       alert("Failed to sign in with Google.");
@@ -1230,20 +1224,30 @@ function initOnboardingFlow() {
     try {
       const response = await ClientAPI.request('/api/auth/signup', 'POST', { email, password: pass });
        State.user = response.profile;
-      State.user.name = name;
+      State.user.uid = response.googleUid || email;
+      State.user.name = name.trim();
+      State.inventory = response.inventory || [];
+      State.recipes = response.recipes || [];
+      State.trips = response.trips || [];
+      State.notifications = response.notifications || [];
+      State.wasteLogs = response.wasteLogs || [];
       State.calendar = response.calendar || {};
       State.customStores = response.customStores || [];
       localStorage.setItem("grocerly_logged_in", "true");
       saveStateToStorage();
-      alert("Welcome to Grocerly! We've sent a welcome email to your inbox.");
-      transitionToPage("page-profile-setup");
+      // Registration includes a name; save it without a separate setup screen.
+      ClientAPI.request('/api/profile', 'PUT', {
+        email: State.user.email, userId: State.user.uid || null, profile: State.user
+      }).catch(err => console.warn("Name sync could not complete yet:", err));
+      refreshDashboard();
+      refreshInventoryList();
+      refreshRecipesList();
+      refreshProfileCard();
+      transitionToPage("page-dashboard");
     } catch (err) {
-      console.warn("API Signup failed, running local registration fallback:", err);
-      State.user.email = email;
-      State.user.name = name;
-      localStorage.setItem("grocerly_logged_in", "true");
-      saveStateToStorage();
-      transitionToPage("page-profile-setup");
+      console.warn("Signup failed:", err);
+      // A server-side failure is not an authenticated account.
+      alert("We could not create your account. Please try again.");
     }
   });
 
@@ -1570,9 +1574,7 @@ document.getElementById("btn-congrats-finish").addEventListener("click", () => {
   saveStateToStorage();
   refreshDashboard();
   
-  if (State.firstLaunch) {
-    showWelcomeTutorial();
-  }
+  // Welcome tutorial intentionally not shown.
 });
 
 // Welcome Tutorial slider
@@ -1671,9 +1673,9 @@ function refreshDashboard() {
   if (labelEditItemPrice) labelEditItemPrice.textContent = `Price (${symbol})`;
 
   // Update welcome greeting
-  const firstName = State.user.name.split(" ")[0];
+  const firstName = State.user.name && State.user.name.trim() !== "New Chef" ? State.user.name.trim().split(" ")[0] : "";
   const welcomeText = document.getElementById("dash-welcome-text");
-  if (welcomeText) welcomeText.innerText = `Welcome, ${firstName}`;
+  if (welcomeText) welcomeText.innerText = firstName ? `Welcome, ${firstName}!` : "Welcome!";
   
   updateAllAvatarElements();
 
@@ -1753,7 +1755,7 @@ function refreshDashboard() {
 
   // 3. Grocery Lifespan
   const durationValEl = document.getElementById("stat-duration-val");
-  if (durationValEl) durationValEl.innerHTML = `${State.user.desiredStorageWeeks * 7} days${estLabel}`;
+  if (durationValEl) durationValEl.innerHTML = `${Math.max(1, Math.round((Number(State.user.desiredStorageWeeks) || 2) * 7))} days${estLabel}`;
 
   // 4. Food Waste
   const totalWastedVal = State.wasteLogs.reduce((acc, w) => acc + w.cost, 0);
@@ -3189,10 +3191,17 @@ function refreshInventoryList() {
       ${checkboxHtml}
       <div class="inv-card-header" onclick="${clickAction}">
         <div class="inv-card-title-group">
-          <span class="inv-card-name">${item.name}</span>
-          <span class="inv-card-cat">${item.category} • ${getStorageLocationBadgeHtml(item.storageLoc)}</span>
+          <span class="inv-card-name">${item.name} <small class="inv-card-price">(${formatCurrency(item.price || 0)})</small></span>
+          <span class="inv-card-cat">${getStorageLocationBadgeHtml(item.storageLoc)}</span>
         </div>
-        <span class="inv-card-life ${lifeClass}">${lifeText}</span>
+        <div class="inv-card-side">
+          <span class="inv-card-life ${lifeClass}">${lifeText}</span>
+          <div class="inv-card-quick-actions">
+            <span class="inv-card-stock ${daysLeft <= 0 || item.remainingPercent <= 25 || item.currentQty <= 0 ? 'needs' : 'ready'}"><i class="fas ${daysLeft <= 0 || item.remainingPercent <= 25 || item.currentQty <= 0 ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i> ${daysLeft <= 0 ? 'Check date' : item.remainingPercent <= 25 || item.currentQty <= 0 ? 'Low stock' : 'Ready'}</span>
+            <button type="button" class="inv-quick-action" aria-label="Edit ${item.name}" onclick="event.stopPropagation(); openEditGroceryModal('${item.id}')"><i class="fas fa-pen" aria-hidden="true"></i></button>
+            <button type="button" class="inv-quick-action delete" aria-label="Remove ${item.name}" onclick="event.stopPropagation(); removeItemDirectly('${item.id}')"><i class="fas fa-trash-can" aria-hidden="true"></i></button>
+          </div>
+        </div>
       </div>
       
       <div class="inv-card-details-row" onclick="${clickAction}" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
@@ -3241,6 +3250,19 @@ function refreshInventoryList() {
       </div>
     `;
 
+    const cardHeader = card.querySelector(".inv-card-header");
+    if (cardHeader) {
+      cardHeader.setAttribute("tabindex", "0");
+      cardHeader.setAttribute("role", "button");
+      cardHeader.setAttribute("aria-label", "Show details for " + item.name);
+      cardHeader.addEventListener("keydown", e => {
+        if (e.target !== e.currentTarget) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          card.classList.toggle("expanded");
+        }
+      });
+    }
     container.appendChild(card);
   });
 }
@@ -5108,6 +5130,10 @@ const ClientAPI = {
       }
       return data;
     } catch (e) {
+      // Authentication must never fall back to simulated accounts after a server error.
+      if (endpoint.startsWith('/api/auth/') && endpoint !== '/api/auth/config') {
+        throw e;
+      }
       console.warn(`API server error on ${endpoint}, falling back to local simulation:`, e.message);
       if (isWrite && !endpoint.includes('/api/auth')) {
         updateCloudSyncBadge("offline");

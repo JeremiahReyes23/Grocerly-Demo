@@ -5,6 +5,116 @@
 (function () {
   "use strict";
   const rows = [
+    ["Edit Lifespan","Editar duración"],
+    ["Days between grocery trips","Días entre compras"],
+    ["Upload profile photo","Subir foto de perfil"],
+    ["Close","Cerrar"],
+    ["Save Changes","Guardar cambios"],
+    ["Lifespan","Duración"],
+    ["Average store loop","Tiempo promedio entre compras"],
+    ["Breakfast","Desayuno"],
+    ["Lunch","Almuerzo"],
+    ["Dinner","Cena"],
+
+    // Core four-screen strings, including accessible empty states and Settings.
+    ["Dark Theme","Tema oscuro"],
+    ["Your Meal Builder is Empty","Tu plan de comidas está vacío"],
+    ["Your Pantry is Empty","Tu despensa está vacía"],
+    ["Create custom meal recipes manually, or pull automated meal recommendations from the AI assistant to populate ideas.","Crea tus propias recetas o utiliza el asistente de IA para encontrar ideas de comidas."],
+    ["Add pantry or freezer items manually, or scan your store receipt using live OCR to load them automatically.","Añade productos de la despensa o el congelador, o escanea un recibo para registrarlos."],
+    ["No ingredients in inventory. Add some in Purchases!","Aún no hay ingredientes. ¡Añade productos desde Compras!"],
+    ["Your Meal Builder is Empty","Tu plan de comidas está vacío"],
+    ["My Profile","Mi perfil"],
+    ["Dark Theme","Tema oscuro"],
+    ["Sign Out","Cerrar sesión"],
+    ["APP OPTIONS","OPCIONES"],
+    ["AI Integration Perms","Permisos de IA"],
+    ["Submit App Feedback","Enviar comentarios"],
+    ["Preferred Currency","Moneda preferida"],
+    ["Your Pantry is Empty","Tu despensa está vacía"],
+    ["What would you like to do?","¿Qué te gustaría hacer?"],
+    ["Your Current Grocery Plan","Tu plan de compras actual"],
+    ["Current Grocery List","Lista actual de compras"],
+    ["Your groceries","Tus compras"],
+    ["My Groceries","Mis compras"],
+    ["My Meal Plan","Mi plan de comidas"],
+    ["Home","Inicio"],
+    ["Scan Receipt","Escanear recibo"],
+    ["Build Meals","Preparar comidas"],
+    ["Add","Añadir"],
+    ["Ideas","Ideas"],
+    ["Download List","Descargar lista"],
+    ["Budget","Presupuesto"],
+    ["Lifespan","Duración"],
+    ["Average store loop","Promedio entre compras"],
+    ["Ingredient","Ingrediente"],
+    ["Ingredients","Ingredientes"],
+    ["INGREDIENT","INGREDIENTE"],
+    ["QTY","CANT."],
+    ["STORAGE","ALMACÉN"],
+    ["STATUS","ESTADO"],
+    ["No ingredients","Sin ingredientes"],
+    ["All","Todos"],
+    ["Vegetables","Verduras"],
+    ["Fruits","Frutas"],
+    ["Grains","Cereales"],
+    ["Protein","Proteínas"],
+    ["Dairy","Lácteos"],
+    ["Herbs","Hierbas"],
+    ["Your name","Tu nombre"],
+    ["Email Address","Correo electrónico"],
+    ["Name","Nombre"],
+    ["Settings","Configuración"],
+    ["Profile Picture","Foto de perfil"],
+    ["Click to upload your photo","Haz clic para subir tu foto"],
+    ["Search storage items...","Buscar productos..."],
+    ["Search recipe name...","Buscar recetas..."],
+    ["Ready","Disponible"],
+    ["Low stock","Quedan pocos"],
+    ["EXPIRED","VENCIDO"],
+    ["Not entered","Sin registrar"],
+    ["View details","Ver detalles"],
+
+    ["AI Integration Perms","Permisos de IA"],
+    ["Allow AI features","Permitir funciones de IA"],
+    ["Add groceries by scanning a receipt","Añadir productos escaneando un recibo"],
+    ["Photo of item","Foto del producto"],
+    ["Add manually","Añadir manualmente"],
+    ["Could not sign in. Please check your email and password and try again.","No se pudo iniciar sesión. Revisa tu correo y contraseña."],
+    ["We could not create your account. Please try again.","No pudimos crear tu cuenta. Inténtalo de nuevo."],
+    ["Enable AI Integration Perms in Settings first.","Primero activa los permisos de IA en Configuración."],
+
+    ["See what you already have at home.","Mira lo que ya tienes en casa."],
+    ["Home","Inicio"],
+    ["My Meal Plan","Mi plan de comidas"],
+    ["Build Meals","Preparar comidas"],
+    ["Your Current Grocery Plan","Tu plan de compras actual"],
+    ["Download List","Descargar lista"],
+    ["Vegetables","Verduras"],
+    ["Fruits","Frutas"],
+    ["Grains","Cereales"],
+    ["Protein","Proteínas"],
+    ["Dairy","Lácteos"],
+    ["Herbs","Hierbas"],
+    ["Other ways to add","Otras formas de añadir"],
+    ["More options","Más opciones"],
+    ["AI Assistant","Asistente de IA"],
+    ["Notifications","Notificaciones"],
+    ["Name","Nombre"],
+    ["Filter groceries","Filtrar compras"],
+    ["No items yet","Todavía no hay productos"],
+    ["Low stock","Quedan pocos"],
+    ["Ready","Disponible"],
+    ["EXPIRED","FECHA VENCIDA"],
+    ["Date passed","Fecha pasada"],
+    ["Use soon","Usar pronto"],
+    ["Not entered","Sin registrar"],
+    ["Sort by Expiry","Ordenar por fecha"],
+    ["Search recipe name...","Buscar recetas..."],
+    ["Search storage items...","Buscar productos..."],
+    ["Manage your account and preferences.","Administra tu cuenta y tus preferencias."],
+    ["Scan Receipt","Escanear recibo"],
+
     ["Buy Smarter. Waste Less. Eat Better.","Compra mejor. Desperdicia menos. Come bien."],
     ["Simply better groceries.","Compras más sencillas."],
     ["Email Address","Correo electrónico"],
@@ -270,6 +380,9 @@
       else if ((m = /^(\d+)\s+Ideas?$/.exec(value))) target = m[1] + " ideas";
       else if ((m = /^Spend:\s*(.+)\s+of\s+(.+)$/.exec(value))) target = "Gastado: " + m[1] + " de " + m[2];
       else if ((m = /^(\d+)\s+People$/.exec(value))) target = m[1] + " personas";
+      else if ((m = /^Total:\s*(.+)$/.exec(value))) target = "Total: " + m[1];
+      else if ((m = /^(\d+)\s+Days?\s+[Ll]eft$/.exec(value))) target = "Quedan " + m[1] + " días";
+      else if ((m = /^(\d+) ingredients? in storage$/.exec(value))) target = m[1] + " ingredientes en casa";
     }
     return target === undefined ? source : match[1] + target + match[3];
   }
@@ -329,7 +442,7 @@
       }
     } finally {
       translating = false;
-      if (observer) observer.observe(document.body, { childList: true, characterData: true, subtree: true });
+      if (observer) observer.observe(document.body, { childList: true, characterData: true, attributes: true, attributeFilter: ["placeholder", "title", "aria-label"], subtree: true });
     }
   }
 
