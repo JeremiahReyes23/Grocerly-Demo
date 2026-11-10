@@ -35,7 +35,7 @@ function updateAllAvatarElements() {
   const suppliedAvatar = (State && State.user && State.user.avatar) || "";
   const genericStock = /images\.unsplash\.com\/photo-(1494790108377|1534528741775|1535713875002)/.test(suppliedAvatar);
   const avatar = (!suppliedAvatar || genericStock)
-    ? 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>'
+    ? 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#e0eee5"/><circle cx="12" cy="8.5" r="4" fill="#347658"/><path d="M4 22c0-5.4 3.1-8 8-8s8 2.6 8 8" fill="#347658"/></svg>')
     : suppliedAvatar;
   
   const ids = ["dash-avatar-img", "profile-card-img", "profile-card-img-sidebar"];
@@ -46,11 +46,11 @@ function updateAllAvatarElements() {
 
   const select = document.getElementById("profile-avatar-select");
   if (select) {
-    if (avatar.startsWith("data:image/svg+xml")) {
-      select.innerHTML = `${avatar.replace("data:image/svg+xml;utf8,", "")}`;
-    } else {
-      select.innerHTML = `<img src="${avatar}" alt="Profile avatar" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-    }
+    const previewImage = document.createElement("img");
+    previewImage.alt = "Profile avatar";
+    previewImage.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%";
+    previewImage.src = avatar;
+    select.replaceChildren(previewImage);
   }
 }
 
