@@ -1139,3 +1139,110 @@ body.dark-theme .grocerly-lifespan-modal .form-control {
 #page-profile .profile-card {
   padding-top: 16px;
 }
+
+
+/* Final cleanup: single dropdown controls and phone-safe field alignment. */
+#modal-add-grocery .modal-content > div[style*="grid-template-columns"],
+#modal-edit-grocery .modal-content > div[style*="grid-template-columns"] {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr) !important;
+  gap: 8px !important;
+  width: 100%;
+  align-items: end;
+}
+#modal-add-grocery .modal-content > div[style*="grid-template-columns"] > *,
+#modal-edit-grocery .modal-content > div[style*="grid-template-columns"] > * {
+  min-width: 0;
+  width: 100%;
+}
+#modal-add-grocery .form-group > label,
+#modal-edit-grocery .form-group > label {
+  display: block;
+  margin-bottom: 5px;
+  line-height: 1.25;
+}
+#modal-add-grocery .form-control,
+#modal-edit-grocery .form-control {
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+#modal-add-grocery .modal-content,
+#modal-edit-grocery .modal-content { gap: 9px !important; }
+#modal-add-grocery #groc-scroll-arrow,
+#modal-edit-grocery #edit-groc-scroll-arrow { display: none !important; }
+#modal-add-grocery .modal-box,
+#modal-edit-grocery .modal-box { max-height: min(95%, 740px); }
+@media(max-width:380px) {
+  #modal-add-grocery .modal-content,
+  #modal-edit-grocery .modal-content { padding: 9px 12px !important; }
+  #modal-add-grocery .modal-content > div[style*="grid-template-columns"],
+  #modal-edit-grocery .modal-content > div[style*="grid-template-columns"] { gap: 5px !important; }
+  #modal-add-grocery .form-control,
+  #modal-edit-grocery .form-control { padding: 5px 6px !important; font-size: 12px !important; }
+}
+
+/* Recipe editor uses the available panel height; only its ingredient list scrolls. */
+#page-meals #recipe-inline-editor:not([style*="display: none"]) {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box;
+  gap: 5px;
+  padding: 12px !important;
+}
+#page-meals #recipe-inline-editor > * { flex-shrink: 0; }
+#page-meals #recipe-inline-editor > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  min-width: 0;
+  width: 100%;
+}
+#page-meals #recipe-inline-title {
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap !important;
+  font-size: 16px !important;
+  line-height: 1.3 !important;
+}
+#page-meals #recipe-inline-editor .recipe-edit-ingredients-list {
+  flex: 1 1 auto !important;
+  min-height: 65px !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  margin-bottom: 3px !important;
+  padding-right: 5px;
+}
+#page-meals #recipe-inline-editor .ingredient-input-row {
+  flex: 0 0 auto;
+  min-width: 0;
+  gap: 7px;
+}
+#page-meals #recipe-inline-editor .ingredient-input-row select,
+#page-meals #recipe-inline-editor .ingredient-input-row input {
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+#page-meals #recipe-inline-editor #btn-recipe-add-ingredient-row {
+  align-self: flex-start;
+  margin-bottom: 3px !important;
+}
+#page-meals #recipe-inline-editor .grocerly-recipe-details {
+  flex: 0 0 auto;
+}
+#page-meals #recipe-inline-editor .grocerly-recipe-details[open] {
+  max-height: 38%;
+  overflow-y: auto;
+}
+#page-meals #recipe-inline-editor > .btn-group {
+  flex-shrink: 0;
+  margin-top: 3px;
+  padding-top: 5px !important;
+  padding-bottom: 2px;
+}
