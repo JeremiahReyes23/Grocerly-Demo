@@ -910,6 +910,10 @@ app.put('/api/custom-stores', async (req, res) => {
 });
 
 // Start listening
-app.listen(PORT, () => {
-  console.log(`Grocerly backend running at http://localhost:${PORT}`);
-});
+// Local development runs the listener; Vercel imports the Express app as a function.
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Grocerly backend running at http://localhost:${PORT}`);
+  });
+}
+module.exports = app;
