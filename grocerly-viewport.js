@@ -28,7 +28,7 @@
         }
         // The original decorative spacer wastes precious height on mobile.
         const spacer=[...panel.children].find(node=>
-          node.tagName==="DIV" && /height:\\s*30px/.test(node.getAttribute("style")||""));
+          node.tagName==="DIV" && /height:\s*30px/.test(node.getAttribute("style")||""));
         if(spacer)spacer.remove();
       }
     }
