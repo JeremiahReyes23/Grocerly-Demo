@@ -3,6 +3,73 @@
 (function(){
   "use strict";
   const $=id=>document.getElementById(id);
+
+  // Always-available PDF export: no third-party script, network, or print dialog.
+  // Uses a small standards-compliant PDF document with printable Latin text.
+  function downloadBasicPdf(products, date) {
+    const plain = value => String(value ?? "").normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[\u2018\u2019]/g, "'").replace(/[\u201c\u201d]/g, '"')
+      .replace(/[\u2013\u2014]/g, "-").replace(/[^\x20-\x7e]/g, "?");
+    const lines = ["GROCERLY - MY GROCERY LIST", "Generated: " + date, ""];
+    if (!products.length) lines.push("No groceries added yet.");
+    else products.forEach((item, index) => {
+      const days = item.expiryDate ? Math.ceil((new Date(item.expiryDate) - new Date()) / 86400000) : null;
+      const status = days === null || !Number.isFinite(days) ? "No date" :
+        days <= 0 ? "Date passed" : days <= 2 ? "Use soon" : days + " days left";
+      lines.push((index + 1) + ". " + plain(item.name || "Unnamed item"));
+      lines.push("   Qty: " + plain(item.currentQty ?? item.originalQty ?? 0) + " " +
+        plain(item.unit || "pcs") + "  |  Storage: " + plain(item.storageLoc || "Unspecified") +
+        "  |  " + status + "  |  Price: " + (Number(item.price) || 0).toFixed(2));
+      lines.push("");
+    });
+    const wrapped = [];
+    for (const original of lines) {
+      let line = plain(original);
+      while (line.length > 91) {
+        let split = line.lastIndexOf(" ", 91);
+        if (split < 22) split = 91;
+        wrapped.push(line.slice(0, split));
+        line = "  " + line.slice(split).trimStart();
+      }
+      wrapped.push(line);
+    }
+    const chunks = [];
+    for (let i = 0; i < wrapped.length; i += 48) chunks.push(wrapped.slice(i, i + 48));
+    if (!chunks.length) chunks.push([]);
+    const objects = [null, "<< /Type /Catalog /Pages 2 0 R >>", null, "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"];
+    const pageReferences = [];
+    for (const chunk of chunks) {
+      const pageId = objects.length;
+      const streamId = pageId + 1;
+      pageReferences.push(pageId + " 0 R");
+      objects.push("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents " + streamId + " 0 R >>");
+      const escapeText = text => text.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+      const content = "BT /F1 11 Tf 40 805 Td 14 TL\n" +
+        chunk.map(line => "(" + escapeText(line) + ") Tj T*").join("\n") + "\nET";
+      objects.push("<< /Length " + content.length + " >>\nstream\n" + content + "\nendstream");
+    }
+    objects[2] = "<< /Type /Pages /Kids [" + pageReferences.join(" ") + "] /Count " + pageReferences.length + " >>";
+    let pdf = "%PDF-1.4\n";
+    const offsets = [0];
+    for (let id = 1; id < objects.length; id++) {
+      offsets[id] = pdf.length;
+      pdf += id + " 0 obj\n" + objects[id] + "\nendobj\n";
+    }
+    const xref = pdf.length;
+    pdf += "xref\n0 " + objects.length + "\n0000000000 65535 f \n";
+    for (let id = 1; id < objects.length; id++) pdf += String(offsets[id]).padStart(10, "0") + " 00000 n \n";
+    pdf += "trailer\n<< /Size " + objects.length + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF";
+    const bytes = Uint8Array.from(pdf, character => character.charCodeAt(0));
+    const url = URL.createObjectURL(new Blob([bytes], {type:"application/pdf"}));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "grocerly-list-" + date + ".pdf";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
   function initialize(){
     const dashboard=$("page-dashboard");
     const inventory=$("page-inventory");
@@ -24,11 +91,11 @@
         event.preventDefault();
         event.stopImmediatePropagation();
         const jsPDF = window.jspdf?.jsPDF;
+        const products = Array.isArray(State?.inventory) ? State.inventory : [];
         if (!jsPDF) {
-          alert("PDF export is unavailable. Please check your connection and try again.");
+          downloadBasicPdf(products, new Date().toISOString().slice(0,10));
           return;
         }
-        const products = Array.isArray(State?.inventory) ? State.inventory : [];
         const doc = new jsPDF({unit:"mm",format:"a4"});
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
