@@ -95,7 +95,11 @@
   async function apiRequest(endpoint, method = 'GET', body = null) {
     if (!isAuthenticated() || !await verify()) throw Error('Please sign in again.');
     let route, outgoing;
-    if (endpoint.startsWith('/api/profile')) {
+    if (endpoint === '/api/feedback') {
+      if (method !== 'POST') throw Error('Unsupported feedback action');
+      route = '/api/v2/feedback';
+      outgoing = {message: body?.message};
+    } else if (endpoint.startsWith('/api/profile')) {
       route = '/api/v2/profile';
       if (method !== 'GET') outgoing = {profile: body.profile};
     } else {
@@ -114,6 +118,7 @@
     });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) throw Error(json.error || 'Cloud save failed');
+    if (endpoint === '/api/feedback') return json;
     if (endpoint.startsWith('/api/profile')) {
       if (method === 'GET') return json;
       return body.profile;
