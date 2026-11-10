@@ -20,7 +20,17 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
     && publishableKey.length > 0;
 
   router.get('/status', (_req, res) => {
-    res.json({ configured: ready, version: 'v2', authentication: 'supabase' });
+    // Diagnostics expose only true/false checks, never environment values or keys.
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({
+      configured: ready,
+      version: 'v2',
+      authentication: 'supabase',
+      diagnostics: {
+        supabaseUrlValid: /^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/.test(PROJECT_URL),
+        publishableKeyPresent: publishableKey.length > 0
+      }
+    });
   });
 
   // No anonymous email/id values are ever accepted as identity.
