@@ -48,6 +48,75 @@
       }
     }
 
+    // Itemized receipt reviews are paginated instead of scrolling or cropping.
+    // Input fields remain mounted on every page, so saving imports every edited
+    // item (not just the visible page), and delete still works normally.
+    const review=document.getElementById("receipt-review-container");
+    const reviewItems=document.getElementById("review-receipt-items-list");
+    if(review&&reviewItems&&!document.getElementById("receipt-review-pagination")){
+      const controls=document.createElement("div");
+      controls.id="receipt-review-pagination";
+      controls.setAttribute("aria-label","Receipt items pages");
+      const prev=document.createElement("button");
+      prev.type="button";prev.id="receipt-review-prev";
+      const status=document.createElement("span");
+      status.id="receipt-review-page-status";
+      status.setAttribute("role","status");
+      status.setAttribute("aria-live","polite");
+      const next=document.createElement("button");
+      next.type="button";next.id="receipt-review-next";
+      controls.append(prev,status,next);
+      reviewItems.after(controls);
+      let currentPage=0;
+      let lastRows=[];
+      let renderRequested=false;
+      function renderPages(){
+        renderRequested=false;
+        const rows=[...reviewItems.children].filter(node=>node.classList.contains("review-item-row"));
+        const isOpen=review.style.display!=="none";
+        const es=document.documentElement.lang.toLowerCase().startsWith("es");
+        prev.textContent=es?"Anterior":"Previous";
+        next.textContent=es?"Siguiente":"Next";
+        if(!isOpen||rows.length===0){
+          controls.hidden=true;
+          return;
+        }
+        if(rows.length!==lastRows.length||rows.some((row,i)=>row!==lastRows[i])) currentPage=0;
+        lastRows=rows;
+        // Measure a representative row. The list is a flex child with an
+        // actual available height after the scanner card is hidden.
+        rows.forEach((row,i)=>{row.hidden=i>0;});
+        const first=rows[0];
+        const height=Math.max(55,first.getBoundingClientRect().height||72);
+        const gap=parseFloat(getComputedStyle(reviewItems).gap)||5;
+        const area=Math.max(0,reviewItems.clientHeight);
+        const pageSize=Math.max(1,Math.min(8,Math.floor((area+gap)/(height+gap))));
+        const pages=Math.max(1,Math.ceil(rows.length/pageSize));
+        currentPage=Math.max(0,Math.min(currentPage,pages-1));
+        rows.forEach((row,i)=>{row.hidden=Math.floor(i/pageSize)!==currentPage;});
+        status.textContent=es
+          ? "Página "+(currentPage+1)+" de "+pages
+          : "Page "+(currentPage+1)+" of "+pages;
+        prev.disabled=currentPage===0;
+        next.disabled=currentPage>=pages-1;
+        controls.hidden=pages===1;
+      }
+      function schedulePages(){
+        if(renderRequested)return;
+        renderRequested=true;
+        requestAnimationFrame(renderPages);
+      }
+      prev.addEventListener("click",()=>{currentPage--;schedulePages();});
+      next.addEventListener("click",()=>{currentPage++;schedulePages();});
+      new MutationObserver(schedulePages).observe(reviewItems,{childList:true});
+      new MutationObserver(schedulePages).observe(review,{attributes:true,attributeFilter:["style"]});
+      const observer=new ResizeObserver(schedulePages);
+      observer.observe(reviewItems);
+      window.addEventListener("resize",schedulePages);
+      document.getElementById("grocerly-language-switch")?.addEventListener("click",schedulePages);
+      schedulePages();
+    }
+
     // Existing onclick code toggles the dropdown, but the entire Home screen
     // must remain stationary. The list stays expanded and scrollable inside.
     const section=document.getElementById("dash-grocery-list-dropdown");
