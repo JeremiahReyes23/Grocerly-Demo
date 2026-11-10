@@ -494,3 +494,10 @@ body.dark-theme #page-inventory .grocerly-category-filters button[aria-pressed="
     margin-top: 3px !important;
   }
 }
+
+
+/* Override the legacy hard-coded black greeting even in dark mode. The color
+   follows the active theme token in either mode instead of a fixed RGB value. */
+#page-dashboard h1#dash-welcome-text {
+  color: var(--grocerly-ink) !important;
+}
