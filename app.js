@@ -4187,21 +4187,33 @@ function initProfileSettings() {
       const wWidth = cropperWorkarea.clientWidth;
       const wHeight = cropperWorkarea.clientHeight;
       
-      const circleX = wWidth / 2;
-      const circleY = wHeight / 2;
-
       const iWidth = cropperImg.naturalWidth;
       const iHeight = cropperImg.naturalHeight;
+      if (!cropperImg.complete || !iWidth || !iHeight) {
+        throw new Error("Photo has not finished loading");
+      }
 
+      // Match the editor's centered image. posX/posY contain the initial
+      // centering offset plus the user's drag; only the drag belongs in
+      // the 180x180 cropped output.
+      const initialX = (wWidth - iWidth) / 2;
+      const initialY = (wHeight - iHeight) / 2;
+      const dragX = posX - initialX;
+      const dragY = posY - initialY;
+      const minScale = Math.max(180 / iWidth, 180 / iHeight);
+      const actualScale = Math.max(Number(zoom) || 0, minScale);
+      const dw = iWidth * actualScale;
+      const dh = iHeight * actualScale;
+      const dx = (180 - dw) / 2 + dragX;
+      const dy = (180 - dh) / 2 + dragY;
+
+      // White backing avoids black JPEG backgrounds if the crop is shifted
+      // beyond the photo, and clipping keeps a circular profile preview.
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, 180, 180);
       ctx.beginPath();
       ctx.arc(90, 90, 90, 0, Math.PI * 2);
       ctx.clip();
-
-      const dx = posX - (circleX - 90);
-      const dy = posY - (circleY - 90);
-      const dw = iWidth * zoom;
-      const dh = iHeight * zoom;
-
       ctx.drawImage(cropperImg, dx, dy, dw, dh);
 
       croppedBase64 = canvas.toDataURL("image/jpeg", 0.72);
