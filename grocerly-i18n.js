@@ -5,6 +5,17 @@
 (function () {
   "use strict";
   const rows = [
+    ["Edit Lifespan","Editar duración"],
+    ["Days between grocery trips","Días entre compras"],
+    ["Upload profile photo","Subir foto de perfil"],
+    ["Close","Cerrar"],
+    ["Save Changes","Guardar cambios"],
+    ["Lifespan","Duración"],
+    ["Average store loop","Tiempo promedio entre compras"],
+    ["Breakfast","Desayuno"],
+    ["Lunch","Almuerzo"],
+    ["Dinner","Cena"],
+
     // Core four-screen strings, including accessible empty states and Settings.
     ["Dark Theme","Tema oscuro"],
     ["Your Meal Builder is Empty","Tu plan de comidas está vacío"],
