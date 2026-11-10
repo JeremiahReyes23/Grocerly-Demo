@@ -184,7 +184,14 @@ try {
           return {ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05),pageBg,heading,loaded,
             dark:document.body.classList.contains('dark-theme'),
             ink:getComputedStyle(document.body).getPropertyValue('--grocerly-ink'),
-            matching:document.querySelectorAll('body.dark-theme #page-dashboard #dash-welcome-text').length};
+            matching:document.querySelectorAll('body.dark-theme #page-dashboard #dash-welcome-text').length,
+            inline:document.querySelector('#dash-welcome-text').getAttribute('style'),
+            varAtHeading:getComputedStyle(document.querySelector('#dash-welcome-text')).getPropertyValue('--grocerly-ink'),
+            matchedRules:[...document.styleSheets].filter(x=>x.href&&x.href.includes('grocerly')).flatMap(sheet=>[...sheet.cssRules]
+              .filter(rule=>rule.selectorText&&rule.selectorText.includes('dash-welcome-text'))
+              .map(rule=>({sheet:sheet.href.split('/').pop(),selector:rule.selectorText,
+                matches:document.querySelector('#dash-welcome-text').matches(rule.selectorText),
+                color:rule.style?.getPropertyValue('color'),priority:rule.style?.getPropertyPriority('color')}))).filter(x=>x.color)};
         });
         assert(contrast.ratio>=4.5,
           'Dark-mode Home greeting contrast insufficient at '+viewport.width+': '+JSON.stringify(contrast));
