@@ -180,7 +180,11 @@ try {
           const pageBg=getComputedStyle(document.querySelector('#page-dashboard')).backgroundColor;
           const heading=getComputedStyle(document.querySelector('#dash-welcome-text')).color;
           const a=lum(parse(pageBg)),b=lum(parse(heading));
-          return {ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05),pageBg,heading};
+          const loaded=[...document.styleSheets].filter(sheet=>sheet.href?.includes('grocerly-polish.css')).map(sheet=>({href:sheet.href,rules:sheet.cssRules.length,hasRule:[...sheet.cssRules].some(rule=>rule.selectorText?.includes('body.dark-theme #page-dashboard #dash-welcome-text'))}));
+          return {ratio:(Math.max(a,b)+0.05)/(Math.min(a,b)+0.05),pageBg,heading,loaded,
+            dark:document.body.classList.contains('dark-theme'),
+            ink:getComputedStyle(document.body).getPropertyValue('--grocerly-ink'),
+            matching:document.querySelectorAll('body.dark-theme #page-dashboard #dash-welcome-text').length};
         });
         assert(contrast.ratio>=4.5,
           'Dark-mode Home greeting contrast insufficient at '+viewport.width+': '+JSON.stringify(contrast));
