@@ -97,7 +97,7 @@
     return body[endpoints[endpoint.split('?')[0]]];
   }
   function applyUser() {
-    if (!isAuthenticated() || !window.State) return;
+    if (!isAuthenticated()) return;
     State.user.email = session.user.email;
     State.user.uid = session.user.id;
   }
@@ -106,7 +106,7 @@
     clearLegacyCache();
     applyUser();
     const profile = await apiRequest('/api/profile');
-    State.user = {...State.user, ...profile, email:session.user.email, uid:session.user.id, isAdmin:false, isPremium:false};
+    State.user = {...State.user, ...profile, name:profile.name === 'Grocerly Member' ? (session.user.user_metadata?.display_name || profile.name) : profile.name, email:session.user.email, uid:session.user.id, isAdmin:false, isPremium:false};
     await loadStateFromServer();
     refreshDashboard();
     refreshInventoryList();
