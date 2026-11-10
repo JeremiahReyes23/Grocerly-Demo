@@ -66,7 +66,7 @@ app.get('/api/public-config', (_req, res) => {
 // endpoints or user-ID/email-based data endpoints while migration is underway.
 app.use('/api', (req, res, next) => {
   if (!process.env.SUPABASE_PUBLISHABLE_KEY) return next();
-  const protectedLegacy = /^\/(auth\/(login|signup|google)|profile|inventory|recipes|trips|waste|notifications|calendar|custom-stores|admin\/|ai\/)/.test(req.path);
+  const protectedLegacy = /^\/(auth\/(login|signup|google)|profile|inventory|recipes|trips|waste|notifications|calendar|custom-stores|feedback|admin\/|ai\/)/.test(req.path);
   if (protectedLegacy) return res.status(410).json({ error: 'Legacy account endpoint retired; use verified Supabase session' });
   next();
 });
