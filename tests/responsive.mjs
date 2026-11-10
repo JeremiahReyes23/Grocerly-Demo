@@ -171,6 +171,21 @@ try {
           screen+' empty-state should span collection at '+viewport.width+': '+JSON.stringify(empty));
       }
 
+      if(tab==='meals' && [390,1440].includes(viewport.width)){
+        const search=page.locator('#recipe-search-input');
+        await search.fill('grocerly__no_matching_recipes__2026');
+        await page.locator('#recipes-list-container > .empty-state-card').waitFor();
+        const emptyFrame=await page.evaluate(()=>{
+          const container=document.querySelector('#recipes-list-container').getBoundingClientRect();
+          const card=document.querySelector('#recipes-list-container > .empty-state-card').getBoundingClientRect();
+          return {width:container.width,cardWidth:card.width,cardLeft:card.left,containerLeft:container.left};
+        });
+        assert(emptyFrame.cardWidth >= emptyFrame.width-35,
+          'Meal empty state should extend across entire panel: '+JSON.stringify(emptyFrame));
+        await page.screenshot({path:'test-artifacts/'+viewport.width+'-meals-empty.png',fullPage:false});
+        await search.fill('');
+      }
+
       if(tab==='dashboard' && [390,1440].includes(viewport.width)){
         await page.evaluate(()=>document.body.classList.add('dark-theme'));
         const contrast=await page.evaluate(()=>{
