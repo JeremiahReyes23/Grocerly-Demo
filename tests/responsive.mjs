@@ -355,6 +355,48 @@ try {
   await page.locator('#page-dashboard.active').waitFor({ timeout: 15000 });
   assert.equal(await page.locator('#page-profile-setup.active, #page-goals.active, #page-dynamic-questions.active').count(), 0);
   console.log('Registration redirects directly to Home: OK');
+  // A real photo selection must update the Profile avatar immediately and
+  // survive screen changes and a fresh page load.
+  page.on('dialog',dialog=>dialog.accept());
+  await page.locator('#app-bottom-nav .nav-item[data-tab="profile"]').click();
+  await page.locator('#page-profile.active').waitFor();
+  const imageData = await page.evaluate(()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=32;canvas.height=32;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#cf7042';ctx.fillRect(0,0,32,32);
+    return canvas.toDataURL('image/png').split(',')[1];
+  });
+  await page.locator('#profile-card-upload').setInputFiles({
+    name:'test-avatar.png',mimeType:'image/png',buffer:Buffer.from(imageData,'base64')
+  });
+  await page.locator('#modal-image-editor.active').waitFor();
+  await page.locator('#btn-cropper-save').click();
+  await page.waitForFunction(()=>{
+    const avatar=document.querySelector('#profile-card-img');
+    return avatar?.src?.startsWith('data:image/png;base64,') && avatar.naturalWidth>0;
+  });
+  const avatarSaved=await page.evaluate(()=>{
+    const src=document.querySelector('#profile-card-img').src;
+    const cached=JSON.parse(localStorage.getItem('grocerly_state_cache')||'{}');
+    return {onScreen:src,stored:cached.user?.avatar,source:State.user.avatar};
+  });
+  assert.equal(avatarSaved.onScreen,avatarSaved.source,'Profile avatar did not update to stored photo');
+  assert.equal(avatarSaved.stored,avatarSaved.source,'Profile avatar was not saved to the local cache');
+  await page.locator('#app-bottom-nav .nav-item[data-tab="dashboard"]').click();
+  await page.locator('#app-bottom-nav .nav-item[data-tab="profile"]').click();
+  assert.equal(await page.locator('#profile-card-img').getAttribute('src'),avatarSaved.onScreen,
+    'Avatar should remain after switching screens');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#page-dashboard.active').waitFor({timeout:15000});
+  await page.locator('#app-bottom-nav .nav-item[data-tab="profile"]').click();
+  await page.locator('#page-profile.active').waitFor();
+  await page.waitForFunction(()=>
+    document.querySelector('#profile-card-img')?.src?.startsWith('data:image/png;base64,'));
+  assert.equal(await page.locator('#profile-card-img').getAttribute('src'),avatarSaved.onScreen,
+    'Uploaded avatar did not persist after reloading');
+  console.log('Profile photo upload and reload persistence: OK');
+
   await authContext.close();
   assert.deepEqual(errors, [], 'Uncaught browser errors: ' + errors.join(' | '));
 } finally {
