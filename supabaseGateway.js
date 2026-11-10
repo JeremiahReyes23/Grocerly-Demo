@@ -16,8 +16,8 @@ const PROJECT_URL = process.env.SUPABASE_URL || 'https://qbmcsqvyeozgetznlgjc.su
 function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
   const router = express.Router();
   const publishableKey = process.env.SUPABASE_PUBLISHABLE_KEY || '';
-  const ready = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(PROJECT_URL)
-    && publishableKey.length > 0;
+  const urlValid = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(PROJECT_URL);
+  const ready = urlValid && publishableKey.length > 0;
 
   router.get('/status', (_req, res) => {
     // Diagnostics expose only true/false checks, never environment values or keys.
@@ -27,7 +27,7 @@ function createGrocerlyV2Router({ fetchImpl = fetch } = {}) {
       version: 'v2',
       authentication: 'supabase',
       diagnostics: {
-        supabaseUrlValid: /^https:\\/\\/[a-z0-9-]+\\.supabase\\.co$/.test(PROJECT_URL),
+        supabaseUrlValid: urlValid,
         publishableKeyPresent: publishableKey.length > 0
       }
     });
