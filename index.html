@@ -540,10 +540,7 @@
             <label for="edit-recipe-name" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">Recipe Name</label>
             <input type="text" id="edit-recipe-name" class="form-control" placeholder="e.g. Garlic Herb Chicken thighs" style="font-size: 13px; height: 36px; padding: 6px 10px;">
           </div>
-          <div class="form-group" style="margin-bottom: 12px;">
-            <label for="edit-recipe-desc" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">Short Description</label>
-            <input type="text" id="edit-recipe-desc" class="form-control" placeholder="Brief tagline about flavor, time, etc." style="font-size: 13px; height: 36px; padding: 6px 10px;">
-          </div>
+          
           
           <label style="font-size: 11px; font-weight: 700; color: var(--text-secondary); margin-bottom: 4px; display: block; text-transform: uppercase;">Ingredients List</label>
           <div class="recipe-edit-ingredients-list" id="recipe-edit-ingredients-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px;">
@@ -553,12 +550,19 @@
             <i class="fas fa-plus"></i> Add Ingredient Row
           </button>
 
-          <div class="form-group" style="margin-bottom: 12px;">
+          
+
+          <details class="grocerly-more-fields grocerly-recipe-details">
+             <summary>Recipe details <span class="grocerly-optional-hint">Description &amp; instructions</span></summary>
+             <div class="grocerly-more-fields-inner"><div class="form-group" style="margin-bottom: 12px;">
+            <label for="edit-recipe-desc" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">Short Description</label>
+            <input type="text" id="edit-recipe-desc" class="form-control" placeholder="Brief tagline about flavor, time, etc." style="font-size: 13px; height: 36px; padding: 6px 10px;">
+          </div><div class="form-group" style="margin-bottom: 12px;">
             <label for="edit-recipe-instructions" style="font-size: 11px; font-weight: 700; color: var(--text-secondary); display: block; margin-bottom: 4px;">Cooking Instructions</label>
             <textarea id="edit-recipe-instructions" class="form-control" rows="3" placeholder="Explain steps to prepare and cook..." style="font-size: 13px; padding: 8px 10px;"></textarea>
-          </div>
-
-          <div class="btn-group" style="flex-direction: row; gap: 8px; padding-top: 10px;">
+          </div></div>
+           </details>
+           <div class="btn-group" style="flex-direction: row; gap: 8px; padding-top: 10px;">
             <button class="btn btn-outline" id="btn-recipe-edit-cancel" style="flex:1; height: 36px; font-size: 13px; cursor: pointer; background: transparent;">Cancel</button>
             <button class="btn btn-primary" id="btn-recipe-edit-save" style="flex:2; height: 36px; font-size: 13px; cursor: pointer;">Save Recipe</button>
           </div>
@@ -1583,7 +1587,10 @@
           </div>
         </div>
 
-        <!-- Purchase date, EXP.Date -->
+        <details class="grocerly-more-fields">
+          <summary>More details <span class="grocerly-optional-hint">Dates, store &amp; notes</span></summary>
+          <div class="grocerly-more-fields-inner">
+<!-- Purchase date, EXP.Date -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Purchase Date</label>
@@ -1632,6 +1639,9 @@
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Notes / Details</label>
           <textarea id="groc-notes" class="form-control" rows="1.5" placeholder="Brand, special details..." style="resize: none;"></textarea>
         </div>
+
+                  </div>
+        </details>
 
         <button class="btn btn-primary" id="btn-groc-save" style="margin-top: 4px; padding: 12px;">Add to Groceries</button>
       </div>
@@ -1710,7 +1720,10 @@
           </div>
         </div>
 
-        <!-- Purchase date, EXP.Date -->
+        <details class="grocerly-more-fields">
+          <summary>More details <span class="grocerly-optional-hint">Dates, store &amp; notes</span></summary>
+          <div class="grocerly-more-fields-inner">
+<!-- Purchase date, EXP.Date -->
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px;">
           <div class="form-group" style="margin-bottom: 0;">
             <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Purchase Date</label>
@@ -1759,6 +1772,9 @@
           <label style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--text-secondary);">Notes / Details</label>
           <textarea id="edit-groc-notes" class="form-control" rows="1.5" placeholder="Brand, special details..." style="resize: none;"></textarea>
         </div>
+
+                  </div>
+        </details>
 
         <button class="btn btn-primary" id="btn-edit-groc-save" style="margin-top: 4px; padding: 12px;">Save Changes</button>
       </div>
