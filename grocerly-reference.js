@@ -4,6 +4,36 @@
   "use strict";
   const $=id=>document.getElementById(id);
 
+  // Offer iOS users a native Save-to-Files/share sheet when available.
+  // On other browsers use a normal downloadable Blob URL. Never require a CDN.
+  function savePdfBlob(blob, date) {
+    const filename = "grocerly-list-" + date + ".pdf";
+    const isAppleMobile = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (isAppleMobile && typeof navigator.share === "function" && typeof navigator.canShare === "function") {
+      const file = new File([blob], filename, {type:"application/pdf"});
+      if (navigator.canShare({files:[file]})) {
+        // The native sheet offers Save to Files on iOS; cancellation is user choice.
+        navigator.share({files:[file], title:"Grocerly grocery list"}).catch(err => {
+          if (err?.name !== "AbortError") savePdfByLink(blob, filename, true);
+        });
+        return;
+      }
+    }
+    savePdfByLink(blob, filename, isAppleMobile);
+  }
+  function savePdfByLink(blob, filename, appleMobile) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    if (appleMobile) link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
   // Always-available PDF export: no third-party script, network, or print dialog.
   // Uses a small standards-compliant PDF document with printable Latin text.
   function downloadBasicPdf(products, date) {
@@ -61,14 +91,7 @@
     for (let id = 1; id < objects.length; id++) pdf += String(offsets[id]).padStart(10, "0") + " 00000 n \n";
     pdf += "trailer\n<< /Size " + objects.length + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF";
     const bytes = Uint8Array.from(pdf, character => character.charCodeAt(0));
-    const url = URL.createObjectURL(new Blob([bytes], {type:"application/pdf"}));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "grocerly-list-" + date + ".pdf";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    savePdfBlob(new Blob([bytes], {type:"application/pdf"}), date);
   }
   function initialize(){
     const dashboard=$("page-dashboard");
@@ -134,7 +157,7 @@
             y += 1;
           }
         }
-        doc.save("grocerly-list-" + date + ".pdf");
+        savePdfBlob(doc.output("blob"), date);
       },true);
     }
 
