@@ -23,22 +23,51 @@
       download.addEventListener("click",function(event){
         event.preventDefault();
         event.stopImmediatePropagation();
-        const products=Array.isArray(State?.inventory)?State.inventory:[];
-        const header=["Ingredient","Quantity","Unit","Storage","Status","Price"];
-        function csv(value){
-          let text=String(value===undefined||value===null?"":value);
-          if(/^[\s]*[=+\-@]/.test(text))text="'"+text; // Prevent spreadsheet formula execution.
-          return '"'+text.replace(/"/g,'""')+'"';
+        const jsPDF = window.jspdf?.jsPDF;
+        if (!jsPDF) {
+          alert("PDF export is unavailable. Please check your connection and try again.");
+          return;
         }
-        const rows=products.map(item=>{
-          const days=item.expiryDate?Math.ceil((new Date(item.expiryDate)-new Date())/86400000):null;
-          const status=days===null?"Not entered":days<=0?"Date passed":days<=2?"Use soon":days+" days left";
-          return [item.name,item.currentQty,item.unit,item.storageLoc,status,(Number(item.price)||0).toFixed(2)].map(csv).join(",");
-        });
-        const blob=new Blob(["\uFEFF"+header.map(csv).join(",")+"\r\n"+rows.join("\r\n")],{type:"text/csv;charset=utf-8"});
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement("a");a.href=url;a.download="grocerly-list-"+new Date().toISOString().slice(0,10)+".csv";
-        document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+        const products = Array.isArray(State?.inventory) ? State.inventory : [];
+        const doc = new jsPDF({unit:"mm",format:"a4"});
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 16;
+        const lineHeight = 6;
+        let y = 23;
+        const date = new Date().toISOString().slice(0,10);
+        const writeLine = (text, options = {}) => {
+          const maxWidth = pageWidth - margin * 2;
+          const lines = doc.splitTextToSize(String(text), maxWidth);
+          for (const line of lines) {
+            if (y > pageHeight - 18) { doc.addPage(); y = 18; }
+            doc.text(line, margin, y, options);
+            y += lineHeight;
+          }
+        };
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(18);
+        writeLine("Grocerly - My Grocery List");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        writeLine("Generated: " + date);
+        y += 3;
+        if (!products.length) {
+          writeLine("No groceries added yet.");
+        } else {
+          doc.setFont("helvetica", "bold");
+          writeLine("Ingredient | Quantity | Storage | Status | Price");
+          doc.setFont("helvetica", "normal");
+          for (const item of products) {
+            const days = item.expiryDate ? Math.ceil((new Date(item.expiryDate) - new Date()) / 86400000) : null;
+            const status = days === null || !Number.isFinite(days) ? "No date" : days <= 0 ? "Date passed" : days <= 2 ? "Use soon" : days + " days left";
+            const count = (item.currentQty ?? item.originalQty ?? 0) + " " + (item.unit || "pcs");
+            const price = "$" + (Number(item.price) || 0).toFixed(2);
+            writeLine([item.name || "Unnamed item",count,item.storageLoc || "—",status,price].join(" | "));
+            y += 1;
+          }
+        }
+        doc.save("grocerly-list-" + date + ".pdf");
       },true);
     }
 
